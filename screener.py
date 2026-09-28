@@ -1,5 +1,3 @@
-!pip install yfinance lxml -q
-
 import os
 import yfinance as yf
 import pandas as pd
