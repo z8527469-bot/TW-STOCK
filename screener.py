@@ -147,15 +147,28 @@ def check_technical(ticker):
         return None
 
 def check_revenue(stock_dict):
-    """階段二：月營收雙增濾網 (MoM > 0 且 YoY > 10%)"""
+    """階段二：月營收雙增濾網 (MoM > 0 且 YoY > 10%) - S1 豁免"""
     ticker = stock_dict['代碼']
+    strats = stock_dict['strats'].copy()
+    
     start_date = (datetime.datetime.now() - datetime.timedelta(days=400)).strftime('%Y-%m-%d')
     url = f"https://api.finmindtrade.com/api/v4/data?dataset=TaiwanStockMonthRevenue&data_id={ticker}&start_date={start_date}"
     
+    # 定義營收未達標時的豁免機制
+    def handle_fail(mom_val="-", yoy_val="-"):
+        if "S1_底部突破" in strats:
+            # 剔除其他需要營收的策略，強制保留 S1 資格
+            stock_dict['strats'] = ["S1_底部突破"]
+            stock_dict['MoM'] = f"{mom_val}" if mom_val != "-" else "-"
+            stock_dict['YoY'] = f"{yoy_val}" if yoy_val != "-" else "-"
+            return stock_dict
+        return None
+
     try:
         time.sleep(0.25) # 防火牆保護延遲
         res = requests.get(url, timeout=5).json()
-        if 'data' not in res or len(res['data']) < 13: return None
+        if 'data' not in res or len(res['data']) < 13: 
+            return handle_fail()
             
         df = pd.DataFrame(res['data'])
         latest_rev = df.iloc[-1]['revenue']
@@ -165,7 +178,9 @@ def check_revenue(stock_dict):
         latest_year = df.iloc[-1]['revenue_year']
         last_year_data = df[(df['revenue_year'] == latest_year - 1) & (df['revenue_month'] == latest_month)]
         
-        if last_year_data.empty: return None
+        if last_year_data.empty: 
+            return handle_fail()
+            
         prev_yoy = last_year_data.iloc[0]['revenue']
         
         mom = (latest_rev / prev_rev - 1) * 100 if prev_rev else 0
@@ -175,9 +190,11 @@ def check_revenue(stock_dict):
             stock_dict['MoM'] = f"{mom:.1f}%"
             stock_dict['YoY'] = f"{yoy:.1f}%"
             return stock_dict
-        return None
+        else:
+            # 計算成功，但數值未達雙增標準，交給豁免機制處理
+            return handle_fail(f"{mom:.1f}%", f"{yoy:.1f}%")
     except:
-        return None
+        return handle_fail()
 
 def check_chips(stock_dict):
     """階段三：針對 S1, S3 確認籌碼面"""
