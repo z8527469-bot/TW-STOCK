@@ -4,7 +4,7 @@ on:
   schedule:
     # 伺服器使用 UTC 時間。台灣時間 15:00 = UTC 07:00
     # 1-5 代表每週一到週五執行
-    - cron: '40 14 * * 1-5'
+    - cron: '40 14 * * *'
   workflow_dispatch: # 保留這個設定，讓你可以隨時手動點擊執行
 
 jobs:
