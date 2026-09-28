@@ -2,18 +2,18 @@ import os
 import yfinance as yf
 import pandas as pd
 import requests
-from tqdm.notebook import tqdm
 import warnings
 from concurrent.futures import ThreadPoolExecutor, as_completed
 import datetime
 import time
 import random
 
+# 忽略警告訊息
 warnings.filterwarnings('ignore')
 
 # ================= 參數設定區 =================
-# 改為優先讀取系統環境變數
-DISCORD_WEBHOOK_URL = os.environ.get("DISCORD_WEBHOOK_URL", "若沒有環境變數則填這裡")
+# 優先讀取 GitHub Secrets 環境變數
+DISCORD_WEBHOOK_URL = os.environ.get("DISCORD_WEBHOOK_URL", "請在此貼上你的_DISCORD_WEBHOOK_URL")
 # ============================================
 
 STOCK_INFO = {}
@@ -21,6 +21,7 @@ error_count = 0
 
 def send_discord_webhook(webhook_url, msg):
     if not webhook_url or webhook_url == "請在此貼上你的_DISCORD_WEBHOOK_URL":
+        print("⚠️ 未設定 Discord Webhook，跳過發送。")
         return
     try:
         res = requests.post(webhook_url, json={"content": msg})
@@ -61,7 +62,9 @@ def get_tw_stocks():
 def check_technical(ticker):
     global error_count
     try:
-        time.sleep(random.uniform(0.1, 0.4))
+        # ✅ 降速機制：隨機延遲 0.5 到 1.2 秒，避免被 Yahoo 判定為惡意爬蟲
+        time.sleep(random.uniform(0.5, 1.2))
+        
         stock = yf.Ticker(ticker)
         df = stock.history(period="2y")
         
@@ -139,7 +142,7 @@ def check_technical(ticker):
         }
     except Exception as e:
         if error_count < 3:
-            print(f"\n⚠️ 股票 {ticker} 發生錯誤: {e}")
+            print(f"⚠️ 股票 {ticker} 發生錯誤: {e}")
             error_count += 1
         return None
 
@@ -168,7 +171,6 @@ def check_revenue(stock_dict):
         mom = (latest_rev / prev_rev - 1) * 100 if prev_rev else 0
         yoy = (latest_rev / prev_yoy - 1) * 100 if prev_yoy else 0
         
-        # 雙增條件審查
         if mom > 0 and yoy > 10:
             stock_dict['MoM'] = f"{mom:.1f}%"
             stock_dict['YoY'] = f"{yoy:.1f}%"
@@ -231,65 +233,71 @@ def check_chips(stock_dict):
         return stock_dict if strats else None
 
 # ================= 主程式執行 =================
-print("⏳ 步驟 1: 獲取全市場股票清單 (包含名稱)...")
-all_tickers = get_tw_stocks()
+if __name__ == "__main__":
+    print("⏳ 步驟 1: 獲取全市場股票清單 (包含名稱)...")
+    all_tickers = get_tw_stocks()
+    print(f"✅ 共獲取 {len(all_tickers)} 檔股票。")
 
-print("🚀 步驟 2: 啟動多執行緒掃描技術面...")
-passed_technical = []
-with ThreadPoolExecutor(max_workers=5) as executor:
-    futures = {executor.submit(check_technical, ticker): ticker for ticker in all_tickers}
-    for future in tqdm(as_completed(futures), total=len(all_tickers), desc="技術面掃描"):
-        result = future.result()
-        if result: passed_technical.append(result)
+    print("\n🚀 步驟 2: 啟動多執行緒掃描技術面 (背景執行中，請耐心等候約 15-20 分鐘)...")
+    passed_technical = []
+    
+    # ✅ 降速機制：並發數設為 2，確保 GitHub Actions 穩定運行不被封鎖
+    with ThreadPoolExecutor(max_workers=2) as executor:
+        futures = {executor.submit(check_technical, ticker): ticker for ticker in all_tickers}
+        # 移除 tqdm，改為單純迭代
+        for future in as_completed(futures):
+            result = future.result()
+            if result: passed_technical.append(result)
 
-print(f"\n📊 步驟 3: 針對 {len(passed_technical)} 檔初篩名單進行【月營收雙增】驗證...")
-passed_revenue = []
-for stock in tqdm(passed_technical, desc="營收面掃描"):
-    rev_result = check_revenue(stock)
-    if rev_result: passed_revenue.append(rev_result)
+    print(f"\n📊 步驟 3: 針對 {len(passed_technical)} 檔初篩名單進行【月營收雙增】驗證...")
+    passed_revenue = []
+    for stock in passed_technical:
+        rev_result = check_revenue(stock)
+        if rev_result: passed_revenue.append(rev_result)
 
-print(f"\n🏦 步驟 4: 針對 {len(passed_revenue)} 檔營收達標名單進行籌碼驗證...")
-final_stocks = []
-for stock in tqdm(passed_revenue, desc="籌碼面掃描"):
-    chip_result = check_chips(stock)
-    if chip_result: final_stocks.append(chip_result)
+    print(f"\n🏦 步驟 4: 針對 {len(passed_revenue)} 檔營收達標名單進行籌碼驗證...")
+    final_stocks = []
+    for stock in passed_revenue:
+        chip_result = check_chips(stock)
+        if chip_result: final_stocks.append(chip_result)
 
-# ================= 整理結果與發送 =================
-print("\n========== 🎯 四大策略最終篩選結果 ==========")
+    # ================= 整理結果與發送 =================
+    print("\n========== 🎯 四大策略最終篩選結果 ==========")
 
-results_by_strat = {"S1_底部突破": [], "S2_創高動能": [], "S3_投信認養": [], "S4_恐慌抄底": []}
-for stock in final_stocks:
-    for s in stock['strats']:
-        results_by_strat[s].append(stock)
+    results_by_strat = {"S1_底部突破": [], "S2_創高動能": [], "S3_投信認養": [], "S4_恐慌抄底": []}
+    for stock in final_stocks:
+        for s in stock['strats']:
+            results_by_strat[s].append(stock)
 
-today_str = datetime.datetime.now().strftime("%Y-%m-%d")
-notify_msg = f"## 📊 【{today_str} 台股四核心選股報告】\n*附加條件：月營收 MoM>0 且 YoY>10%*\n"
+    today_str = datetime.datetime.now().strftime("%Y-%m-%d")
+    notify_msg = f"## 📊 【{today_str} 台股四核心選股報告】\n*附加條件：月營收 MoM>0 且 YoY>10%*\n"
 
-for strat_name, stocks in results_by_strat.items():
-    print(f"\n📁 【{strat_name}】符合標的：{len(stocks)} 檔")
-    notify_msg += f"\n### 🎯 【{strat_name}】\n"
+    for strat_name, stocks in results_by_strat.items():
+        print(f"\n📁 【{strat_name}】符合標的：{len(stocks)} 檔")
+        notify_msg += f"\n### 🎯 【{strat_name}】\n"
 
-    if not stocks:
-        print("今日無符合標的。")
-        notify_msg += "> 無符合標的\n"
-        continue
+        if not stocks:
+            print("今日無符合標的。")
+            notify_msg += "> 無符合標的\n"
+            continue
 
-    df = pd.DataFrame(stocks)
-    cols_order = ['代碼', '名稱', '市場', '收盤價', '成交量(張)', '距年高點跌幅', 'MoM', 'YoY']
-    if '外資動向' in df.columns: cols_order.extend(['外資動向', '投信動向'])
+        df = pd.DataFrame(stocks)
+        cols_order = ['代碼', '名稱', '市場', '收盤價', '成交量(張)', '距年高點跌幅', 'MoM', 'YoY']
+        if '外資動向' in df.columns: cols_order.extend(['外資動向', '投信動向'])
 
-    # 解決圖片中出現 NaN 的問題，將空值補為 '-'
-    df = df[cols_order].sort_values(by='成交量(張)', ascending=False).reset_index(drop=True)
-    df.fillna('-', inplace=True)
-    display(df)
+        df = df[cols_order].sort_values(by='成交量(張)', ascending=False).reset_index(drop=True)
+        df.fillna('-', inplace=True)
+        
+        # 移除 display，改用標準 print 輸出到終端機 (不顯示 index 以保持整潔)
+        print(df.to_string(index=False))
 
-    for _, row in df.iterrows():
-        # 優化 Discord 顯示排版
-        notify_msg += f"**📌 {row['代碼']} {row['名稱']} ({row['市場']})**\n"
-        notify_msg += f"> 收盤: `{row['收盤價']}` ｜ 量: `{row['成交量(張)']}張` ｜ 距高: `{row['距年高點跌幅']}`\n"
-        notify_msg += f"> 營收: MoM `{row['MoM']}` ｜ YoY `{row['YoY']}`\n"
-        if '外資動向' in row and row['外資動向'] != '-':
-            notify_msg += f"> 籌碼: 外資 `{row['外資動向']}` ｜ 投信 `{row['投信動向']}`\n"
+        for _, row in df.iterrows():
+            notify_msg += f"**📌 {row['代碼']} {row['名稱']} ({row['市場']})**\n"
+            notify_msg += f"> 收盤: `{row['收盤價']}` ｜ 量: `{row['成交量(張)']}張` ｜ 距高: `{row['距年高點跌幅']}`\n"
+            notify_msg += f"> 營收: MoM `{row['MoM']}` ｜ YoY `{row['YoY']}`\n"
+            if '外資動向' in row and row['外資動向'] != '-':
+                notify_msg += f"> 籌碼: 外資 `{row['外資動向']}` ｜ 投信 `{row['投信動向']}`\n"
         notify_msg += "───────────────\n"
 
-send_discord_webhook(DISCORD_WEBHOOK_URL, notify_msg)
+    send_discord_webhook(DISCORD_WEBHOOK_URL, notify_msg)
+    print("\n✅ 選股作業結束，通知已發送！")
