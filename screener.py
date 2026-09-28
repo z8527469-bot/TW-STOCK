@@ -258,19 +258,41 @@ if __name__ == "__main__":
     print("\n🚀 步驟 2: 啟動多執行緒掃描技術面 (背景執行中，請耐心等候約 15-20 分鐘)...")
     passed_technical = []
     
-    # ✅ 降速機制：並發數設為 2，確保 GitHub Actions 穩定運行不被封鎖
     with ThreadPoolExecutor(max_workers=2) as executor:
         futures = {executor.submit(check_technical, ticker): ticker for ticker in all_tickers}
-        # 移除 tqdm，改為單純迭代
         for future in as_completed(futures):
             result = future.result()
             if result: passed_technical.append(result)
+
+    # === 🟢 新增：印出技術面初篩名單 ===
+    print(f"\n🔍 【階段一：技術面初篩完成】共 {len(passed_technical)} 檔")
+    if passed_technical:
+        tech_df = pd.DataFrame(passed_technical)
+        tech_df['符合策略'] = tech_df['strats'].apply(lambda x: ", ".join(x))
+        print(tech_df[['代碼', '名稱', '市場', '收盤價', '成交量(張)', '符合策略']].sort_values(by='成交量(張)', ascending=False).to_string(index=False))
+    print("-" * 50)
+    # =================================
 
     print(f"\n📊 步驟 3: 針對 {len(passed_technical)} 檔初篩名單進行【月營收雙增】驗證...")
     passed_revenue = []
     for stock in passed_technical:
         rev_result = check_revenue(stock)
         if rev_result: passed_revenue.append(rev_result)
+
+    # === 🟢 新增：印出營收過關名單 (進入籌碼篩選前) ===
+    print(f"\n🔍 【階段二：營收雙增驗證完成】進入籌碼審查前，共 {len(passed_revenue)} 檔")
+    if passed_revenue:
+        rev_df = pd.DataFrame(passed_revenue)
+        rev_df['符合策略'] = rev_df['strats'].apply(lambda x: ", ".join(x))
+        rev_df.fillna('-', inplace=True)
+        # 動態抓取欄位（避免全部都被豁免時沒有 MoM/YoY 欄位報錯）
+        cols = ['代碼', '名稱', '收盤價', '成交量(張)']
+        if 'MoM' in rev_df.columns: cols.extend(['MoM', 'YoY'])
+        cols.append('符合策略')
+        
+        print(rev_df[cols].sort_values(by='成交量(張)', ascending=False).to_string(index=False))
+    print("-" * 50)
+    # =================================
 
     print(f"\n🏦 步驟 4: 針對 {len(passed_revenue)} 檔營收達標名單進行籌碼驗證...")
     final_stocks = []
@@ -287,7 +309,7 @@ if __name__ == "__main__":
             results_by_strat[s].append(stock)
 
     today_str = datetime.datetime.now().strftime("%Y-%m-%d")
-    notify_msg = f"## 📊 【{today_str} 台股四核心選股報告】\n*附加條件：月營收 MoM>0 且 YoY>10%*\n"
+    notify_msg = f"## 📊 【{today_str} 台股四核心選股報告】\n*附加條件：月營收 MoM>0 且 YoY>10% (S1豁免)*\n"
 
     for strat_name, stocks in results_by_strat.items():
         print(f"\n📁 【{strat_name}】符合標的：{len(stocks)} 檔")
@@ -304,8 +326,6 @@ if __name__ == "__main__":
 
         df = df[cols_order].sort_values(by='成交量(張)', ascending=False).reset_index(drop=True)
         df.fillna('-', inplace=True)
-        
-        # 移除 display，改用標準 print 輸出到終端機 (不顯示 index 以保持整潔)
         print(df.to_string(index=False))
 
         for _, row in df.iterrows():
