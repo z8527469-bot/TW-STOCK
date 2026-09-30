@@ -102,7 +102,7 @@ def check_technical(ticker):
         ma_max, ma_min = max(ma_yest), min(ma_yest)
 
         if (box_high <= (high_1y * 0.80) and (box_high - box_low) / box_low <= 0.20 and
-            (ma_max - ma_min) / ma_min <= 0.08 and (today['Close'] - today['Open']) / today['Open'] >= 0.03 and
+            (ma_max - ma_min) / ma_min <= 0.1 and (today['Close'] - yesterday['Close']) /yesterday['Close'] >= 0.03 and
             today['Close'] > ma_max and today['MA5'] > yesterday['MA5'] and
             today['Volume'] >= 1000000):
             passed_strats.append("S1_底部突破")
