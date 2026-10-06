@@ -420,4 +420,4 @@ if __name__ == "__main__":
                 notify_msg += f"> 營收: MoM `{row['MoM']}` ｜ YoY `{row['YoY']}`\n"
             if '外資動向' in row and row['外資動向'] != '-':
                 notify_msg += f"> 籌碼: 外資 `{row['外資動向']}` ｜ 投信 `{row['投信動向']}`\n"
-        notify_msg += "───────────────\n
+        notify_msg += "───────────────\n"
