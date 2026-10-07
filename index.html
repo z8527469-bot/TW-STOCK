@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="zh-TW" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>台股四核心動能戰情室</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        darkbg: '#0f172a',
+                        cardbg: '#1e293b',
+                        twred: '#ef4444',
+                        twgreen: '#10b981'
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; }
+        .tab-active { border-bottom: 2px solid #3b82f6; color: #60a5fa; font-weight: 600; }
+    </style>
+</head>
+<body class="bg-darkbg text-gray-200 min-h-screen pb-12">
+
+    <!-- 頂部導覽列 -->
+    <header class="bg-cardbg border-b border-gray-800 sticky top-0 z-10 shadow-md">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex flex-col sm:flex-row justify-between items-center gap-2">
+            <div class="flex items-center space-x-3">
+                <span class="text-2xl">📈</span>
+                <h1 class="text-xl font-bold text-white tracking-wide">台股四核心動能戰情室</h1>
+            </div>
+            <div class="text-sm text-gray-400">
+                最新資料日期：<span id="update-date" class="font-mono text-blue-400 font-semibold">載入中...</span>
+            </div>
+        </div>
+    </header>
+
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-6">
+        
+        <!-- 歷史績效總覽卡片 -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+            <div class="bg-cardbg p-5 rounded-xl border border-gray-800 shadow">
+                <div class="text-gray-400 text-sm mb-1">歷史累積選股 (筆)</div>
+                <div id="stat-total" class="text-2xl font-bold text-white font-mono">0</div>
+            </div>
+            <div class="bg-cardbg p-5 rounded-xl border border-gray-800 shadow">
+                <div class="text-gray-400 text-sm mb-1">歷史正報酬勝率</div>
+                <div id="stat-winrate" class="text-2xl font-bold text-white font-mono">0.0%</div>
+            </div>
+            <div class="bg-cardbg p-5 rounded-xl border border-gray-800 shadow">
+                <div class="text-gray-400 text-sm mb-1">歷史平均持有報酬率</div>
+                <div id="stat-avg-return" class="text-2xl font-bold text-white font-mono">0.00%</div>
+            </div>
+        </div>
+
+        <!-- 頁籤切換 -->
+        <div class="flex border-b border-gray-800 mb-6 space-x-6">
+            <button onclick="switchTab('daily')" id="tab-daily" class="pb-3 px-2 tab-active transition-colors">
+                🎯 最新選股名單
+            </button>
+            <button onclick="switchTab('history')" id="tab-history" class="pb-3 px-2 text-gray-400 hover:text-gray-200 transition-colors">
+                📊 歷史績效追蹤庫
+            </button>
+        </div>
+
+        <!-- 區塊 1：今日最新選股 -->
+        <div id="section-daily" class="space-y-6">
+            <div id="daily-container" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div class="col-span-full text-center py-12 text-gray-500">正在載入今日選股資料...</div>
+            </div>
+        </div>
+
+        <!-- 區塊 2：歷史績效追蹤 -->
+        <div id="section-history" class="hidden">
+            <!-- 搜尋與過濾工具列 -->
+            <div class="flex flex-col sm:flex-row gap-3 mb-4">
+                <input type="text" id="search-input" oninput="renderHistory()" placeholder="🔍 搜尋股票代碼或名稱..." 
+                       class="bg-cardbg border border-gray-700 rounded-lg px-4 py-2 text-sm text-white focus:outline-none focus:border-blue-500 flex-grow">
+                <select id="strat-filter" onchange="renderHistory()" 
+                        class="bg-cardbg border border-gray-700 rounded-lg px-4 py-2 text-sm text-white focus:outline-none focus:border-blue-500">
+                    <option value="ALL">所有策略 (S1 ~ S4)</option>
+                    <option value="S1_底部突破">S1_底部突破</option>
+                    <option value="S2_創高動能">S2_創高動能</option>
+                    <option value="S3_投信認養">S3_投信認養</option>
+                    <option value="S4_恐慌抄底">S4_恐慌抄底</option>
+                </select>
+                <select id="sort-select" onchange="renderHistory()" 
+                        class="bg-cardbg border border-gray-700 rounded-lg px-4 py-2 text-sm text-white focus:outline-none focus:border-blue-500">
+                    <option value="date-desc">排序：選出日期 (最新 ➔ 最舊)</option>
+                    <option value="return-desc">排序：報酬率 (最高 ➔ 最低)</option>
+                    <option value="return-asc">排序：報酬率 (最低 ➔ 最高)</option>
+                </select>
+            </div>
+
+            <!-- 歷史表格 -->
+            <div class="bg-cardbg rounded-xl border border-gray-800 overflow-x-auto shadow">
+                <table class="w-full text-left border-collapse">
+                    <thead>
+                        <tr class="border-b border-gray-800 text-gray-400 text-xs uppercase bg-gray-900/50">
+                            <th class="py-3.5 px-4">選出日期</th>
+                            <th class="py-3.5 px-4">股票代碼 / 名稱</th>
+                            <th class="py-3.5 px-4">觸發策略</th>
+                            <th class="py-3.5 px-4 text-right">當時進場價</th>
+                            <th class="py-3.5 px-4 text-right">最新收盤價</th>
+                            <th class="py-3.5 px-4 text-right">累積報酬率</th>
+                        </tr>
+                    </thead>
+                    <tbody id="history-tbody" class="divide-y divide-gray-800/60 text-sm">
+                        <tr><td colspan="6" class="text-center py-8 text-gray-500">載入中...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+    </main>
+
+    <script>
+        let globalHistoryList = [];
+
+        // 切換頁籤
+        function switchTab(tab) {
+            document.getElementById('section-daily').classList.toggle('hidden', tab !== 'daily');
+            document.getElementById('section-history').classList.toggle('hidden', tab !== 'history');
+            
+            document.getElementById('tab-daily').className = tab === 'daily' 
+                ? 'pb-3 px-2 tab-active transition-colors' 
+                : 'pb-3 px-2 text-gray-400 hover:text-gray-200 transition-colors';
+            document.getElementById('tab-history').className = tab === 'history' 
+                ? 'pb-3 px-2 tab-active transition-colors' 
+                : 'pb-3 px-2 text-gray-400 hover:text-gray-200 transition-colors';
+        }
+
+        // 格式化策略標籤顏色
+        function getStrategyBadges(stratStr) {
+            if (!stratStr) return '';
+            const colors = {
+                'S1_底部突破': 'bg-purple-900/60 text-purple-300 border-purple-700/50',
+                'S2_創高動能': 'bg-red-900/60 text-red-300 border-red-700/50',
+                'S3_投信認養': 'bg-amber-900/60 text-amber-300 border-amber-700/50',
+                'S4_恐慌抄底': 'bg-emerald-900/60 text-emerald-300 border-emerald-700/50'
+            };
+            return stratStr.split(',').map(s => {
+                const cleanS = s.trim();
+                const colorClass = colors[cleanS] || 'bg-blue-900/60 text-blue-300 border-blue-700/50';
+                return `<span class="inline-block px-2.5 py-0.5 text-xs font-medium rounded-full border ${colorClass} mr-1.5 mb-1">${cleanS}</span>`;
+            }).join('');
+        }
+
+        // 載入 JSON 資料
+        async function loadData() {
+            const cacheBuster = `?t=${new Date().getTime()}`;
+            
+            // 1. 讀取今日選股
+            try {
+                const resDaily = await fetch(`data/daily_picks.json${cacheBuster}`);
+                if (resDaily.ok) {
+                    const dailyData = await resDaily.json();
+                    document.getElementById('update-date').textContent = dailyData.date || '未知';
+                    renderDaily(dailyData.picks || []);
+                } else {
+                    document.getElementById('daily-container').innerHTML = `<div class="col-span-full text-center py-12 text-gray-400">目前尚無今日選股資料 (請確認 GitHub Actions 已執行並產生 data/daily_picks.json)</div>`;
+                }
+            } catch (e) {
+                console.error("無法載入 daily_picks.json:", e);
+            }
+
+            // 2. 讀取歷史追蹤庫
+            try {
+                const resHist = await fetch(`data/history.json${cacheBuster}`);
+                if (resHist.ok) {
+                    const histData = await resHist.json();
+                    processHistoryData(histData);
+                }
+            } catch (e) {
+                console.error("無法載入 history.json:", e);
+            }
+        }
+
+        // 渲染今日選股卡片
+        function renderDaily(picks) {
+            const container = document.getElementById('daily-container');
+            if (!picks || picks.length === 0) {
+                container.innerHTML = `<div class="col-span-full bg-cardbg p-8 rounded-xl border border-gray-800 text-center text-gray-400">🎉 今日市場無符合嚴格條件之標的，空手也是一種策略！</div>`;
+                return;
+            }
+
+            container.innerHTML = picks.map(stock => {
+                const badges = getStrategyBadges((stock.strats || []).join(', '));
+                const chipInfo = stock['外資動向'] && stock['外資動向'] !== '-' 
+                    ? `<div class="mt-3 pt-3 border-t border-gray-800/80 flex justify-between text-xs text-gray-400">
+                           <span>🏦 外資：<strong class="text-gray-200">${stock['外資動向']}</strong></span>
+                           <span>🏦 投信：<strong class="text-gray-200">${stock['投信動向']}</strong></span>
+                       </div>` : '';
+
+                return `
+                <div class="bg-cardbg p-5 rounded-xl border border-gray-800 hover:border-gray-700 transition-all shadow">
+                    <div class="flex justify-between items-start mb-2">
+                        <div>
+                            <a href="https://tw.stock.yahoo.com/quote/${stock['代碼']}" target="_blank" class="text-lg font-bold text-white hover:text-blue-400 transition-colors inline-flex items-center gap-1.5">
+                                ${stock['代碼']} ${stock['名稱']}
+                                <span class="text-xs font-normal px-2 py-0.5 bg-gray-800 text-gray-400 rounded">${stock['市場']}</span>
+                            </a>
+                        </div>
+                        <div class="text-right">
+                            <div class="text-xl font-bold font-mono text-white">${stock['收盤價']}</div>
+                            <div class="text-xs text-gray-400">成交量 ${stock['成交量(張)'].toLocaleString()} 張</div>
+                        </div>
+                    </div>
+                    <div class="my-2">${badges}</div>
+                    <div class="grid grid-cols-3 gap-2 mt-4 bg-gray-900/60 p-2.5 rounded-lg text-xs">
+                        <div>
+                            <span class="text-gray-500 block">月增 (MoM)</span>
+                            <span class="font-mono font-semibold text-gray-200">${stock['MoM'] || '-'}</span>
+                        </div>
+                        <div>
+                            <span class="text-gray-500 block">年增 (YoY)</span>
+                            <span class="font-mono font-semibold text-gray-200">${stock['YoY'] || '-'}</span>
+                        </div>
+                        <div>
+                            <span class="text-gray-500 block">距年高點</span>
+                            <span class="font-mono font-semibold text-gray-200">${stock['距年高點跌幅'] || '-'}</span>
+                        </div>
+                    </div>
+                    ${chipInfo}
+                </div>`;
+            }).join('');
+        }
+
+        // 整理並計算歷史統計數據
+        function processHistoryData(histObj) {
+            globalHistoryList = [];
+            for (const [yfTicker, records] of Object.entries(histObj)) {
+                const cleanCode = yfTicker.replace('.TW', '').replace('.TWO', '');
+                records.forEach(r => {
+                    globalHistoryList.push({
+                        code: cleanCode,
+                        name: r.name || '',
+                        pick_date: r.pick_date,
+                        strategies: r.strategies,
+                        entry_price: Number(r.entry_price),
+                        current_price: Number(r.current_price),
+                        return_pct: Number(r.return_pct)
+                    });
+                });
+            }
+
+            // 更新頂部統計卡片
+            const total = globalHistoryList.length;
+            document.getElementById('stat-total').textContent = total;
+
+            if (total > 0) {
+                const wins = globalHistoryList.filter(item => item.return_pct > 0).length;
+                const winRate = ((wins / total) * 100).toFixed(1);
+                const avgReturn = (globalHistoryList.reduce((acc, cur) => acc + cur.return_pct, 0) / total).toFixed(2);
+
+                const winEl = document.getElementById('stat-winrate');
+                winEl.textContent = `${winRate}%`;
+                winEl.className = `text-2xl font-bold font-mono ${winRate >= 50 ? 'text-twred' : 'text-twgreen'}`;
+
+                const avgEl = document.getElementById('stat-avg-return');
+                avgEl.textContent = `${avgReturn > 0 ? '+' : ''}${avgReturn}%`;
+                avgEl.className = `text-2xl font-bold font-mono ${avgReturn > 0 ? 'text-twred' : (avgReturn < 0 ? 'text-twgreen' : 'text-white')}`;
+            }
+
+            renderHistory();
+        }
+
+        // 渲染歷史績效表格
+        function renderHistory() {
+            const tbody = document.getElementById('history-tbody');
+            const searchKw = document.getElementById('search-input').value.trim().toLowerCase();
+            const stratFilter = document.getElementById('strat-filter').value;
+            const sortMode = document.getElementById('sort-select').value;
+
+            let filtered = globalHistoryList.filter(item => {
+                const matchKw = item.code.toLowerCase().includes(searchKw) || item.name.toLowerCase().includes(searchKw);
+                const matchStrat = stratFilter === 'ALL' || (item.strategies && item.strategies.includes(stratFilter));
+                return matchKw && matchStrat;
+            });
+
+            // 排序邏輯
+            filtered.sort((a, b) => {
+                if (sortMode === 'date-desc') return b.pick_date.localeCompare(a.pick_date);
+                if (sortMode === 'return-desc') return b.return_pct - a.return_pct;
+                if (sortMode === 'return-asc') return a.return_pct - b.return_pct;
+                return 0;
+            });
+
+            if (filtered.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="6" class="text-center py-8 text-gray-500">無符合條件的歷史紀錄</td></tr>`;
+                return;
+            }
+
+            tbody.innerHTML = filtered.map(item => {
+                const isPos = item.return_pct > 0;
+                const isNeg = item.return_pct < 0;
+                const colorClass = isPos ? 'text-twred font-bold' : (isNeg ? 'text-twgreen font-bold' : 'text-gray-300');
+                const sign = isPos ? '+' : '';
+
+                return `
+                <tr class="hover:bg-gray-800/40 transition-colors">
+                    <td class="py-3.5 px-4 font-mono text-gray-400">${item.pick_date}</td>
+                    <td class="py-3.5 px-4">
+                        <a href="https://tw.stock.yahoo.com/quote/${item.code}" target="_blank" class="font-semibold text-white hover:text-blue-400">
+                            ${item.code} ${item.name}
+                        </a>
+                    </td>
+                    <td class="py-3.5 px-4">${getStrategyBadges(item.strategies)}</td>
+                    <td class="py-3.5 px-4 text-right font-mono">${item.entry_price.toFixed(2)}</td>
+                    <td class="py-3.5 px-4 text-right font-mono">${item.current_price.toFixed(2)}</td>
+                    <td class="py-3.5 px-4 text-right font-mono ${colorClass}">
+                        ${sign}${item.return_pct.toFixed(2)}%
+                    </td>
+                </tr>`;
+            }).join('');
+        }
+
+        // 啟動載入
+        loadData();
+    </script>
+</body>
+</html>
