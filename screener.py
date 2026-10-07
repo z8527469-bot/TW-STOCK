@@ -1,3 +1,4 @@
+import json
 import os
 import re
 import logging
@@ -335,6 +336,79 @@ def check_chips(stock_dict):
             DEBUG_CHIPS_COUNT += 1
         return fail_chip()
 
+def update_and_save_json(final_stocks):
+    """將今日選股存成 JSON，並自動更新舊股票的歷史報價與績效"""
+    print("\n💾 正在更新選股紀錄與歷史績效...")
+    
+    # 建立 data 資料夾存放 JSON
+    os.makedirs("data", exist_ok=True)
+    today_str = datetime.datetime.now().strftime("%Y-%m-%d")
+
+    # ---------------- 1. 儲存今日選股 ----------------
+    daily_data = {"date": today_str, "picks": final_stocks}
+    with open("data/daily_picks.json", "w", encoding="utf-8") as f:
+        json.dump(daily_data, f, ensure_ascii=False, indent=4)
+
+    # ---------------- 2. 讀取並更新歷史資料庫 ----------------
+    history_file = "data/history.json"
+    history_data = {}
+    if os.path.exists(history_file):
+        with open(history_file, "r", encoding="utf-8") as f:
+            history_data = json.load(f)
+
+    historical_tickers = list(history_data.keys())
+    if historical_tickers:
+        print(f"🔄 正在獲取 {len(historical_tickers)} 檔歷史選股的最新報價...")
+        
+        # 定義一個抓單檔最新價格的小工具
+        def fetch_latest_price(ticker):
+            try:
+                hist = yf.Ticker(ticker).history(period="1d")
+                if not hist.empty:
+                    return ticker, round(hist['Close'].iloc[-1], 2)
+            except:
+                pass
+            return ticker, None
+
+        # 使用多執行緒極速更新舊股票報價
+        with ThreadPoolExecutor(max_workers=5) as executor:
+            futures = [executor.submit(fetch_latest_price, t) for t in historical_tickers]
+            for future in as_completed(futures):
+                t, latest_price = future.result()
+                if latest_price:
+                    # 更新這檔股票的所有歷史進場紀錄
+                    for record in history_data[t]:
+                        record['current_price'] = latest_price
+                        # 計算未實現損益 (%)
+                        record['return_pct'] = round((latest_price - record['entry_price']) / record['entry_price'] * 100, 2)
+
+    # ---------------- 3. 將今日選股加入歷史資料庫 ----------------
+    for stock in final_stocks:
+        # 還原 Yahoo Finance 格式的代碼 (例如: 2330.TW)
+        suffix = ".TW" if stock['市場'] == "上市" else ".TWO"
+        yf_ticker = f"{stock['代碼']}{suffix}"
+
+        if yf_ticker not in history_data:
+            history_data[yf_ticker] = []
+
+        # 檢查今天是否已經存過 (防呆：防止手動重複執行造成重複寫入)
+        already_added = any(r['pick_date'] == today_str for r in history_data[yf_ticker])
+        if not already_added:
+            history_data[yf_ticker].append({
+                "name": stock['名稱'],
+                "pick_date": today_str,
+                "strategies": ", ".join(stock['strats']),
+                "entry_price": stock['收盤價'],
+                "current_price": stock['收盤價'],
+                "return_pct": 0.0
+            })
+
+    # 將更新後的資料寫回 history.json
+    with open(history_file, "w", encoding="utf-8") as f:
+        json.dump(history_data, f, ensure_ascii=False, indent=4)
+        
+    print("✅ JSON 資料庫更新完成！")
+
 # ================= 主程式執行 =================
 if __name__ == "__main__":
     check_market_regime()
@@ -386,6 +460,10 @@ if __name__ == "__main__":
     # ================= 整理結果與發送 =================
     print("\n========== 🎯 四大策略最終篩選結果 ==========")
 
+    # 👇👇👇 加入這一行，讓程式把 final_stocks 存成 JSON 👇👇👇
+    update_and_save_json(final_stocks)
+    # 👆👆👆 加入這一行 👆👆👆
+    
     results_by_strat = {"S1_底部突破": [], "S2_創高動能": [], "S3_投信認養": [], "S4_恐慌抄底": []}
     for stock in final_stocks:
         for s in stock['strats']:
