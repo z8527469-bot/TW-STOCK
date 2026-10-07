@@ -1,12 +1,14 @@
-name: 台股盤後選股機器人
+name: 台股盤後選股與網站更新機器人
 
 on:
   schedule:
-    # GitHub Actions 使用 UTC 時間。
-    # 台灣時間 (UTC+8) 下午 15:00 = UTC 早上 07:00
-    # 設定每週一到週五的 UTC 07:00 執行
+    # 台灣時間 (UTC+8) 晚上 21:00 = UTC 時間 13:00
     - cron: '0 13 * * 1-5'
-  workflow_dispatch: # 允許在 GitHub 網頁上手動點擊 "Run workflow" 按鈕測試
+  workflow_dispatch:
+
+# 賦予機器人寫入倉庫的權限，才能自動儲存 JSON 歷史紀錄
+permissions:
+  contents: write
 
 jobs:
   run-screener:
@@ -14,10 +16,10 @@ jobs:
 
     steps:
       - name: 📥 下載程式碼
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: 🐍 設定 Python 環境
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v5
         with:
           python-version: '3.10'
 
@@ -26,10 +28,17 @@ jobs:
           python -m pip install --upgrade pip
           pip install yfinance pandas requests lxml tqdm
 
-      - name: 🚀 執行選股程式並發送 Discord
+      - name: 🚀 執行選股程式並更新 JSON
         env:
-          # 將 GitHub Secrets 注入到 Python 的環境變數中
           DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
           FINMIND_TOKEN: ${{ secrets.FINMIND_TOKEN }}
         run: |
           python screener.py
+
+      - name: 💾 自動將最新 JSON 數據推播回 GitHub
+        run: |
+          git config --global user.name "GitHub Action Bot"
+          git config --global user.email "action@github.com"
+          git add data/*.json
+          git commit -m "📊 自動更新每日選股與歷史績效 ($(date +'%Y-%m-%d'))" || echo "無資料變更"
+          git push
