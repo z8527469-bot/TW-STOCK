@@ -176,7 +176,7 @@ def check_technical(ticker):
             (today['Close'] - yesterday['Close']) / yesterday['Close'] >= 0.04 and
             today['Close'] > ma_max and
             today['MA5'] > yesterday['MA5'] and
-            today['Volume'] >= 1000000 and
+            today['Volume'] >= 2000000 and
             today['Volume'] >= (1.5 * today['Vol_20MA'])):
             passed_strats.append("S1_底部突破")
 
@@ -187,7 +187,7 @@ def check_technical(ticker):
             today['Close'] <= (today['MA200'] * 2.0) and
             today['Volume'] >= (2 * today['Vol_20MA']) and
             today['Close'] > today['Open'] and
-            today['Volume'] >= 1000000):
+            today['Volume'] >= 2000000):
             passed_strats.append("S2_創高動能")
 
         # --- S3：投信認養 ---
@@ -204,7 +204,7 @@ def check_technical(ticker):
             yesterday['Close'] <= (yesterday['MA20'] * 0.90) and
             yesterday['Volume'] >= (1.3 * yesterday['Vol_20MA']) and
             yest_lower_shadow >= (1.5 * yest_real_body) and
-            yesterday['Volume'] >= 1000000 and
+            yesterday['Volume'] >= 2000000 and
             today['Close'] > yesterday['High']):
             passed_strats.append("S4_恐慌抄底")
 
@@ -229,7 +229,7 @@ def check_technical(ticker):
             today['Close'] > today['Open'] and
             today['Volume'] > max_down_vol and
             today['Volume'] >= 1.2 * today['Vol_50MA'] and
-            today['Volume'] >= 1000000):
+            today['Volume'] >= 2000000):
             passed_strats.append("S6_營收口袋樞紐")
 
         # --- S7：漲停強勢旗形 (Power Play：40日飆漲50% + 曾漲停 + 高檔強勢整理) ---
@@ -242,7 +242,7 @@ def check_technical(ticker):
         if (low_40 > 0 and high_40 >= low_40 * 1.50 and
             has_limit_up and
             today['Close'] >= high_40 * 0.85 and
-            today['Volume'] >= 1000000):
+            today['Volume'] >= 2000000):
             passed_strats.append("S7_漲停強勢旗形")
 
         if not passed_strats: return None
