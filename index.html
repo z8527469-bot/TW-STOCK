@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>台股七核心動能戰情室</title>
+    <title>台股七核心動能戰情室(僅供參考)</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
         tailwind.config = {
@@ -42,18 +42,18 @@
 
     <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-6">
         
-        <!-- 歷史績效總覽卡片 -->
+        <!-- 歷史績效總覽卡片 (會隨篩選器動態更新) -->
         <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
             <div class="bg-cardbg p-5 rounded-xl border border-gray-800 shadow">
-                <div class="text-gray-400 text-sm mb-1">歷史累積選股 (筆)</div>
+                <div class="text-gray-400 text-sm mb-1">追蹤個股檔數 (已合併重複)</div>
                 <div id="stat-total" class="text-2xl font-bold text-white font-mono">0</div>
             </div>
             <div class="bg-cardbg p-5 rounded-xl border border-gray-800 shadow">
-                <div class="text-gray-400 text-sm mb-1">歷史正報酬勝率</div>
+                <div class="text-gray-400 text-sm mb-1">當前篩選正報酬勝率</div>
                 <div id="stat-winrate" class="text-2xl font-bold text-white font-mono">0.0%</div>
             </div>
             <div class="bg-cardbg p-5 rounded-xl border border-gray-800 shadow">
-                <div class="text-gray-400 text-sm mb-1">歷史平均持有報酬率</div>
+                <div class="text-gray-400 text-sm mb-1">當前篩選平均報酬率</div>
                 <div id="stat-avg-return" class="text-2xl font-bold text-white font-mono">0.00%</div>
             </div>
         </div>
@@ -77,13 +77,19 @@
 
         <!-- 區塊 2：歷史績效追蹤 -->
         <div id="section-history" class="hidden">
-            <!-- 搜尋與過濾工具列 -->
-            <div class="flex flex-col sm:flex-row gap-3 mb-4">
-                <input type="text" id="search-input" oninput="renderHistory()" placeholder="🔍 搜尋股票代碼或名稱..." 
-                       class="bg-cardbg border border-gray-700 rounded-lg px-4 py-2 text-sm text-white focus:outline-none focus:border-blue-500 flex-grow">
+            <!-- 搜尋與過濾工具列 (新增日期篩選器) -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 mb-4">
+                <input type="text" id="search-input" oninput="renderHistory()" placeholder="🔍 搜尋代碼或名稱..." 
+                       class="bg-cardbg border border-gray-700 rounded-lg px-4 py-2 text-sm text-white focus:outline-none focus:border-blue-500">
+                
+                <select id="date-filter" onchange="renderHistory()" 
+                        class="bg-cardbg border border-gray-700 rounded-lg px-4 py-2 text-sm text-white focus:outline-none focus:border-blue-500">
+                    <option value="ALL">📅 所有選出日期</option>
+                </select>
+
                 <select id="strat-filter" onchange="renderHistory()" 
                         class="bg-cardbg border border-gray-700 rounded-lg px-4 py-2 text-sm text-white focus:outline-none focus:border-blue-500">
-                    <option value="ALL">所有策略 (S1 ~ S7)</option>
+                    <option value="ALL">🎯 所有策略 (S1 ~ S7)</option>
                     <option value="S1_底部突破">S1_底部突破</option>
                     <option value="S2_創高動能">S2_創高動能</option>
                     <option value="S3_投信認養">S3_投信認養</option>
@@ -92,11 +98,14 @@
                     <option value="S6_營收口袋樞紐">S6_營收口袋樞紐</option>
                     <option value="S7_漲停強勢旗形">S7_漲停強勢旗形</option>
                 </select>
+
                 <select id="sort-select" onchange="renderHistory()" 
                         class="bg-cardbg border border-gray-700 rounded-lg px-4 py-2 text-sm text-white focus:outline-none focus:border-blue-500">
-                    <option value="date-desc">排序：選出日期 (最新 ➔ 最舊)</option>
-                    <option value="return-desc">排序：報酬率 (最高 ➔ 最低)</option>
-                    <option value="return-asc">排序：報酬率 (最低 ➔ 最高)</option>
+                    <option value="date-desc">排序：最新入選日 (新➔舊)</option>
+                    <option value="first-date-desc">排序：首次入選日 (新➔舊)</option>
+                    <option value="return-desc">排序：報酬率 (最高➔最低)</option>
+                    <option value="return-asc">排序：報酬率 (最低➔最高)</option>
+                    <option value="count-desc">排序：入選次數 (最多➔最少)</option>
                 </select>
             </div>
 
@@ -105,9 +114,9 @@
                 <table class="w-full text-left border-collapse">
                     <thead>
                         <tr class="border-b border-gray-800 text-gray-400 text-xs uppercase bg-gray-900/50">
-                            <th class="py-3.5 px-4">選出日期</th>
+                            <th class="py-3.5 px-4">選出日期 (入選紀錄)</th>
                             <th class="py-3.5 px-4">股票代碼 / 名稱</th>
-                            <th class="py-3.5 px-4">觸發策略</th>
+                            <th class="py-3.5 px-4">觸發策略 (累積)</th>
                             <th class="py-3.5 px-4 text-right">當時進場價</th>
                             <th class="py-3.5 px-4 text-right">最新收盤價</th>
                             <th class="py-3.5 px-4 text-right">累積報酬率</th>
@@ -123,7 +132,7 @@
     </main>
 
     <script>
-        let globalHistoryList = [];
+        let globalMergedList = [];
 
         // 切換頁籤
         function switchTab(tab) {
@@ -139,8 +148,8 @@
         }
 
         // 格式化策略標籤顏色 (支援 S1 ~ S7)
-        function getStrategyBadges(stratStr) {
-            if (!stratStr) return '';
+        function getStrategyBadges(stratArrayOrStr) {
+            if (!stratArrayOrStr) return '';
             const colors = {
                 'S1_底部突破': 'bg-purple-900/60 text-purple-300 border-purple-700/50',
                 'S2_創高動能': 'bg-red-900/60 text-red-300 border-red-700/50',
@@ -150,8 +159,10 @@
                 'S6_營收口袋樞紐': 'bg-blue-900/60 text-blue-300 border-blue-700/50',
                 'S7_漲停強勢旗形': 'bg-pink-900/60 text-pink-300 border-pink-700/50'
             };
-            return stratStr.split(',').map(s => {
+            const list = Array.isArray(stratArrayOrStr) ? stratArrayOrStr : stratArrayOrStr.split(',');
+            return list.map(s => {
                 const cleanS = s.trim();
+                if (!cleanS) return '';
                 const colorClass = colors[cleanS] || 'bg-gray-800 text-gray-300 border-gray-700';
                 return `<span class="inline-block px-2.5 py-0.5 text-xs font-medium rounded-full border ${colorClass} mr-1.5 mb-1">${cleanS}</span>`;
             }).join('');
@@ -169,7 +180,7 @@
                     document.getElementById('update-date').textContent = dailyData.date || '未知';
                     renderDaily(dailyData.picks || []);
                 } else {
-                    document.getElementById('daily-container').innerHTML = `<div class="col-span-full text-center py-12 text-gray-400">目前尚無今日選股資料 (請確認 GitHub Actions 已執行並產生 data/daily_picks.json)</div>`;
+                    document.getElementById('daily-container').innerHTML = `<div class="col-span-full text-center py-12 text-gray-400">目前尚無今日選股資料</div>`;
                 }
             } catch (e) {
                 console.error("無法載入 daily_picks.json:", e);
@@ -196,7 +207,7 @@
             }
 
             container.innerHTML = picks.map(stock => {
-                const badges = getStrategyBadges((stock.strats || []).join(', '));
+                const badges = getStrategyBadges(stock.strats || []);
                 const yfSuffix = stock['市場'] === '上市' ? '.TW' : '.TWO';
                 const yfTicker = `${stock['代碼']}${yfSuffix}`;
                 const chipInfo = stock['外資動向'] && stock['外資動向'] !== '-' 
@@ -239,92 +250,212 @@
             }).join('');
         }
 
-        // 整理並計算歷史統計數據
+        // 整理並合併同一支股票的歷史紀錄
         function processHistoryData(histObj) {
-            globalHistoryList = [];
+            globalMergedList = [];
+            const allDatesSet = new Set();
+
             for (const [yfTicker, records] of Object.entries(histObj)) {
-                // 先替換 .TWO 再替換 .TW，避免殘留字母 O
+                if (!records || records.length === 0) continue;
+
                 const cleanCode = yfTicker.replace('.TWO', '').replace('.TW', '');
-                records.forEach(r => {
-                    globalHistoryList.push({
-                        yf_ticker: yfTicker,
-                        code: cleanCode,
-                        name: r.name || '',
-                        pick_date: r.pick_date,
-                        strategies: r.strategies,
-                        entry_price: Number(r.entry_price),
-                        current_price: Number(r.current_price),
-                        return_pct: Number(r.return_pct)
-                    });
+                
+                // 將同一檔股票的紀錄依日期由舊到新排序
+                const sortedRecords = [...records].sort((a, b) => a.pick_date.localeCompare(b.pick_date));
+
+                // 收集所有出現過的日期與策略 (去重複)
+                const pickDates = [];
+                const stratSet = new Set();
+                
+                sortedRecords.forEach(r => {
+                    if (r.pick_date) {
+                        allDatesSet.add(r.pick_date);
+                        if (!pickDates.includes(r.pick_date)) pickDates.push(r.pick_date);
+                    }
+                    if (r.strategies) {
+                        r.strategies.split(',').forEach(s => {
+                            const trimS = s.trim();
+                            if (trimS) stratSet.add(trimS);
+                        });
+                    }
+                });
+
+                const firstRecord = sortedRecords[0];
+                const latestRecord = sortedRecords[sortedRecords.length - 1];
+                
+                const firstEntryPrice = Number(firstRecord.entry_price);
+                const currentPrice = Number(latestRecord.current_price);
+                const totalReturnPct = firstEntryPrice > 0 
+                    ? ((currentPrice - firstEntryPrice) / firstEntryPrice) * 100 
+                    : 0;
+
+                globalMergedList.push({
+                    yf_ticker: yfTicker,
+                    code: cleanCode,
+                    name: latestRecord.name || firstRecord.name || '',
+                    first_date: firstRecord.pick_date,
+                    latest_date: latestRecord.pick_date,
+                    pick_dates: pickDates,
+                    pick_count: sortedRecords.length,
+                    all_strategies: Array.from(stratSet),
+                    first_entry_price: firstEntryPrice,
+                    current_price: currentPrice,
+                    return_pct: totalReturnPct,
+                    raw_records: sortedRecords
                 });
             }
 
-            // 更新頂部統計卡片
-            const total = globalHistoryList.length;
+            // 動態生成「選出日期」下拉選單 (由新到舊排序)
+            const sortedDates = Array.from(allDatesSet).sort((a, b) => b.localeCompare(a));
+            const dateSelect = document.getElementById('date-filter');
+            dateSelect.innerHTML = `<option value="ALL">📅 所有選出日期 (共 ${sortedDates.length} 天)</option>` + 
+                sortedDates.map(d => `<option value="${d}">${d}</option>`).join('');
+
+            renderHistory();
+        }
+
+        // 更新頂部統計卡片
+        function updateStatsCards(displayList) {
+            const total = displayList.length;
             document.getElementById('stat-total').textContent = total;
 
-            if (total > 0) {
-                const wins = globalHistoryList.filter(item => item.return_pct > 0).length;
-                const winRate = ((wins / total) * 100).toFixed(1);
-                const avgReturn = (globalHistoryList.reduce((acc, cur) => acc + cur.return_pct, 0) / total).toFixed(2);
+            const winEl = document.getElementById('stat-winrate');
+            const avgEl = document.getElementById('stat-avg-return');
 
-                const winEl = document.getElementById('stat-winrate');
+            if (total > 0) {
+                const wins = displayList.filter(item => item.display_return > 0).length;
+                const winRate = ((wins / total) * 100).toFixed(1);
+                const avgReturn = (displayList.reduce((acc, cur) => acc + cur.display_return, 0) / total).toFixed(2);
+
                 winEl.textContent = `${winRate}%`;
                 winEl.className = `text-2xl font-bold font-mono ${winRate >= 50 ? 'text-twred' : 'text-twgreen'}`;
 
-                const avgEl = document.getElementById('stat-avg-return');
                 avgEl.textContent = `${avgReturn > 0 ? '+' : ''}${avgReturn}%`;
                 avgEl.className = `text-2xl font-bold font-mono ${avgReturn > 0 ? 'text-twred' : (avgReturn < 0 ? 'text-twgreen' : 'text-white')}`;
+            } else {
+                winEl.textContent = `0.0%`;
+                winEl.className = `text-2xl font-bold font-mono text-white`;
+                avgEl.textContent = `0.00%`;
+                avgEl.className = `text-2xl font-bold font-mono text-white`;
             }
-
-            renderHistory();
         }
 
         // 渲染歷史績效表格
         function renderHistory() {
             const tbody = document.getElementById('history-tbody');
             const searchKw = document.getElementById('search-input').value.trim().toLowerCase();
+            const dateFilter = document.getElementById('date-filter').value;
             const stratFilter = document.getElementById('strat-filter').value;
             const sortMode = document.getElementById('sort-select').value;
 
-            let filtered = globalHistoryList.filter(item => {
+            // 1. 過濾資料並決定顯示的進場價與報酬率
+            let filtered = [];
+            
+            for (const item of globalMergedList) {
                 const matchKw = item.code.toLowerCase().includes(searchKw) || item.name.toLowerCase().includes(searchKw);
-                const matchStrat = stratFilter === 'ALL' || (item.strategies && item.strategies.includes(stratFilter));
-                return matchKw && matchStrat;
-            });
+                if (!matchKw) continue;
 
-            // 排序邏輯
+                // 若有指定特定日期，檢查該股票在當天是否有被選出
+                if (dateFilter !== 'ALL') {
+                    const recOnDate = item.raw_records.find(r => r.pick_date === dateFilter);
+                    if (!recOnDate) continue;
+
+                    // 若同時有選策略，檢查當天或累積策略是否符合
+                    if (stratFilter !== 'ALL' && !(recOnDate.strategies && recOnDate.strategies.includes(stratFilter))) {
+                        continue;
+                    }
+
+                    const entryOnDate = Number(recOnDate.entry_price);
+                    const retOnDate = entryOnDate > 0 ? ((item.current_price - entryOnDate) / entryOnDate) * 100 : 0;
+
+                    filtered.push({
+                        ...item,
+                        display_entry: entryOnDate,
+                        display_return: retOnDate,
+                        display_strategies: recOnDate.strategies ? recOnDate.strategies.split(',') : item.all_strategies
+                    });
+                } else {
+                    // 未指定日期 (顯示全部合併結果)
+                    if (stratFilter !== 'ALL' && !item.all_strategies.includes(stratFilter)) {
+                        continue;
+                    }
+                    filtered.push({
+                        ...item,
+                        display_entry: item.first_entry_price,
+                        display_return: item.return_pct,
+                        display_strategies: item.all_strategies
+                    });
+                }
+            }
+
+            // 2. 更新頂部統計數據
+            updateStatsCards(filtered);
+
+            // 3. 排序邏輯
             filtered.sort((a, b) => {
-                if (sortMode === 'date-desc') return b.pick_date.localeCompare(a.pick_date);
-                if (sortMode === 'return-desc') return b.return_pct - a.return_pct;
-                if (sortMode === 'return-asc') return a.return_pct - b.return_pct;
+                if (sortMode === 'date-desc') return b.latest_date.localeCompare(a.latest_date);
+                if (sortMode === 'first-date-desc') return b.first_date.localeCompare(a.first_date);
+                if (sortMode === 'return-desc') return b.display_return - a.display_return;
+                if (sortMode === 'return-asc') return a.display_return - b.display_return;
+                if (sortMode === 'count-desc') return b.pick_count - a.pick_count || b.display_return - a.display_return;
                 return 0;
             });
 
             if (filtered.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="6" class="text-center py-8 text-gray-500">無符合條件的歷史紀錄</td></tr>`;
+                tbody.innerHTML = `<tr><td colspan="6" class="text-center py-8 text-gray-500">無符合篩選條件的歷史紀錄</td></tr>`;
                 return;
             }
 
+            // 4. 產生 HTML
             tbody.innerHTML = filtered.map(item => {
-                const isPos = item.return_pct > 0;
-                const isNeg = item.return_pct < 0;
+                const isPos = item.display_return > 0;
+                const isNeg = item.display_return < 0;
                 const colorClass = isPos ? 'text-twred font-bold' : (isNeg ? 'text-twgreen font-bold' : 'text-gray-300');
                 const sign = isPos ? '+' : '';
 
+                // 日期欄位顯示設計：若入選多次，顯示首次日期與最新日期，並附上入選明細提示
+                let dateHtml = '';
+                if (dateFilter !== 'ALL') {
+                    dateHtml = `<div class="font-mono text-blue-400 font-semibold">${dateFilter}</div>`;
+                    if (item.pick_count > 1) {
+                        dateHtml += `<div class="text-xs text-gray-500 mt-0.5">共入選 ${item.pick_count} 次 (首日: ${item.first_date})</div>`;
+                    }
+                } else {
+                    if (item.pick_count > 1) {
+                        const historyTooltip = item.raw_records.map(r => `${r.pick_date} ($${Number(r.entry_price).toFixed(2)})`).join(' ➔ ');
+                        dateHtml = `
+                            <div class="font-mono text-gray-200">
+                                <span class="text-xs text-gray-400">首:</span> ${item.first_date}
+                                <span class="ml-1.5 px-1.5 py-0.5 text-[11px] bg-amber-500/20 text-amber-300 border border-amber-500/40 rounded font-sans">
+                                    🔥 ${item.pick_count}次
+                                </span>
+                            </div>
+                            <div class="text-xs text-gray-400 font-mono mt-0.5" title="${historyTooltip}">
+                                <span class="text-gray-500">近:</span> ${item.latest_date}
+                                <span class="text-gray-600 ml-1 cursor-help border-b border-dotted border-gray-600">(明細)</span>
+                            </div>
+                        `;
+                    } else {
+                        dateHtml = `<div class="font-mono text-gray-300">${item.first_date}</div>`;
+                    }
+                }
+
                 return `
                 <tr class="hover:bg-gray-800/40 transition-colors">
-                    <td class="py-3.5 px-4 font-mono text-gray-400">${item.pick_date}</td>
+                    <td class="py-3.5 px-4">${dateHtml}</td>
                     <td class="py-3.5 px-4">
-                        <a href="https://tw.stock.yahoo.com/quote/${item.yf_ticker}" target="_blank" class="font-semibold text-white hover:text-blue-400">
+                        <a href="https://tw.stock.yahoo.com/quote/${item.yf_ticker}" target="_blank" class="font-semibold text-white hover:text-blue-400 text-base">
                             ${item.code} ${item.name}
                         </a>
                     </td>
-                    <td class="py-3.5 px-4">${getStrategyBadges(item.strategies)}</td>
-                    <td class="py-3.5 px-4 text-right font-mono">${item.entry_price.toFixed(2)}</td>
+                    <td class="py-3.5 px-4">${getStrategyBadges(item.display_strategies)}</td>
+                    <td class="py-3.5 px-4 text-right font-mono">
+                        ${item.display_entry.toFixed(2)}
+                        ${dateFilter === 'ALL' && item.pick_count > 1 ? '<span class="block text-[10px] text-gray-500">(首次進場價)</span>' : ''}
+                    </td>
                     <td class="py-3.5 px-4 text-right font-mono">${item.current_price.toFixed(2)}</td>
-                    <td class="py-3.5 px-4 text-right font-mono ${colorClass}">
-                        ${sign}${item.return_pct.toFixed(2)}%
+                    <td class="py-3.5 px-4 text-right font-mono text-base ${colorClass}">
+                        ${sign}${item.display_return.toFixed(2)}%
                     </td>
                 </tr>`;
             }).join('');
