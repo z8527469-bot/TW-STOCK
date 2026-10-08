@@ -235,7 +235,7 @@
         function processHistoryData(histObj) {
             globalHistoryList = [];
             for (const [yfTicker, records] of Object.entries(histObj)) {
-                const cleanCode = yfTicker.replace('.TW', '').replace('.TWO', '');
+                const cleanCode = yfTicker.replace('.TWO', '').replace('.TW', '');
                 records.forEach(r => {
                     globalHistoryList.push({
                         code: cleanCode,
