@@ -17,7 +17,6 @@ logging.getLogger('yfinance').setLevel(logging.CRITICAL)
 warnings.filterwarnings('ignore')
 
 # ================= 參數設定區 =================
-# 由 GitHub Secrets 環境變數讀取
 DISCORD_WEBHOOK_URL = os.environ.get("DISCORD_WEBHOOK_URL", "")
 FINMIND_TOKEN = os.environ.get("FINMIND_TOKEN", "")
 # ============================================
@@ -29,7 +28,7 @@ DEBUG_CHIPS_COUNT = 0
 MARKET_BULL = True  
 
 def check_market_regime():
-    """微調改善 1：建立大盤環境濾網"""
+    """建立大盤環境濾網"""
     global MARKET_BULL
     print("⏳ 正在判斷大盤趨勢環境...")
     try:
@@ -141,6 +140,7 @@ def check_technical(ticker):
         df['MA20'] = df['Close'].rolling(window=20).mean()
         df['MA50'] = df['Close'].rolling(window=50).mean()
         df['MA60'] = df['Close'].rolling(window=60).mean()
+        df['MA150'] = df['Close'].rolling(window=150).mean()
         df['MA200'] = df['Close'].rolling(window=200).mean()
         df['Vol_20MA'] = df['Volume'].rolling(window=20).mean()
         df['Vol_50MA'] = df['Volume'].rolling(window=50).mean()
@@ -171,7 +171,7 @@ def check_technical(ticker):
 
         if (MARKET_BULL and
             box_low <= (high_1y * 0.75) and
-            (box_high - box_low) / box_low <= 0.25 and
+            (box_high - box_low) / box_low <= 0.20 and
             (ma_max - ma_min) / ma_min <= 0.10 and
             (today['Close'] - yesterday['Close']) / yesterday['Close'] >= 0.04 and
             today['Close'] > ma_max and
@@ -204,45 +204,72 @@ def check_technical(ticker):
             yesterday['Close'] <= (yesterday['MA20'] * 0.90) and
             yesterday['Volume'] >= (1.3 * yesterday['Vol_20MA']) and
             yest_lower_shadow >= (1.5 * yest_real_body) and
-            yesterday['Volume'] >= 2000000 and
+            yesterday['Volume'] >= 1000000 and
             today['Close'] > yesterday['High']):
             passed_strats.append("S4_恐慌抄底")
 
-        # --- S5：投信作帳VCP (3-C改良：波動收斂 + 量縮洗盤) ---
-        past_15_days = df['Close'].iloc[-16:-1]
+        # =====================================================================
+        # 《超級績效》第二階段趨勢樣板 (Stage 2 Trend Template) 基底
+        # =====================================================================
+        stage2_trend = (
+            today['Close'] > today['MA50'] > today['MA150'] > today['MA200'] and
+            today['MA200'] > df['MA200'].iloc[-20] and  # 年線明確向上翻揚
+            today['Close'] >= 25.0                       # 排除 25 元以下低價股
+        )
+
+        # --- S5：投信作帳VCP (嚴格版：Stage 2 + 15日震幅<=10% + 量縮至均量65%以下) ---
+        past_15_days = df.iloc[-16:-1]
         if not past_15_days.empty:
-            box_15_high, box_15_low = past_15_days.max(), past_15_days.min()
+            box_15_high = past_15_days['High'].max()
+            box_15_low = past_15_days['Low'].min()
             vcp_contraction = (box_15_high - box_15_low) / box_15_low if box_15_low > 0 else 1.0
-            if (today['Close'] > today['MA50'] and
-                vcp_contraction <= 0.15 and
-                today['Volume'] < today['Vol_50MA'] and
-                today['Volume'] >= 500000 and
-                today['Vol_50MA'] >= 800000):
+
+            if (stage2_trend and
+                today['Close'] >= (high_1y * 0.80) and
+                today['Close'] >= today['MA20'] * 0.98 and
+                vcp_contraction <= 0.10 and
+                today['Volume'] <= (0.65 * today['Vol_50MA']) and
+                today['Vol_50MA'] >= 1000000):
                 passed_strats.append("S5_投信作帳VCP")
 
-        # --- S6：營收口袋樞紐 (Pocket Pivot：上漲量 > 過去10日最大下跌量) ---
+        # --- S6：營收口袋樞紐 (嚴格版：Stage 2 + 量>10日最大黑K量 & >1.5倍均量 + 漲幅>=3%收高) ---
         past_10_days = df.iloc[-11:-1]
         down_days = past_10_days[past_10_days['Close'] < past_10_days['Open']]
         max_down_vol = down_days['Volume'].max() if not down_days.empty else 0
+        day_range = today['High'] - today['Low']
+        close_pos = (today['Close'] - today['Low']) / day_range if day_range > 0 else 0
 
-        if (today['Close'] > today['MA20'] > today['MA50'] and
-            today['Close'] > today['Open'] and
+        if (stage2_trend and
+            today['Close'] >= (high_1y * 0.80) and
+            today['Close'] > today['MA20'] and
+            (today['Close'] - today['MA20']) / today['MA20'] <= 0.06 and
+            (today['Close'] - yesterday['Close']) / yesterday['Close'] >= 0.03 and
+            close_pos >= 0.65 and
             today['Volume'] > max_down_vol and
-            today['Volume'] >= 1.2 * today['Vol_50MA'] and
-            today['Volume'] >= 2000000):
+            today['Volume'] >= 1.5 * today['Vol_50MA'] and
+            today['Volume'] >= 1500000):
             passed_strats.append("S6_營收口袋樞紐")
 
-        # --- S7：漲停強勢旗形 (Power Play：40日飆漲50% + 曾漲停 + 高檔強勢整理) ---
+        # --- S7：漲停強勢旗形 (嚴格版：40日漲55% + 曾漲停 + 近10日窄幅旗面<=12% + 量縮守高檔) ---
         past_40_days_df = df.iloc[-41:-1]
         low_40 = past_40_days_df['Low'].min()
         high_40 = past_40_days_df['High'].max()
         past_40_returns = df['Close'].pct_change().iloc[-41:-1]
         has_limit_up = (past_40_returns >= 0.095).any()
 
-        if (low_40 > 0 and high_40 >= low_40 * 1.50 and
+        past_10_flag = df.iloc[-10:]
+        flag_high = past_10_flag['High'].max()
+        flag_low = past_10_flag['Low'].min()
+        flag_tightness = (flag_high - flag_low) / flag_low if flag_low > 0 else 1.0
+
+        if (stage2_trend and
+            low_40 > 0 and high_40 >= low_40 * 1.55 and
             has_limit_up and
-            today['Close'] >= high_40 * 0.85 and
-            today['Volume'] >= 2000000):
+            today['Close'] >= high_40 * 0.92 and
+            today['Close'] >= today['MA20'] and
+            flag_tightness <= 0.12 and
+            today['Volume'] <= today['Vol_20MA'] and
+            today['Vol_20MA'] >= 1500000):
             passed_strats.append("S7_漲停強勢旗形")
 
         if not passed_strats: return None
@@ -269,7 +296,7 @@ def check_revenue(stock_dict):
     """
     分級營收濾網：
     - S1_底部突破、S7_漲停強勢旗形：豁免營收限制
-    - S6_營收口袋樞紐：要求 YoY > 20%
+    - S6_營收口袋樞紐：嚴格要求 YoY > 30% 且 MoM > 5%
     - S2, S3, S4, S5：要求月營收雙增 (MoM > 0% 且 YoY > 10%)
     """
     ticker = stock_dict['代碼']
@@ -287,12 +314,11 @@ def check_revenue(stock_dict):
         new_strats = []
         for s in strats:
             if s in ["S1_底部突破", "S7_漲停強勢旗形"]:
-                new_strats.append(s)  # 豁免營收
+                new_strats.append(s)
             elif s == "S6_營收口袋樞紐":
-                if has_data and yoy > 20.0:
+                if has_data and yoy > 30.0 and mom > 5.0:
                     new_strats.append(s)
             else:
-                # S2, S3, S4, S5 皆需雙增
                 if has_data and mom > 0 and yoy > 10.0:
                     new_strats.append(s)
 
@@ -301,12 +327,10 @@ def check_revenue(stock_dict):
             return stock_dict
         return None
 
-    # 引擎 1：政府 OpenAPI 記憶體快取查表
     if code in REVENUE_DATA:
         rev = REVENUE_DATA[code]
         return evaluate_strats(rev['mom'], rev['yoy'], True)
 
-    # 引擎 2：FinMind 動態補查
     start_date = (datetime.datetime.now() - datetime.timedelta(days=400)).strftime('%Y-%m-%d')
     token_param = f"&token={FINMIND_TOKEN}" if FINMIND_TOKEN else ""
     url = f"https://api.finmindtrade.com/api/v4/data?dataset=TaiwanStockMonthRevenue&data_id={ticker}&start_date={start_date}{token_param}"
@@ -337,8 +361,8 @@ def check_chips(stock_dict):
     """
     籌碼濾網：
     - S1_底部突破：今日外資 > 0 或 今日投信 > 0
-    - S3_投信認養：投信連兩日買超 (t0 > 0 且 t1 > 0) 且 今日投信 >= 100張
-    - S5_投信作帳VCP：投信近 3 日合計買超 > 0 張
+    - S3_投信認養：投信連兩日買超 且 今日投信 >= 100張
+    - S5_投信作帳VCP：投信近 3 日合計買超 >= 300 張 且 今日投信 >= 0 張
     """
     global DEBUG_CHIPS_COUNT
     ticker = stock_dict['代碼']
@@ -399,8 +423,8 @@ def check_chips(stock_dict):
         if "S3_投信認養" in strats and not s3_pass:
             strats.remove("S3_投信認養")
 
-        # S5 籌碼驗證：近 3 日投信合計買超 > 0
-        s5_pass = (t_3d_sum > 0)
+        # S5 籌碼驗證：近 3 日投信合計買超 >= 300 張 且 今日不賣超
+        s5_pass = (t_3d_sum >= 300) and (t_t0 >= 0)
         if "S5_投信作帳VCP" in strats and not s5_pass:
             strats.remove("S5_投信作帳VCP")
 
@@ -421,12 +445,10 @@ def update_and_save_json(final_stocks):
     os.makedirs("data", exist_ok=True)
     today_str = datetime.datetime.now().strftime("%Y-%m-%d")
 
-    # 1. 儲存今日選股
     daily_data = {"date": today_str, "picks": final_stocks}
     with open("data/daily_picks.json", "w", encoding="utf-8") as f:
         json.dump(daily_data, f, ensure_ascii=False, indent=4)
 
-    # 2. 讀取並更新歷史資料庫
     history_file = "data/history.json"
     history_data = {}
     if os.path.exists(history_file):
@@ -454,7 +476,6 @@ def update_and_save_json(final_stocks):
                         record['current_price'] = latest_price
                         record['return_pct'] = round((latest_price - record['entry_price']) / record['entry_price'] * 100, 2)
 
-    # 3. 將今日選股加入歷史資料庫
     for stock in final_stocks:
         suffix = ".TW" if stock['市場'] == "上市" else ".TWO"
         yf_ticker = f"{stock['代碼']}{suffix}"
@@ -487,7 +508,7 @@ if __name__ == "__main__":
     all_tickers = get_tw_stocks()
     print(f"✅ 共獲取 {len(all_tickers)} 檔股票。")
 
-    print("\n🚀 步驟 2: 啟動多執行緒掃描技術面 (S1 ~ S7)...")
+    print("\n🚀 步驟 2: 啟動多執行緒掃描技術面 (S1 ~ S7 嚴格版)...")
     passed_technical = []
 
     with ThreadPoolExecutor(max_workers=5) as executor:
@@ -529,7 +550,6 @@ if __name__ == "__main__":
     # ================= 整理結果與發送 =================
     print("\n========== 🎯 七大策略最終篩選結果 ==========")
     
-    # 寫入與更新 JSON 歷史資料庫
     update_and_save_json(final_stocks)
 
     results_by_strat = {
@@ -547,7 +567,7 @@ if __name__ == "__main__":
                 results_by_strat[s].append(stock)
 
     today_str = datetime.datetime.now().strftime("%Y-%m-%d")
-    notify_msg = f"## 📊 【{today_str} 台股七核心選股報告】\n*整合《超級績效》VCP、口袋樞紐、強勢旗形與法人營收濾網*\n"
+    notify_msg = f"## 📊 【{today_str} 台股七核心選股報告】\n*整合《超級績效》Stage 2 趨勢樣板、VCP、口袋樞紐與強勢旗形*\n"
 
     for strat_name, stocks in results_by_strat.items():
         print(f"\n📁 【{strat_name}】符合標的：{len(stocks)} 檔")
