@@ -284,5 +284,85 @@
             "current_price": 132.0,
             "return_pct": 5.6
         }
+    ],
+    "2428.TW": [
+        {
+            "name": "興勤",
+            "pick_date": "2026-10-08",
+            "strategies": "S1_底部突破",
+            "entry_price": 282.0,
+            "current_price": 282.0,
+            "return_pct": 0.0
+        }
+    ],
+    "3264.TWO": [
+        {
+            "name": "欣銓",
+            "pick_date": "2026-10-08",
+            "strategies": "S3_投信認養",
+            "entry_price": 256.0,
+            "current_price": 256.0,
+            "return_pct": 0.0
+        }
+    ],
+    "3685.TWO": [
+        {
+            "name": "元創精密",
+            "pick_date": "2026-10-08",
+            "strategies": "S1_底部突破",
+            "entry_price": 37.9,
+            "current_price": 37.9,
+            "return_pct": 0.0
+        }
+    ],
+    "4157.TWO": [
+        {
+            "name": "太景*-KY",
+            "pick_date": "2026-10-08",
+            "strategies": "S1_底部突破",
+            "entry_price": 9.33,
+            "current_price": 9.33,
+            "return_pct": 0.0
+        }
+    ],
+    "4171.TWO": [
+        {
+            "name": "瑞基",
+            "pick_date": "2026-10-08",
+            "strategies": "S1_底部突破",
+            "entry_price": 19.85,
+            "current_price": 19.85,
+            "return_pct": 0.0
+        }
+    ],
+    "4714.TWO": [
+        {
+            "name": "永捷",
+            "pick_date": "2026-10-08",
+            "strategies": "S1_底部突破",
+            "entry_price": 12.45,
+            "current_price": 12.45,
+            "return_pct": 0.0
+        }
+    ],
+    "4934.TW": [
+        {
+            "name": "太極",
+            "pick_date": "2026-10-08",
+            "strategies": "S1_底部突破",
+            "entry_price": 17.1,
+            "current_price": 17.1,
+            "return_pct": 0.0
+        }
+    ],
+    "5230.TWO": [
+        {
+            "name": "雷笛克光學",
+            "pick_date": "2026-10-08",
+            "strategies": "S2_創高動能",
+            "entry_price": 25.0,
+            "current_price": 25.0,
+            "return_pct": 0.0
+        }
     ]
 }
