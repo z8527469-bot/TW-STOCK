@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>台股七核心動能戰情室(僅供參考)</title>
+    <title>台股七核心動能戰情室</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
         tailwind.config = {
@@ -35,7 +35,7 @@
                 <h1 class="text-xl font-bold text-white tracking-wide">台股七核心動能戰情室</h1>
             </div>
             <div class="text-sm text-gray-400">
-                最新資料日期：<span id="update-date" class="font-mono text-blue-400 font-semibold">載入中...</span>
+                最新選股日期：<span id="update-date" class="font-mono text-blue-400 font-semibold">載入中...</span>
             </div>
         </div>
     </header>
@@ -59,12 +59,15 @@
         </div>
 
         <!-- 頁籤切換 -->
-        <div class="flex border-b border-gray-800 mb-6 space-x-6">
-            <button onclick="switchTab('daily')" id="tab-daily" class="pb-3 px-2 tab-active transition-colors">
+        <div class="flex border-b border-gray-800 mb-6 space-x-4 sm:space-x-6 overflow-x-auto whitespace-nowrap">
+            <button onclick="switchTab('daily')" id="tab-daily" class="pb-3 px-2 tab-active transition-colors shrink-0">
                 🎯 最新選股名單
             </button>
-            <button onclick="switchTab('history')" id="tab-history" class="pb-3 px-2 text-gray-400 hover:text-gray-200 transition-colors">
+            <button onclick="switchTab('history')" id="tab-history" class="pb-3 px-2 text-gray-400 hover:text-gray-200 transition-colors shrink-0">
                 📊 歷史績效追蹤庫
+            </button>
+            <button onclick="switchTab('uptrend')" id="tab-uptrend" class="pb-3 px-2 text-gray-400 hover:text-gray-200 transition-colors shrink-0">
+                🌊 第2階段大趨勢股 (每週)
             </button>
         </div>
 
@@ -77,7 +80,7 @@
 
         <!-- 區塊 2：歷史績效追蹤 -->
         <div id="section-history" class="hidden">
-            <!-- 搜尋與過濾工具列 (新增日期篩選器) -->
+            <!-- 搜尋與過濾工具列 -->
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 mb-4">
                 <input type="text" id="search-input" oninput="renderHistory()" placeholder="🔍 搜尋代碼或名稱..." 
                        class="bg-cardbg border border-gray-700 rounded-lg px-4 py-2 text-sm text-white focus:outline-none focus:border-blue-500">
@@ -111,7 +114,7 @@
 
             <!-- 歷史表格 -->
             <div class="bg-cardbg rounded-xl border border-gray-800 overflow-x-auto shadow">
-                <table class="w-full text-left border-collapse">
+                <table class="w-full text-left border-collapse min-w-[800px]">
                     <thead>
                         <tr class="border-b border-gray-800 text-gray-400 text-xs uppercase bg-gray-900/50">
                             <th class="py-3.5 px-4">選出日期 (入選紀錄)</th>
@@ -129,22 +132,50 @@
             </div>
         </div>
 
+        <!-- 區塊 3：每週上升趨勢股 -->
+        <div id="section-uptrend" class="hidden">
+            <div class="mb-4 text-sm text-gray-400 bg-gray-800/50 p-4 rounded-lg border border-gray-700 shadow">
+                💡 <b>說明：</b> 本清單於每週六更新，嚴格執行《超級績效》「第2階段趨勢模板」8 大準則 (包含年線翻揚與 50MA>150MA>200MA 多頭排列)。作為平時 S1~S7 短線爆發策略的優質「候選股水池」。
+                <div class="mt-2 flex items-center gap-4">
+                    <span>更新日期：<span id="uptrend-date" class="text-blue-400 font-mono font-semibold">載入中...</span></span>
+                    <span>符合檔數：<span id="uptrend-count" class="text-twred font-bold font-mono text-lg">0</span> 檔</span>
+                </div>
+            </div>
+            <div class="bg-cardbg rounded-xl border border-gray-800 overflow-x-auto shadow">
+                <table class="w-full text-left border-collapse min-w-[700px]">
+                    <thead>
+                        <tr class="border-b border-gray-800 text-gray-400 text-xs uppercase bg-gray-900/50">
+                            <th class="py-3.5 px-4 w-1/3">股票代碼 / 名稱</th>
+                            <th class="py-3.5 px-4 text-right">最新收盤價</th>
+                            <th class="py-3.5 px-4 text-right">成交量(張)</th>
+                            <th class="py-3.5 px-4 text-right">距年高點跌幅</th>
+                            <th class="py-3.5 px-4 text-right">自年低點反彈</th>
+                        </tr>
+                    </thead>
+                    <tbody id="uptrend-tbody" class="divide-y divide-gray-800/60 text-sm">
+                        <tr><td colspan="5" class="text-center py-8 text-gray-500">載入中...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
     </main>
 
     <script>
         let globalMergedList = [];
 
-        // 切換頁籤
+        // 切換頁籤 (管理 3 個分頁)
         function switchTab(tab) {
             document.getElementById('section-daily').classList.toggle('hidden', tab !== 'daily');
             document.getElementById('section-history').classList.toggle('hidden', tab !== 'history');
+            document.getElementById('section-uptrend').classList.toggle('hidden', tab !== 'uptrend');
             
-            document.getElementById('tab-daily').className = tab === 'daily' 
-                ? 'pb-3 px-2 tab-active transition-colors' 
-                : 'pb-3 px-2 text-gray-400 hover:text-gray-200 transition-colors';
-            document.getElementById('tab-history').className = tab === 'history' 
-                ? 'pb-3 px-2 tab-active transition-colors' 
-                : 'pb-3 px-2 text-gray-400 hover:text-gray-200 transition-colors';
+            const activeClass = 'pb-3 px-2 tab-active transition-colors shrink-0';
+            const inactiveClass = 'pb-3 px-2 text-gray-400 hover:text-gray-200 transition-colors shrink-0';
+            
+            document.getElementById('tab-daily').className = tab === 'daily' ? activeClass : inactiveClass;
+            document.getElementById('tab-history').className = tab === 'history' ? activeClass : inactiveClass;
+            document.getElementById('tab-uptrend').className = tab === 'uptrend' ? activeClass : inactiveClass;
         }
 
         // 格式化策略標籤顏色 (支援 S1 ~ S7)
@@ -168,7 +199,7 @@
             }).join('');
         }
 
-        // 載入 JSON 資料
+        // 載入所有 JSON 資料
         async function loadData() {
             const cacheBuster = `?t=${new Date().getTime()}`;
             
@@ -195,6 +226,21 @@
                 }
             } catch (e) {
                 console.error("無法載入 history.json:", e);
+            }
+
+            // 3. 讀取每週大趨勢庫 (Weekly Uptrend)
+            try {
+                const resUptrend = await fetch(`data/weekly_uptrend.json${cacheBuster}`);
+                if (resUptrend.ok) {
+                    const uptrendData = await resUptrend.json();
+                    document.getElementById('uptrend-date').textContent = uptrendData.date || '未知';
+                    document.getElementById('uptrend-count').textContent = uptrendData.count || '0';
+                    renderUptrend(uptrendData.stocks || []);
+                } else {
+                    document.getElementById('uptrend-tbody').innerHTML = `<tr><td colspan="5" class="text-center py-8 text-gray-500">尚無每週趨勢資料，請等待週六排程執行</td></tr>`;
+                }
+            } catch (e) {
+                console.error("無法載入 weekly_uptrend.json:", e);
             }
         }
 
@@ -258,6 +304,7 @@
             for (const [yfTicker, records] of Object.entries(histObj)) {
                 if (!records || records.length === 0) continue;
 
+                // 處理 Yahoo 代碼後綴
                 const cleanCode = yfTicker.replace('.TWO', '').replace('.TW', '');
                 
                 // 將同一檔股票的紀錄依日期由舊到新排序
@@ -355,12 +402,11 @@
                 const matchKw = item.code.toLowerCase().includes(searchKw) || item.name.toLowerCase().includes(searchKw);
                 if (!matchKw) continue;
 
-                // 若有指定特定日期，檢查該股票在當天是否有被選出
                 if (dateFilter !== 'ALL') {
+                    // 若有指定特定日期，檢查該股票在當天是否有被選出
                     const recOnDate = item.raw_records.find(r => r.pick_date === dateFilter);
                     if (!recOnDate) continue;
 
-                    // 若同時有選策略，檢查當天或累積策略是否符合
                     if (stratFilter !== 'ALL' && !(recOnDate.strategies && recOnDate.strategies.includes(stratFilter))) {
                         continue;
                     }
@@ -413,7 +459,7 @@
                 const colorClass = isPos ? 'text-twred font-bold' : (isNeg ? 'text-twgreen font-bold' : 'text-gray-300');
                 const sign = isPos ? '+' : '';
 
-                // 日期欄位顯示設計：若入選多次，顯示首次日期與最新日期，並附上入選明細提示
+                // 日期欄位顯示設計：若入選多次，顯示首次日期與最新日期，並附上明細提示
                 let dateHtml = '';
                 if (dateFilter !== 'ALL') {
                     dateHtml = `<div class="font-mono text-blue-400 font-semibold">${dateFilter}</div>`;
@@ -461,8 +507,33 @@
             }).join('');
         }
 
-        // 啟動載入
-        loadData();
+        // 渲染每週趨勢表格 (第 3 個頁籤)
+        function renderUptrend(stocks) {
+            const tbody = document.getElementById('uptrend-tbody');
+            if (stocks.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="5" class="text-center py-8 text-gray-500">本週無符合第二階段趨勢的股票</td></tr>`;
+                return;
+            }
+
+            tbody.innerHTML = stocks.map(item => {
+                const yfSuffix = item['市場'] === '上市' ? '.TW' : '.TWO';
+                const yfTicker = `${item['代碼']}${yfSuffix}`;
+                
+                return `
+                <tr class="hover:bg-gray-800/40 transition-colors">
+                    <td class="py-3.5 px-4">
+                        <a href="https://tw.stock.yahoo.com/quote/${yfTicker}" target="_blank" class="font-semibold text-white hover:text-blue-400 text-base">
+                            ${item['代碼']} ${item['名稱']}
+                        </a>
+                        <span class="text-xs font-normal px-2 py-0.5 bg-gray-800 text-gray-400 rounded ml-2">${item['市場']}</span>
+                    </td>
+                    <td class="py-3.5 px-4 text-right font-mono text-white">${item['收盤價'].toFixed(2)}</td>
+                    <td class="py-3.5 px-4 text-right font-mono text-gray-300">${item['成交量(張)'].toLocaleString()}</td>
+                    <td class="py-3.5 px-4 text-right font-mono text-twred">${item['距年高點跌幅']}</td>
+                    <td class="py-3.5 px-4 text-right font-mono text-twred">${item['自低點反彈']}</td>
+                </tr>`;
+            }).join('');
+        }
     </script>
 </body>
 </html>
