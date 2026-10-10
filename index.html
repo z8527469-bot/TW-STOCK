@@ -199,7 +199,7 @@
             }).join('');
         }
 
-        // 載入所有 JSON 資料
+// 載入所有 JSON 資料 (強化錯誤處理版)
         async function loadData() {
             const cacheBuster = `?t=${new Date().getTime()}`;
             
@@ -211,10 +211,13 @@
                     document.getElementById('update-date').textContent = dailyData.date || '未知';
                     renderDaily(dailyData.picks || []);
                 } else {
-                    document.getElementById('daily-container').innerHTML = `<div class="col-span-full text-center py-12 text-gray-400">目前尚無今日選股資料</div>`;
+                    document.getElementById('update-date').textContent = '無今日資料';
+                    document.getElementById('daily-container').innerHTML = `<div class="col-span-full text-center py-12 text-gray-400">目前尚無今日選股資料，請確認是否已執行 screener.py</div>`;
                 }
             } catch (e) {
                 console.error("無法載入 daily_picks.json:", e);
+                document.getElementById('update-date').textContent = '讀取失敗';
+                document.getElementById('daily-container').innerHTML = `<div class="col-span-full text-center py-12 text-twred font-bold">載入失敗！請確認是否透過 HTTP 伺服器或 GitHub Pages 開啟（勿直接點擊 HTML 檔）。</div>`;
             }
 
             // 2. 讀取歷史追蹤庫
@@ -223,6 +226,8 @@
                 if (resHist.ok) {
                     const histData = await resHist.json();
                     processHistoryData(histData);
+                } else {
+                    document.getElementById('history-tbody').innerHTML = `<tr><td colspan="6" class="text-center py-8 text-gray-500">尚無歷史追蹤資料，請先執行 screener.py 產生 history.json</td></tr>`;
                 }
             } catch (e) {
                 console.error("無法載入 history.json:", e);
@@ -237,7 +242,7 @@
                     document.getElementById('uptrend-count').textContent = uptrendData.count || '0';
                     renderUptrend(uptrendData.stocks || []);
                 } else {
-                    document.getElementById('uptrend-tbody').innerHTML = `<tr><td colspan="5" class="text-center py-8 text-gray-500">尚無每週趨勢資料，請等待週六排程執行</td></tr>`;
+                    document.getElementById('uptrend-tbody').innerHTML = `<tr><td colspan="5" class="text-center py-8 text-gray-500">尚無每週趨勢資料，請執行 weekly_uptrend.py</td></tr>`;
                 }
             } catch (e) {
                 console.error("無法載入 weekly_uptrend.json:", e);
