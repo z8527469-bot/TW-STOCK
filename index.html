@@ -23,6 +23,9 @@
     <style>
         body { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; }
         .tab-active { border-bottom: 2px solid #3b82f6; color: #60a5fa; font-weight: 600; }
+        /* 自訂滾動條樣式，讓橫向分頁列更美觀 */
+        .scrollbar-hide::-webkit-scrollbar { display: none; }
+        .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
     </style>
 </head>
 <body class="bg-darkbg text-gray-200 min-h-screen pb-12">
@@ -42,7 +45,7 @@
 
     <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-6">
         
-        <!-- 歷史績效總覽卡片 (會隨篩選器動態更新) -->
+        <!-- 歷史績效總覽卡片 -->
         <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
             <div class="bg-cardbg p-5 rounded-xl border border-gray-800 shadow">
                 <div class="text-gray-400 text-sm mb-1">追蹤個股檔數 (已合併重複)</div>
@@ -58,8 +61,8 @@
             </div>
         </div>
 
-        <!-- 頁籤切換 -->
-        <div class="flex border-b border-gray-800 mb-6 space-x-4 sm:space-x-6 overflow-x-auto whitespace-nowrap">
+        <!-- 頁籤切換 (擴展為 4 個分頁) -->
+        <div class="flex border-b border-gray-800 mb-6 space-x-4 sm:space-x-6 overflow-x-auto whitespace-nowrap scrollbar-hide">
             <button onclick="switchTab('daily')" id="tab-daily" class="pb-3 px-2 tab-active transition-colors shrink-0">
                 🎯 最新選股名單
             </button>
@@ -67,31 +70,29 @@
                 📊 歷史績效追蹤庫
             </button>
             <button onclick="switchTab('uptrend')" id="tab-uptrend" class="pb-3 px-2 text-gray-400 hover:text-gray-200 transition-colors shrink-0">
-                🌊 第2階段大趨勢股 (每週)
+                🌊 第2階段大趨勢股
+            </button>
+            <button onclick="switchTab('turn')" id="tab-turn" class="pb-3 px-2 text-gray-400 hover:text-gray-200 transition-colors shrink-0">
+                🔄 週轉折強勢股
             </button>
         </div>
 
-        <!-- 區塊 1：今日最新選股 -->
+        <!-- ================== 區塊 1：今日最新選股 ================== -->
         <div id="section-daily" class="space-y-6">
             <div id="daily-container" class="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div class="col-span-full text-center py-12 text-gray-500">正在載入今日選股資料...</div>
             </div>
         </div>
 
-        <!-- 區塊 2：歷史績效追蹤 -->
+        <!-- ================== 區塊 2：歷史績效追蹤 ================== -->
         <div id="section-history" class="hidden">
-            <!-- 搜尋與過濾工具列 -->
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 mb-4">
                 <input type="text" id="search-input" oninput="renderHistory()" placeholder="🔍 搜尋代碼或名稱..." 
                        class="bg-cardbg border border-gray-700 rounded-lg px-4 py-2 text-sm text-white focus:outline-none focus:border-blue-500">
-                
-                <select id="date-filter" onchange="renderHistory()" 
-                        class="bg-cardbg border border-gray-700 rounded-lg px-4 py-2 text-sm text-white focus:outline-none focus:border-blue-500">
+                <select id="date-filter" onchange="renderHistory()" class="bg-cardbg border border-gray-700 rounded-lg px-4 py-2 text-sm text-white focus:outline-none focus:border-blue-500">
                     <option value="ALL">📅 所有選出日期</option>
                 </select>
-
-                <select id="strat-filter" onchange="renderHistory()" 
-                        class="bg-cardbg border border-gray-700 rounded-lg px-4 py-2 text-sm text-white focus:outline-none focus:border-blue-500">
+                <select id="strat-filter" onchange="renderHistory()" class="bg-cardbg border border-gray-700 rounded-lg px-4 py-2 text-sm text-white focus:outline-none focus:border-blue-500">
                     <option value="ALL">🎯 所有策略 (S1 ~ S7)</option>
                     <option value="S1_底部突破">S1_底部突破</option>
                     <option value="S2_創高動能">S2_創高動能</option>
@@ -101,9 +102,7 @@
                     <option value="S6_營收口袋樞紐">S6_營收口袋樞紐</option>
                     <option value="S7_漲停強勢旗形">S7_漲停強勢旗形</option>
                 </select>
-
-                <select id="sort-select" onchange="renderHistory()" 
-                        class="bg-cardbg border border-gray-700 rounded-lg px-4 py-2 text-sm text-white focus:outline-none focus:border-blue-500">
+                <select id="sort-select" onchange="renderHistory()" class="bg-cardbg border border-gray-700 rounded-lg px-4 py-2 text-sm text-white focus:outline-none focus:border-blue-500">
                     <option value="date-desc">排序：最新入選日 (新➔舊)</option>
                     <option value="first-date-desc">排序：首次入選日 (新➔舊)</option>
                     <option value="return-desc">排序：報酬率 (最高➔最低)</option>
@@ -111,8 +110,6 @@
                     <option value="count-desc">排序：入選次數 (最多➔最少)</option>
                 </select>
             </div>
-
-            <!-- 歷史表格 -->
             <div class="bg-cardbg rounded-xl border border-gray-800 overflow-x-auto shadow">
                 <table class="w-full text-left border-collapse min-w-[800px]">
                     <thead>
@@ -132,10 +129,10 @@
             </div>
         </div>
 
-        <!-- 區塊 3：每週上升趨勢股 -->
+        <!-- ================== 區塊 3：第2階段大趨勢股 ================== -->
         <div id="section-uptrend" class="hidden">
             <div class="mb-4 text-sm text-gray-400 bg-gray-800/50 p-4 rounded-lg border border-gray-700 shadow">
-                💡 <b>說明：</b> 本清單於每週六更新，嚴格執行《超級績效》「第2階段趨勢模板」8 大準則 (包含年線翻揚與 50MA>150MA>200MA 多頭排列)。作為平時 S1~S7 短線爆發策略的優質「候選股水池」。
+                💡 <b>說明：</b> 每週六更新，嚴格執行《超級績效》「第2階段趨勢模板」8 大準則 (包含年線翻揚與 50MA>150MA>200MA 多頭排列)。
                 <div class="mt-2 flex items-center gap-4">
                     <span>更新日期：<span id="uptrend-date" class="text-blue-400 font-mono font-semibold">載入中...</span></span>
                     <span>符合檔數：<span id="uptrend-count" class="text-twred font-bold font-mono text-lg">0</span> 檔</span>
@@ -147,7 +144,7 @@
                         <tr class="border-b border-gray-800 text-gray-400 text-xs uppercase bg-gray-900/50">
                             <th class="py-3.5 px-4 w-1/3">股票代碼 / 名稱</th>
                             <th class="py-3.5 px-4 text-right">最新收盤價</th>
-                            <th class="py-3.5 px-4 text-right">成交量(張)</th>
+                            <th class="py-3.5 px-4 text-right">本週成交量(張)</th>
                             <th class="py-3.5 px-4 text-right">距年高點跌幅</th>
                             <th class="py-3.5 px-4 text-right">自年低點反彈</th>
                         </tr>
@@ -159,26 +156,50 @@
             </div>
         </div>
 
+        <!-- ================== 區塊 4：週轉折強勢股 ================== -->
+        <div id="section-turn" class="hidden">
+            <div class="mb-4 text-sm text-gray-400 bg-gray-800/50 p-4 rounded-lg border border-gray-700 shadow">
+                💡 <b>說明：</b> 依據控盤轉折公式，將其延伸至「週K線」級別。篩選出**「當週收盤價已大於未來三週(W1、W2、W3)轉折價」**的股票。代表其 3 週、6 週線未來將強迫翻揚向上，下檔形成波段防守鐵板。
+                <div class="mt-2 flex items-center gap-4">
+                    <span>更新日期：<span id="turn-date" class="text-blue-400 font-mono font-semibold">載入中...</span></span>
+                    <span>符合檔數：<span id="turn-count" class="text-twred font-bold font-mono text-lg">0</span> 檔</span>
+                </div>
+            </div>
+            <div class="bg-cardbg rounded-xl border border-gray-800 overflow-x-auto shadow">
+                <table class="w-full text-left border-collapse min-w-[800px]">
+                    <thead>
+                        <tr class="border-b border-gray-800 text-gray-400 text-xs uppercase bg-gray-900/50">
+                            <th class="py-3.5 px-4">股票代碼 / 名稱</th>
+                            <th class="py-3.5 px-4 text-right">本週收盤價</th>
+                            <th class="py-3.5 px-4 text-right">本週成交量(張)</th>
+                            <th class="py-3.5 px-4 text-right text-indigo-300">W+1 轉折價</th>
+                            <th class="py-3.5 px-4 text-right text-indigo-300">W+2 轉折價</th>
+                            <th class="py-3.5 px-4 text-right text-indigo-300">W+3 轉折價</th>
+                        </tr>
+                    </thead>
+                    <tbody id="turn-tbody" class="divide-y divide-gray-800/60 text-sm">
+                        <tr><td colspan="6" class="text-center py-8 text-gray-500">載入中...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
     </main>
 
     <script>
         let globalMergedList = [];
 
-        // 切換頁籤 (管理 3 個分頁)
+        // 切換頁籤
         function switchTab(tab) {
-            document.getElementById('section-daily').classList.toggle('hidden', tab !== 'daily');
-            document.getElementById('section-history').classList.toggle('hidden', tab !== 'history');
-            document.getElementById('section-uptrend').classList.toggle('hidden', tab !== 'uptrend');
-            
-            const activeClass = 'pb-3 px-2 tab-active transition-colors shrink-0';
-            const inactiveClass = 'pb-3 px-2 text-gray-400 hover:text-gray-200 transition-colors shrink-0';
-            
-            document.getElementById('tab-daily').className = tab === 'daily' ? activeClass : inactiveClass;
-            document.getElementById('tab-history').className = tab === 'history' ? activeClass : inactiveClass;
-            document.getElementById('tab-uptrend').className = tab === 'uptrend' ? activeClass : inactiveClass;
+            const tabs = ['daily', 'history', 'uptrend', 'turn'];
+            tabs.forEach(t => {
+                document.getElementById(`section-${t}`).classList.toggle('hidden', tab !== t);
+                const activeClass = 'pb-3 px-2 tab-active transition-colors shrink-0';
+                const inactiveClass = 'pb-3 px-2 text-gray-400 hover:text-gray-200 transition-colors shrink-0';
+                document.getElementById(`tab-${t}`).className = tab === t ? activeClass : inactiveClass;
+            });
         }
 
-        // 格式化策略標籤顏色
         function getStrategyBadges(stratArrayOrStr) {
             if (!stratArrayOrStr) return '';
             const colors = {
@@ -199,7 +220,7 @@
             }).join('');
         }
 
-        // 三軌獨立載入機制 (避免一個壞掉卡死全部)
+        // ================== 三軌+1 獨立載入機制 ==================
         async function loadDaily() {
             try {
                 const res = await fetch(`data/daily_picks.json?t=${Date.now()}`);
@@ -208,12 +229,12 @@
                     document.getElementById('update-date').textContent = data.date || '未知';
                     renderDaily(data.picks || []);
                 } else {
-                    document.getElementById('update-date').textContent = '無資料';
-                    document.getElementById('daily-container').innerHTML = `<div class="col-span-full text-center py-12 text-gray-400">目前尚無今日選股資料</div>`;
+                    document.getElementById('update-date').textContent = '無今日資料';
+                    document.getElementById('daily-container').innerHTML = `<div class="col-span-full text-center py-12 text-gray-400">目前尚無今日選股資料，請確認是否已執行 screener.py</div>`;
                 }
             } catch (e) {
                 document.getElementById('update-date').textContent = '讀取失敗';
-                document.getElementById('daily-container').innerHTML = `<div class="col-span-full text-center py-12 text-twred font-bold">載入失敗！請確保您是透過 GitHub Pages 網址開啟，或是使用本機 HTTP Server 開啟網頁（直接點擊 HTML 檔案會被瀏覽器安全機制阻擋）。</div>`;
+                document.getElementById('daily-container').innerHTML = `<div class="col-span-full text-center py-12 text-twred font-bold">載入失敗！請確保您是透過 GitHub Pages 或 HTTP Server 開啟。</div>`;
             }
         }
 
@@ -227,7 +248,7 @@
                     document.getElementById('history-tbody').innerHTML = `<tr><td colspan="6" class="text-center py-8 text-gray-500">尚無歷史追蹤資料</td></tr>`;
                 }
             } catch (e) {
-                document.getElementById('history-tbody').innerHTML = `<tr><td colspan="6" class="text-center py-8 text-twred">無法載入 history.json，請檢查路徑或伺服器狀態</td></tr>`;
+                document.getElementById('history-tbody').innerHTML = `<tr><td colspan="6" class="text-center py-8 text-twred">無法載入 history.json，請檢查路徑</td></tr>`;
             }
         }
 
@@ -241,7 +262,7 @@
                     renderUptrend(data.stocks || []);
                 } else {
                     document.getElementById('uptrend-date').textContent = '無資料';
-                    document.getElementById('uptrend-tbody').innerHTML = `<tr><td colspan="5" class="text-center py-8 text-gray-500">尚無每週趨勢資料，請等待週六排程執行</td></tr>`;
+                    document.getElementById('uptrend-tbody').innerHTML = `<tr><td colspan="5" class="text-center py-8 text-gray-500">尚無每週趨勢資料，請執行 weekly_uptrend.py</td></tr>`;
                 }
             } catch (e) {
                 document.getElementById('uptrend-date').textContent = '讀取失敗';
@@ -249,13 +270,33 @@
             }
         }
 
+        async function loadTurn() {
+            try {
+                const res = await fetch(`data/weekly_turn.json?t=${Date.now()}`);
+                if (res.ok) {
+                    const data = await res.json();
+                    document.getElementById('turn-date').textContent = data.date || '未知';
+                    document.getElementById('turn-count').textContent = data.count || '0';
+                    renderTurn(data.stocks || []);
+                } else {
+                    document.getElementById('turn-date').textContent = '無資料';
+                    document.getElementById('turn-tbody').innerHTML = `<tr><td colspan="6" class="text-center py-8 text-gray-500">尚無週轉折資料，請執行 weekly_turn.py</td></tr>`;
+                }
+            } catch (e) {
+                document.getElementById('turn-date').textContent = '讀取失敗';
+                document.getElementById('turn-tbody').innerHTML = `<tr><td colspan="6" class="text-center py-8 text-twred">無法載入 weekly_turn.json</td></tr>`;
+            }
+        }
+
         function loadData() {
             loadDaily();
             loadHistory();
             loadUptrend();
+            loadTurn();
         }
 
-        // 渲染今日選股卡片
+        // ================== 渲染函數 ==================
+
         function renderDaily(picks) {
             const container = document.getElementById('daily-container');
             if (!picks || picks.length === 0) {
@@ -307,14 +348,12 @@
             }).join('');
         }
 
-        // 整理並合併同一支股票的歷史紀錄
         function processHistoryData(histObj) {
             globalMergedList = [];
             const allDatesSet = new Set();
 
             for (const [yfTicker, records] of Object.entries(histObj)) {
                 if (!records || records.length === 0) continue;
-
                 const cleanCode = yfTicker.replace('.TWO', '').replace('.TW', '');
                 const sortedRecords = [...records].sort((a, b) => a.pick_date.localeCompare(b.pick_date));
 
@@ -365,7 +404,6 @@
             renderHistory();
         }
 
-        // 更新頂部統計卡片
         function updateStatsCards(displayList) {
             const total = displayList.length;
             document.getElementById('stat-total').textContent = total;
@@ -390,7 +428,6 @@
             }
         }
 
-        // 渲染歷史績效表格
         function renderHistory() {
             const tbody = document.getElementById('history-tbody');
             const searchKw = document.getElementById('search-input').value.trim().toLowerCase();
@@ -524,6 +561,40 @@
                     <td class="py-3.5 px-4 text-right font-mono text-gray-300">${item['成交量(張)'].toLocaleString()}</td>
                     <td class="py-3.5 px-4 text-right font-mono text-twred">${item['距年高點跌幅']}</td>
                     <td class="py-3.5 px-4 text-right font-mono text-twred">${item['自低點反彈']}</td>
+                </tr>`;
+            }).join('');
+        }
+
+        // 渲染週轉折表格 (第 4 頁籤)
+        function renderTurn(stocks) {
+            const tbody = document.getElementById('turn-tbody');
+            if (stocks.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="6" class="text-center py-8 text-gray-500">本週無高於未來三週轉折價的股票</td></tr>`;
+                return;
+            }
+
+            tbody.innerHTML = stocks.map(item => {
+                const yfSuffix = item['市場'] === '上市' ? '.TW' : '.TWO';
+                const yfTicker = `${item['代碼']}${yfSuffix}`;
+                
+                // 計算與最高轉折價的距離，以突顯強勢程度
+                const maxTurn = Math.max(item['W1轉折價'], item['W2轉折價'], item['W3轉折價']);
+                const strength = ((item['本週收盤價'] - maxTurn) / maxTurn * 100).toFixed(1);
+
+                return `
+                <tr class="hover:bg-gray-800/40 transition-colors">
+                    <td class="py-3.5 px-4">
+                        <a href="https://tw.stock.yahoo.com/quote/${yfTicker}" target="_blank" class="font-semibold text-white hover:text-blue-400 text-base">
+                            ${item['代碼']} ${item['名稱']}
+                        </a>
+                        <span class="text-xs font-normal px-2 py-0.5 bg-gray-800 text-gray-400 rounded ml-2">${item['市場']}</span>
+                        <div class="text-[11px] text-twred mt-1">領先轉折 +${strength}%</div>
+                    </td>
+                    <td class="py-3.5 px-4 text-right font-mono text-white text-base">${item['本週收盤價'].toFixed(2)}</td>
+                    <td class="py-3.5 px-4 text-right font-mono text-gray-300">${item['本週成交量(張)'].toLocaleString()}</td>
+                    <td class="py-3.5 px-4 text-right font-mono text-indigo-300">${item['W1轉折價'].toFixed(2)}</td>
+                    <td class="py-3.5 px-4 text-right font-mono text-indigo-300">${item['W2轉折價'].toFixed(2)}</td>
+                    <td class="py-3.5 px-4 text-right font-mono text-indigo-300">${item['W3轉折價'].toFixed(2)}</td>
                 </tr>`;
             }).join('');
         }
