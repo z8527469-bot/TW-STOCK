@@ -1,9 +1,8 @@
-name: 台股週六長線趨勢掃描
+name: 台股週六長線趨勢與轉折掃描
 
 on:
   schedule:
-    # 台灣時間週六 14:00 = UTC 時間週六 06:00
-    - cron: '0 6 * * 6'
+    - cron: '0 6 * * 6' # 台灣時間週六 14:00
   workflow_dispatch:
 
 permissions:
@@ -27,14 +26,15 @@ jobs:
           python -m pip install --upgrade pip
           pip install yfinance pandas requests tqdm
 
-      - name: 🚀 執行週六趨勢掃描
+      - name: 🚀 執行週六趨勢與轉折掃描
         run: |
           python weekly_uptrend.py
+          python weekly_turn.py
 
       - name: 💾 自動將最新 JSON 數據推播回 GitHub
         run: |
           git config --global user.name "GitHub Action Bot"
           git config --global user.email "action@github.com"
-          git add data/weekly_uptrend.json
-          git commit -m "📊 自動更新每週第二階段趨勢股 ($(date +'%Y-%m-%d'))" || echo "無資料變更"
+          git add data/*.json
+          git commit -m "📊 自動更新週級別(趨勢+轉折)選股 ($(date +'%Y-%m-%d'))" || echo "無資料變更"
           git push
