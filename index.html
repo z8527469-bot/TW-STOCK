@@ -5,6 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>台股七核心動能戰情室</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <!-- 引入 Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script>
         tailwind.config = {
             darkMode: 'class',
@@ -23,7 +25,6 @@
     <style>
         body { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; }
         .tab-active { border-bottom: 2px solid #3b82f6; color: #60a5fa; font-weight: 600; }
-        /* 自訂滾動條樣式，讓橫向分頁列更美觀 */
         .scrollbar-hide::-webkit-scrollbar { display: none; }
         .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
     </style>
@@ -61,7 +62,7 @@
             </div>
         </div>
 
-        <!-- 頁籤切換 (擴展為 4 個分頁) -->
+        <!-- 頁籤切換 (擴展為 5 個分頁) -->
         <div class="flex border-b border-gray-800 mb-6 space-x-4 sm:space-x-6 overflow-x-auto whitespace-nowrap scrollbar-hide">
             <button onclick="switchTab('daily')" id="tab-daily" class="pb-3 px-2 tab-active transition-colors shrink-0">
                 🎯 最新選股名單
@@ -74,6 +75,9 @@
             </button>
             <button onclick="switchTab('turn')" id="tab-turn" class="pb-3 px-2 text-gray-400 hover:text-gray-200 transition-colors shrink-0">
                 🔄 週轉折強勢股
+            </button>
+            <button onclick="switchTab('chips')" id="tab-chips" class="pb-3 px-2 text-gray-400 hover:text-gray-200 transition-colors shrink-0">
+                🐳 大戶籌碼追蹤
             </button>
         </div>
 
@@ -132,7 +136,7 @@
         <!-- ================== 區塊 3：第2階段大趨勢股 ================== -->
         <div id="section-uptrend" class="hidden">
             <div class="mb-4 text-sm text-gray-400 bg-gray-800/50 p-4 rounded-lg border border-gray-700 shadow">
-                💡 <b>說明：</b> 每週六更新，嚴格執行《超級績效》「第2階段趨勢模板」8 大準則 (包含年線翻揚與 50MA>150MA>200MA 多頭排列)。
+                💡 <b>說明：</b> 每週六更新，嚴格執行《超級績效》「第2階段趨勢模板」8 大準則。
                 <div class="mt-2 flex items-center gap-4">
                     <span>更新日期：<span id="uptrend-date" class="text-blue-400 font-mono font-semibold">載入中...</span></span>
                     <span>符合檔數：<span id="uptrend-count" class="text-twred font-bold font-mono text-lg">0</span> 檔</span>
@@ -159,7 +163,7 @@
         <!-- ================== 區塊 4：週轉折強勢股 ================== -->
         <div id="section-turn" class="hidden">
             <div class="mb-4 text-sm text-gray-400 bg-gray-800/50 p-4 rounded-lg border border-gray-700 shadow">
-                💡 <b>說明：</b> 依據控盤轉折公式，將其延伸至「週K線」級別。篩選出**「當週收盤價已大於未來三週(W1、W2、W3)轉折價」**的股票。代表其 3 週、6 週線未來將強迫翻揚向上，下檔形成波段防守鐵板。
+                💡 <b>說明：</b> 依據控盤轉折公式，篩選出「當週收盤價已大於未來三週(W1、W2、W3)轉折價」的股票，下檔防守鐵板強勁。
                 <div class="mt-2 flex items-center gap-4">
                     <span>更新日期：<span id="turn-date" class="text-blue-400 font-mono font-semibold">載入中...</span></span>
                     <span>符合檔數：<span id="turn-count" class="text-twred font-bold font-mono text-lg">0</span> 檔</span>
@@ -184,14 +188,35 @@
             </div>
         </div>
 
+        <!-- ================== 區塊 5：大戶籌碼追蹤 ================== -->
+        <div id="section-chips" class="hidden">
+            <div class="bg-cardbg rounded-xl border border-gray-800 p-6 shadow mb-6">
+                <div class="flex flex-col sm:flex-row gap-4 items-center mb-6">
+                    <input type="text" id="chip-input" placeholder="輸入股票代碼 (例: 2330)" 
+                           class="bg-darkbg border border-gray-700 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-blue-500 w-full sm:w-64">
+                    <button onclick="drawChipChart()" class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-6 rounded-lg transition-colors">
+                        繪製圖表
+                    </button>
+                    <span id="chip-status" class="text-sm text-gray-400 ml-2"></span>
+                </div>
+                
+                <!-- Chart.js 畫布 -->
+                <div class="relative w-full h-[400px]">
+                    <canvas id="chipChart"></canvas>
+                </div>
+            </div>
+        </div>
+
     </main>
 
     <script>
         let globalMergedList = [];
+        let globalHoldersData = {};
+        let currentChart = null;
 
-        // 切換頁籤
+        // 切換頁籤 (管理 5 個分頁)
         function switchTab(tab) {
-            const tabs = ['daily', 'history', 'uptrend', 'turn'];
+            const tabs = ['daily', 'history', 'uptrend', 'turn', 'chips'];
             tabs.forEach(t => {
                 document.getElementById(`section-${t}`).classList.toggle('hidden', tab !== t);
                 const activeClass = 'pb-3 px-2 tab-active transition-colors shrink-0';
@@ -220,7 +245,7 @@
             }).join('');
         }
 
-        // ================== 三軌+1 獨立載入機制 ==================
+        // ================== 五軌獨立載入機制 ==================
         async function loadDaily() {
             try {
                 const res = await fetch(`data/daily_picks.json?t=${Date.now()}`);
@@ -230,11 +255,10 @@
                     renderDaily(data.picks || []);
                 } else {
                     document.getElementById('update-date').textContent = '無今日資料';
-                    document.getElementById('daily-container').innerHTML = `<div class="col-span-full text-center py-12 text-gray-400">目前尚無今日選股資料，請確認是否已執行 screener.py</div>`;
+                    document.getElementById('daily-container').innerHTML = `<div class="col-span-full text-center py-12 text-gray-400">目前尚無今日選股資料</div>`;
                 }
             } catch (e) {
                 document.getElementById('update-date').textContent = '讀取失敗';
-                document.getElementById('daily-container').innerHTML = `<div class="col-span-full text-center py-12 text-twred font-bold">載入失敗！請確保您是透過 GitHub Pages 或 HTTP Server 開啟。</div>`;
             }
         }
 
@@ -247,9 +271,7 @@
                 } else {
                     document.getElementById('history-tbody').innerHTML = `<tr><td colspan="6" class="text-center py-8 text-gray-500">尚無歷史追蹤資料</td></tr>`;
                 }
-            } catch (e) {
-                document.getElementById('history-tbody').innerHTML = `<tr><td colspan="6" class="text-center py-8 text-twred">無法載入 history.json，請檢查路徑</td></tr>`;
-            }
+            } catch (e) {}
         }
 
         async function loadUptrend() {
@@ -262,12 +284,9 @@
                     renderUptrend(data.stocks || []);
                 } else {
                     document.getElementById('uptrend-date').textContent = '無資料';
-                    document.getElementById('uptrend-tbody').innerHTML = `<tr><td colspan="5" class="text-center py-8 text-gray-500">尚無每週趨勢資料，請執行 weekly_uptrend.py</td></tr>`;
+                    document.getElementById('uptrend-tbody').innerHTML = `<tr><td colspan="5" class="text-center py-8 text-gray-500">尚無每週趨勢資料</td></tr>`;
                 }
-            } catch (e) {
-                document.getElementById('uptrend-date').textContent = '讀取失敗';
-                document.getElementById('uptrend-tbody').innerHTML = `<tr><td colspan="5" class="text-center py-8 text-twred">無法載入 weekly_uptrend.json</td></tr>`;
-            }
+            } catch (e) {}
         }
 
         async function loadTurn() {
@@ -280,11 +299,23 @@
                     renderTurn(data.stocks || []);
                 } else {
                     document.getElementById('turn-date').textContent = '無資料';
-                    document.getElementById('turn-tbody').innerHTML = `<tr><td colspan="6" class="text-center py-8 text-gray-500">尚無週轉折資料，請執行 weekly_turn.py</td></tr>`;
+                    document.getElementById('turn-tbody').innerHTML = `<tr><td colspan="6" class="text-center py-8 text-gray-500">尚無週轉折資料</td></tr>`;
+                }
+            } catch (e) {}
+        }
+
+        // 載入籌碼 JSON 到全域變數
+        async function loadHoldersData() {
+            try {
+                const res = await fetch(`data/holders.json?t=${Date.now()}`);
+                if (res.ok) {
+                    globalHoldersData = await res.json();
+                    document.getElementById('chip-status').textContent = "✅ 籌碼庫載入完成";
+                } else {
+                    document.getElementById('chip-status').textContent = "⚠️ 無法讀取 holders.json (可能尚未執行爬蟲)";
                 }
             } catch (e) {
-                document.getElementById('turn-date').textContent = '讀取失敗';
-                document.getElementById('turn-tbody').innerHTML = `<tr><td colspan="6" class="text-center py-8 text-twred">無法載入 weekly_turn.json</td></tr>`;
+                document.getElementById('chip-status').textContent = "❌ 讀取籌碼庫失敗";
             }
         }
 
@@ -293,14 +324,14 @@
             loadHistory();
             loadUptrend();
             loadTurn();
+            loadHoldersData();
         }
 
         // ================== 渲染函數 ==================
-
         function renderDaily(picks) {
             const container = document.getElementById('daily-container');
             if (!picks || picks.length === 0) {
-                container.innerHTML = `<div class="col-span-full bg-cardbg p-8 rounded-xl border border-gray-800 text-center text-gray-400">🎉 今日市場無符合嚴格條件之標的，空手也是一種策略！</div>`;
+                container.innerHTML = `<div class="col-span-full bg-cardbg p-8 rounded-xl border border-gray-800 text-center text-gray-400">🎉 今日無符合嚴格條件之標的</div>`;
                 return;
             }
 
@@ -375,7 +406,6 @@
 
                 const firstRecord = sortedRecords[0];
                 const latestRecord = sortedRecords[sortedRecords.length - 1];
-                
                 const firstEntryPrice = Number(firstRecord.entry_price);
                 const currentPrice = Number(latestRecord.current_price);
                 const totalReturnPct = firstEntryPrice > 0 ? ((currentPrice - firstEntryPrice) / firstEntryPrice) * 100 : 0;
@@ -407,7 +437,6 @@
         function updateStatsCards(displayList) {
             const total = displayList.length;
             document.getElementById('stat-total').textContent = total;
-
             const winEl = document.getElementById('stat-winrate');
             const avgEl = document.getElementById('stat-avg-return');
 
@@ -415,7 +444,6 @@
                 const wins = displayList.filter(item => item.display_return > 0).length;
                 const winRate = ((wins / total) * 100).toFixed(1);
                 const avgReturn = (displayList.reduce((acc, cur) => acc + cur.display_return, 0) / total).toFixed(2);
-
                 winEl.textContent = `${winRate}%`;
                 winEl.className = `text-2xl font-bold font-mono ${winRate >= 50 ? 'text-twred' : 'text-twgreen'}`;
                 avgEl.textContent = `${avgReturn > 0 ? '+' : ''}${avgReturn}%`;
@@ -436,7 +464,6 @@
             const sortMode = document.getElementById('sort-select').value;
 
             let filtered = [];
-            
             for (const item of globalMergedList) {
                 const matchKw = item.code.toLowerCase().includes(searchKw) || item.name.toLowerCase().includes(searchKw);
                 if (!matchKw) continue;
@@ -444,7 +471,6 @@
                 if (dateFilter !== 'ALL') {
                     const recOnDate = item.raw_records.find(r => r.pick_date === dateFilter);
                     if (!recOnDate) continue;
-
                     if (stratFilter !== 'ALL' && !(recOnDate.strategies && recOnDate.strategies.includes(stratFilter))) continue;
 
                     const entryOnDate = Number(recOnDate.entry_price);
@@ -458,7 +484,6 @@
                     });
                 } else {
                     if (stratFilter !== 'ALL' && !item.all_strategies.includes(stratFilter)) continue;
-                    
                     filtered.push({
                         ...item,
                         display_entry: item.first_entry_price,
@@ -527,7 +552,6 @@
                     <td class="py-3.5 px-4">${getStrategyBadges(item.display_strategies)}</td>
                     <td class="py-3.5 px-4 text-right font-mono">
                         ${item.display_entry.toFixed(2)}
-                        ${dateFilter === 'ALL' && item.pick_count > 1 ? '<span class="block text-[10px] text-gray-500">(首次進場價)</span>' : ''}
                     </td>
                     <td class="py-3.5 px-4 text-right font-mono">${item.current_price.toFixed(2)}</td>
                     <td class="py-3.5 px-4 text-right font-mono text-base ${colorClass}">
@@ -537,7 +561,6 @@
             }).join('');
         }
 
-        // 渲染每週趨勢表格
         function renderUptrend(stocks) {
             const tbody = document.getElementById('uptrend-tbody');
             if (stocks.length === 0) {
@@ -565,19 +588,16 @@
             }).join('');
         }
 
-        // 渲染週轉折表格 (第 4 頁籤)
         function renderTurn(stocks) {
             const tbody = document.getElementById('turn-tbody');
             if (stocks.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="6" class="text-center py-8 text-gray-500">本週無高於未來三週轉折價的股票</td></tr>`;
+                tbody.innerHTML = `<tr><td colspan="6" class="text-center py-8 text-gray-500">本週無符合轉折強勢的股票</td></tr>`;
                 return;
             }
 
             tbody.innerHTML = stocks.map(item => {
                 const yfSuffix = item['市場'] === '上市' ? '.TW' : '.TWO';
                 const yfTicker = `${item['代碼']}${yfSuffix}`;
-                
-                // 計算與最高轉折價的距離，以突顯強勢程度
                 const maxTurn = Math.max(item['W1轉折價'], item['W2轉折價'], item['W3轉折價']);
                 const strength = ((item['本週收盤價'] - maxTurn) / maxTurn * 100).toFixed(1);
 
@@ -597,6 +617,97 @@
                     <td class="py-3.5 px-4 text-right font-mono text-indigo-300">${item['W3轉折價'].toFixed(2)}</td>
                 </tr>`;
             }).join('');
+        }
+
+        // ================== 大戶籌碼繪圖邏輯 ==================
+        function drawChipChart() {
+            const code = document.getElementById('chip-input').value.trim();
+            const statusEl = document.getElementById('chip-status');
+
+            if (!code) {
+                statusEl.textContent = "⚠️ 請輸入股票代碼";
+                return;
+            }
+            if (Object.keys(globalHoldersData).length === 0) {
+                statusEl.textContent = "⚠️ 尚未讀取到資料庫，請確認 JSON 是否存在";
+                return;
+            }
+            if (!globalHoldersData[code] || globalHoldersData[code].dates.length === 0) {
+                statusEl.textContent = "⚠️ 尚未追蹤此股票 (僅追蹤曾在戰情室入選之標的)";
+                return;
+            }
+
+            statusEl.textContent = `✅ 正在顯示 ${code} 大戶籌碼`;
+            const data = globalHoldersData[code];
+            const ctx = document.getElementById('chipChart').getContext('2d');
+
+            if (currentChart) {
+                currentChart.destroy();
+            }
+
+            currentChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: data.dates,
+                    datasets: [
+                        {
+                            label: '> 400張 大戶持股比例 (%)',
+                            data: data.p400,
+                            borderColor: '#f59e0b', // 橘黃色
+                            backgroundColor: 'rgba(245, 158, 11, 0.1)',
+                            borderWidth: 2,
+                            pointRadius: 3,
+                            fill: true,
+                            tension: 0.1
+                        },
+                        {
+                            label: '> 1000張 大戶持股比例 (%)',
+                            data: data.p1000,
+                            borderColor: '#ef4444', // 紅色
+                            backgroundColor: 'rgba(239, 68, 68, 0.1)',
+                            borderWidth: 2,
+                            pointRadius: 3,
+                            fill: true,
+                            tension: 0.1
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    interaction: {
+                        mode: 'index',
+                        intersect: false,
+                    },
+                    plugins: {
+                        legend: {
+                            labels: { color: '#e5e7eb' }
+                        },
+                        tooltip: {
+                            backgroundColor: 'rgba(15, 23, 42, 0.9)',
+                            titleColor: '#fff',
+                            bodyColor: '#cbd5e1',
+                            borderColor: '#334155',
+                            borderWidth: 1
+                        }
+                    },
+                    scales: {
+                        x: {
+                            ticks: { color: '#9ca3af' },
+                            grid: { color: '#334155' }
+                        },
+                        y: {
+                            ticks: { color: '#9ca3af' },
+                            grid: { color: '#334155' },
+                            title: {
+                                display: true,
+                                text: '持股比例 (%)',
+                                color: '#9ca3af'
+                            }
+                        }
+                    }
+                }
+            });
         }
 
         window.onload = loadData;
