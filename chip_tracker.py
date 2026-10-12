@@ -73,10 +73,11 @@ def update_holders_database():
         if len(holders_data[code_str]['dates']) == 0 or holders_data[code_str]['dates'][-1] != latest_date:
             stock_tdcc = tdcc_df[tdcc_df['證券代號'] == code_str]
             if not stock_tdcc.empty:
-                # 400張以上 = 集保級距 13(400-600), 14(600-800), 15(800-1000), 16(>1000)
-                p400_sum = stock_tdcc[stock_tdcc['持股分級'].isin([13, 14, 15, 16])]['占集保庫存數比例%'].sum()
-                # 1000張以上 = 集保級距 16
-                p1000_sum = stock_tdcc[stock_tdcc['持股分級'] == 16]['占集保庫存數比例%'].sum()
+                # 【修正】：400張以上 = 集保級距 12, 13, 14, 15 的加總
+                p400_sum = stock_tdcc[stock_tdcc['持股分級'].isin([12, 13, 14, 15])]['占集保庫存數比例%'].sum()
+                
+                # 【修正】：1000張以上 = 集保級距 15
+                p1000_sum = stock_tdcc[stock_tdcc['持股分級'] == 15]['占集保庫存數比例%'].sum()
                 
                 holders_data[code_str]['dates'].append(latest_date)
                 holders_data[code_str]['p400'].append(round(float(p400_sum), 2))
