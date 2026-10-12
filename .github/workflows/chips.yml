@@ -39,4 +39,7 @@ jobs:
           git config --global user.email "action@github.com"
           git add data/holders.json
           git commit -m "🐳 自動更新大戶籌碼歷史資料 ($(date +'%Y-%m-%d'))" || echo "無資料變更"
+          # 👇 就是補上這一行：在上傳前先同步遠端最新的進度
+          git pull --rebase origin main
+          
           git push
