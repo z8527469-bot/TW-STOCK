@@ -19,7 +19,7 @@ def get_target_list():
                 data = json.load(f)
                 if filename == 'history.json':
                     for key in data.keys():
-                        code = key.replace('.TW', '').replace('.TWO', '')
+                        code = key.replace('.TWO', '').replace('.TW', '')
                         target_codes.add(code)
                 elif filename == 'daily_picks.json':
                     for pick in data.get('picks', []):
@@ -33,11 +33,14 @@ def get_target_list():
     return sorted(list(filter(None, target_codes)))
 
 def fetch_tdcc_open_data():
-    """下載集保戶股權分散表 Open Data (完全免費、無限制、每週五深夜更新)"""
+    """下載集保戶股權分散表 Open Data (完全免費、無限制)"""
     print("📥 正在從政府集保中心下載本週最新大戶籌碼...")
     url = "https://opendata.tdcc.com.tw/getOD.ashx?id=1-5"
     df = pd.read_csv(url)
     df.columns = [col.strip() for col in df.columns]
+    
+    # 【關鍵修復】強制將證券代號轉為字串並去除空白，避免 Pandas 把 1101 當成整數
+    df['證券代號'] = df['證券代號'].astype(str).str.strip()
     
     latest_date_raw = str(df['資料日期'].max())
     latest_date = f"{latest_date_raw[:4]}-{latest_date_raw[4:6]}-{latest_date_raw[6:]}"
@@ -56,7 +59,6 @@ def update_holders_database():
     print(f"🎯 戰情室目前共追蹤 {len(target_list)} 檔標的")
     
     try:
-        # 下載本週政府官方資料 (一包包含全市場股票)
         tdcc_df, latest_date = fetch_tdcc_open_data()
     except Exception as e:
         print(f"❌ 官方集保資料下載失敗: {e}")
@@ -66,7 +68,7 @@ def update_holders_database():
     for code in target_list:
         code_str = str(code)
         
-        # 如果資料庫沒有這檔股票，初始化空清單 (自己從零建立歷史)
+        # 如果資料庫沒有這檔股票，初始化空清單
         if code_str not in holders_data:
             holders_data[code_str] = {'dates': [], 'p400': [], 'p1000': []}
             
@@ -83,11 +85,14 @@ def update_holders_database():
                 holders_data[code_str]['p400'].append(round(float(p400_sum), 2))
                 holders_data[code_str]['p1000'].append(round(float(p1000_sum), 2))
                 print(f"➕ {code_str} 增量更新完成 ➔ 400張大戶: {round(float(p400_sum), 2)}%")
+            else:
+                # 若少數 ETF 或剛上市股票查無籌碼資料則略過
+                pass
 
     # 寫入 JSON 儲存
     with open(HOLDERS_FILE, 'w', encoding='utf-8') as f:
         json.dump(holders_data, f, ensure_ascii=False, indent=4)
-    print("\n✅ 專屬大戶籌碼庫更新完畢！(完全零成本/防阻擋)")
+    print("\n✅ 專屬大戶籌碼庫更新完畢！")
 
 if __name__ == "__main__":
     update_holders_database()
