@@ -49,8 +49,12 @@ def update_holders_database():
     
     holders_data = {}
     if os.path.exists(HOLDERS_FILE):
-        with open(HOLDERS_FILE, 'r', encoding='utf-8') as f:
-            holders_data = json.load(f)
+        try:
+            with open(HOLDERS_FILE, 'r', encoding='utf-8') as f:
+                holders_data = json.load(f)
+        except json.JSONDecodeError:
+            print(f"⚠️ 發現空白或損毀的 {HOLDERS_FILE}，將重新初始化資料庫。")
+            holders_data = {}
             
     # 改為獲取全市場名單
     target_list = get_all_tw_stocks()
