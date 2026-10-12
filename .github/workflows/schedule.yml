@@ -41,4 +41,8 @@ jobs:
           git config --global user.email "action@github.com"
           git add data/*.json
           git commit -m "📊 自動更新每日選股與歷史績效 ($(date +'%Y-%m-%d'))" || echo "無資料變更"
+
+          # 👇 加上這一行：推播前先同步遠端最新的程式碼，避免版本衝突
+          git pull --rebase origin schedule
+          
           git push
