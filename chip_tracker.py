@@ -1,36 +1,33 @@
 import os
 import json
+import re
+import requests
 import pandas as pd
 from datetime import datetime
 
 # ================= 參數設定 =================
 DATA_DIR = "data"
 HOLDERS_FILE = f"{DATA_DIR}/holders.json"
-SOURCE_FILES = ['daily_picks.json', 'history.json', 'weekly_uptrend.json', 'weekly_turn.json']
 
-def get_target_list():
-    """從戰情室的各個 JSON 資料庫中，提取所有正在追蹤的股票代碼"""
+def get_all_tw_stocks():
+    """直接從台灣證交所/櫃買中心抓取所有上市櫃股票代碼"""
+    print("🔍 正在獲取全市場上市櫃股票代碼...")
+    headers = {"User-Agent": "Mozilla/5.0"}
     target_codes = set()
-    for filename in SOURCE_FILES:
-        filepath = os.path.join(DATA_DIR, filename)
-        if not os.path.exists(filepath): continue
+    markets = {'2': '上市', '4': '上櫃'}
+    
+    for mode in markets.keys():
         try:
-            with open(filepath, 'r', encoding='utf-8') as f:
-                data = json.load(f)
-                if filename == 'history.json':
-                    for key in data.keys():
-                        code = key.replace('.TWO', '').replace('.TW', '')
-                        target_codes.add(code)
-                elif filename == 'daily_picks.json':
-                    for pick in data.get('picks', []):
-                        target_codes.add(str(pick.get('代碼', '')))
-                else: 
-                    for stock in data.get('stocks', []):
-                        target_codes.add(str(stock.get('代碼', '')))
+            res = requests.get(f"https://isin.twse.com.tw/isin/C_public.jsp?strMode={mode}", headers=headers, timeout=10)
+            res.encoding = 'big5'
+            # 利用正規表達式，只抓取長度為 4 碼的正常股票 (排除權證、牛熊證等)
+            matches = re.findall(r'>([1-9][0-9]{3})\u3000([^<]+)</td>', res.text)
+            for code, name in matches:
+                target_codes.add(code)
         except Exception as e:
-            print(f"讀取 {filename} 失敗: {e}")
+            print(f"抓取股票代碼失敗: {e}")
             
-    return sorted(list(filter(None, target_codes)))
+    return sorted(list(target_codes))
 
 def fetch_tdcc_open_data():
     """下載集保戶股權分散表 Open Data (完全免費、無限制)"""
@@ -39,7 +36,7 @@ def fetch_tdcc_open_data():
     df = pd.read_csv(url)
     df.columns = [col.strip() for col in df.columns]
     
-    # 【關鍵修復】強制將證券代號轉為字串並去除空白，避免 Pandas 把 1101 當成整數
+    # 強制將證券代號轉為字串並去除空白
     df['證券代號'] = df['證券代號'].astype(str).str.strip()
     
     latest_date_raw = str(df['資料日期'].max())
@@ -55,8 +52,9 @@ def update_holders_database():
         with open(HOLDERS_FILE, 'r', encoding='utf-8') as f:
             holders_data = json.load(f)
             
-    target_list = get_target_list()
-    print(f"🎯 戰情室目前共追蹤 {len(target_list)} 檔標的")
+    # 改為獲取全市場名單
+    target_list = get_all_tw_stocks()
+    print(f"🎯 本次更新將涵蓋全市場共 {len(target_list)} 檔標的")
     
     try:
         tdcc_df, latest_date = fetch_tdcc_open_data()
@@ -64,9 +62,8 @@ def update_holders_database():
         print(f"❌ 官方集保資料下載失敗: {e}")
         return
 
-    # 批次從這包資料中，萃取出我們關注的股票
-    for code in target_list:
-        code_str = str(code)
+    # 批次處理全市場股票
+    for code_str in target_list:
         
         # 如果資料庫沒有這檔股票，初始化空清單
         if code_str not in holders_data:
@@ -84,15 +81,12 @@ def update_holders_database():
                 holders_data[code_str]['dates'].append(latest_date)
                 holders_data[code_str]['p400'].append(round(float(p400_sum), 2))
                 holders_data[code_str]['p1000'].append(round(float(p1000_sum), 2))
-                print(f"➕ {code_str} 增量更新完成 ➔ 400張大戶: {round(float(p400_sum), 2)}%")
-            else:
-                # 若少數 ETF 或剛上市股票查無籌碼資料則略過
-                pass
 
-    # 寫入 JSON 儲存
+    print("💾 正在將全市場資料寫入 JSON 檔案 (資料量較大，請稍候)...")
     with open(HOLDERS_FILE, 'w', encoding='utf-8') as f:
+        # 將全市場 1700 檔資料寫入 (檔案約 2~3 MB)
         json.dump(holders_data, f, ensure_ascii=False, indent=4)
-    print("\n✅ 專屬大戶籌碼庫更新完畢！")
+    print("\n✅ 全市場大戶籌碼庫更新完畢！")
 
 if __name__ == "__main__":
     update_holders_database()
