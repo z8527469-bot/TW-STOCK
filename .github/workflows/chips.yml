@@ -28,8 +28,6 @@ jobs:
           pip install pandas requests beautifulsoup4 lxml html5lib
 
       - name: 🚀 執行集保增量更新與冷啟動爬蟲
-        env:
-          FINMIND_TOKEN: ${{ secrets.FINMIND_TOKEN }}
         run: |
           python chip_tracker.py
 
