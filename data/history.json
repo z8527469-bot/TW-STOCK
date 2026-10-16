@@ -37,6 +37,14 @@
             "entry_price": 65.7,
             "current_price": 63.5,
             "return_pct": -3.35
+        },
+        {
+            "name": "台玻",
+            "pick_date": "2026-10-16",
+            "strategies": "S3_投信認養",
+            "entry_price": 66.9,
+            "current_price": 66.9,
+            "return_pct": 0.0
         }
     ],
     "2241.TW": [
@@ -499,6 +507,14 @@
             "entry_price": 27.55,
             "current_price": 27.55,
             "return_pct": 0.0
+        },
+        {
+            "name": "雷笛克光學",
+            "pick_date": "2026-10-16",
+            "strategies": "S2_創高動能",
+            "entry_price": 27.8,
+            "current_price": 27.8,
+            "return_pct": 0.0
         }
     ],
     "1416.TW": [
@@ -849,6 +865,14 @@
             "entry_price": 565.0,
             "current_price": 565.0,
             "return_pct": 0.0
+        },
+        {
+            "name": "聯詠",
+            "pick_date": "2026-10-16",
+            "strategies": "S3_投信認養",
+            "entry_price": 577.0,
+            "current_price": 577.0,
+            "return_pct": 0.0
         }
     ],
     "3041.TW": [
@@ -884,6 +908,14 @@
             "strategies": "S2_創高動能",
             "entry_price": 58.7,
             "current_price": 58.7,
+            "return_pct": 0.0
+        },
+        {
+            "name": "廣寰科",
+            "pick_date": "2026-10-16",
+            "strategies": "S2_創高動能",
+            "entry_price": 59.6,
+            "current_price": 59.6,
             "return_pct": 0.0
         }
     ],
@@ -953,6 +985,14 @@
             "entry_price": 85.5,
             "current_price": 85.5,
             "return_pct": 0.0
+        },
+        {
+            "name": "台化",
+            "pick_date": "2026-10-16",
+            "strategies": "S3_投信認養",
+            "entry_price": 78.7,
+            "current_price": 78.7,
+            "return_pct": 0.0
         }
     ],
     "1409.TW": [
@@ -993,6 +1033,14 @@
             "entry_price": 134.0,
             "current_price": 134.0,
             "return_pct": 0.0
+        },
+        {
+            "name": "富喬",
+            "pick_date": "2026-10-16",
+            "strategies": "S2_創高動能",
+            "entry_price": 140.0,
+            "current_price": 140.0,
+            "return_pct": 0.0
         }
     ],
     "2027.TW": [
@@ -1022,6 +1070,14 @@
             "strategies": "S3_投信認養",
             "entry_price": 250.5,
             "current_price": 250.5,
+            "return_pct": 0.0
+        },
+        {
+            "name": "華通",
+            "pick_date": "2026-10-16",
+            "strategies": "S3_投信認養",
+            "entry_price": 248.0,
+            "current_price": 248.0,
             "return_pct": 0.0
         }
     ],
@@ -1201,6 +1257,14 @@
             "entry_price": 93.0,
             "current_price": 93.0,
             "return_pct": 0.0
+        },
+        {
+            "name": "今國光",
+            "pick_date": "2026-10-16",
+            "strategies": "S2_創高動能",
+            "entry_price": 100.5,
+            "current_price": 100.5,
+            "return_pct": 0.0
         }
     ],
     "6446.TW": [
@@ -1210,6 +1274,86 @@
             "strategies": "S3_投信認養",
             "entry_price": 1205.0,
             "current_price": 1205.0,
+            "return_pct": 0.0
+        }
+    ],
+    "2332.TW": [
+        {
+            "name": "友訊",
+            "pick_date": "2026-10-16",
+            "strategies": "S1_底部突破",
+            "entry_price": 21.35,
+            "current_price": 21.35,
+            "return_pct": 0.0
+        }
+    ],
+    "3062.TW": [
+        {
+            "name": "建漢",
+            "pick_date": "2026-10-16",
+            "strategies": "S1_底部突破",
+            "entry_price": 23.0,
+            "current_price": 23.0,
+            "return_pct": 0.0
+        }
+    ],
+    "3305.TW": [
+        {
+            "name": "昇貿",
+            "pick_date": "2026-10-16",
+            "strategies": "S1_底部突破",
+            "entry_price": 113.0,
+            "current_price": 113.0,
+            "return_pct": 0.0
+        }
+    ],
+    "3630.TWO": [
+        {
+            "name": "新鉅科",
+            "pick_date": "2026-10-16",
+            "strategies": "S1_底部突破",
+            "entry_price": 29.3,
+            "current_price": 29.3,
+            "return_pct": 0.0
+        }
+    ],
+    "4958.TW": [
+        {
+            "name": "臻鼎-KY",
+            "pick_date": "2026-10-16",
+            "strategies": "S3_投信認養",
+            "entry_price": 557.0,
+            "current_price": 557.0,
+            "return_pct": 0.0
+        }
+    ],
+    "4961.TW": [
+        {
+            "name": "天鈺",
+            "pick_date": "2026-10-16",
+            "strategies": "S2_創高動能",
+            "entry_price": 190.0,
+            "current_price": 190.0,
+            "return_pct": 0.0
+        }
+    ],
+    "5289.TWO": [
+        {
+            "name": "宜鼎",
+            "pick_date": "2026-10-16",
+            "strategies": "S4_恐慌抄底",
+            "entry_price": 1175.0,
+            "current_price": 1175.0,
+            "return_pct": 0.0
+        }
+    ],
+    "6415.TW": [
+        {
+            "name": "矽力*-KY",
+            "pick_date": "2026-10-16",
+            "strategies": "S1_底部突破",
+            "entry_price": 489.0,
+            "current_price": 489.0,
             "return_pct": 0.0
         }
     ]
