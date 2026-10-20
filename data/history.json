@@ -1399,6 +1399,14 @@
             "entry_price": 80.2,
             "current_price": 80.2,
             "return_pct": 0.0
+        },
+        {
+            "name": "時碩工業",
+            "pick_date": "2026-10-20",
+            "strategies": "S2_創高動能",
+            "entry_price": 85.8,
+            "current_price": 85.8,
+            "return_pct": 0.0
         }
     ],
     "6274.TWO": [
@@ -1419,6 +1427,14 @@
             "entry_price": 88.8,
             "current_price": 88.8,
             "return_pct": 0.0
+        },
+        {
+            "name": "宏正",
+            "pick_date": "2026-10-20",
+            "strategies": "S2_創高動能",
+            "entry_price": 96.1,
+            "current_price": 96.1,
+            "return_pct": 0.0
         }
     ],
     "6756.TW": [
@@ -1428,6 +1444,24 @@
             "strategies": "S2_創高動能",
             "entry_price": 121.0,
             "current_price": 121.0,
+            "return_pct": 0.0
+        },
+        {
+            "name": "威鋒電子",
+            "pick_date": "2026-10-20",
+            "strategies": "S2_創高動能",
+            "entry_price": 124.5,
+            "current_price": 124.5,
+            "return_pct": 0.0
+        }
+    ],
+    "6689.TW": [
+        {
+            "name": "伊雲谷",
+            "pick_date": "2026-10-20",
+            "strategies": "S1_底部突破",
+            "entry_price": 73.0,
+            "current_price": 73.0,
             "return_pct": 0.0
         }
     ]
