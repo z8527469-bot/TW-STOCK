@@ -155,6 +155,14 @@
             "entry_price": 191.0,
             "current_price": 183.5,
             "return_pct": -3.93
+        },
+        {
+            "name": "光環",
+            "pick_date": "2026-10-21",
+            "strategies": "S2_創高動能",
+            "entry_price": 196.5,
+            "current_price": 196.5,
+            "return_pct": 0.0
         }
     ],
     "3311.TW": [
@@ -1203,6 +1211,14 @@
             "entry_price": 36.95,
             "current_price": 36.95,
             "return_pct": 0.0
+        },
+        {
+            "name": "富驊",
+            "pick_date": "2026-10-21",
+            "strategies": "S2_創高動能",
+            "entry_price": 41.55,
+            "current_price": 41.55,
+            "return_pct": 0.0
         }
     ],
     "5498.TWO": [
@@ -1462,6 +1478,76 @@
             "strategies": "S1_底部突破",
             "entry_price": 73.0,
             "current_price": 73.0,
+            "return_pct": 0.0
+        }
+    ],
+    "2006.TW": [
+        {
+            "name": "東和鋼鐵",
+            "pick_date": "2026-10-21",
+            "strategies": "S3_投信認養",
+            "entry_price": 93.3,
+            "current_price": 93.3,
+            "return_pct": 0.0
+        }
+    ],
+    "2328.TW": [
+        {
+            "name": "廣宇",
+            "pick_date": "2026-10-21",
+            "strategies": "S1_底部突破",
+            "entry_price": 54.3,
+            "current_price": 54.3,
+            "return_pct": 0.0
+        }
+    ],
+    "3545.TW": [
+        {
+            "name": "敦泰",
+            "pick_date": "2026-10-21",
+            "strategies": "S1_底部突破",
+            "entry_price": 53.7,
+            "current_price": 53.7,
+            "return_pct": 0.0
+        }
+    ],
+    "3605.TW": [
+        {
+            "name": "宏致",
+            "pick_date": "2026-10-21",
+            "strategies": "S3_投信認養",
+            "entry_price": 178.0,
+            "current_price": 178.0,
+            "return_pct": 0.0
+        }
+    ],
+    "4155.TW": [
+        {
+            "name": "訊映",
+            "pick_date": "2026-10-21",
+            "strategies": "S2_創高動能",
+            "entry_price": 17.2,
+            "current_price": 17.2,
+            "return_pct": 0.0
+        }
+    ],
+    "4533.TWO": [
+        {
+            "name": "協易機",
+            "pick_date": "2026-10-21",
+            "strategies": "S1_底部突破",
+            "entry_price": 28.9,
+            "current_price": 28.9,
+            "return_pct": 0.0
+        }
+    ],
+    "4770.TW": [
+        {
+            "name": "上品",
+            "pick_date": "2026-10-21",
+            "strategies": "S2_創高動能",
+            "entry_price": 313.5,
+            "current_price": 313.5,
             "return_pct": 0.0
         }
     ]
