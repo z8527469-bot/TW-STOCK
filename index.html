@@ -101,10 +101,13 @@
                     <option value="S1_底部突破">S1_底部突破</option>
                     <option value="S2_創高動能">S2_創高動能</option>
                     <option value="S3_投信認養">S3_投信認養</option>
-                    <option value="S4_恐慌抄底">S4_恐慌抄底</option>
+                    <option value="S4_強勢回測網球">S4_強勢回測網球</option>
                     <option value="S5_投信作帳VCP">S5_投信作帳VCP</option>
                     <option value="S6_營收口袋樞紐">S6_營收口袋樞紐</option>
                     <option value="S7_漲停強勢旗形">S7_漲停強勢旗形</option>
+                    <option value="👑週轉折共振">👑 週轉折共振</option>
+                    <option value="🐳">🐳 大戶籌碼加持</option>
+                    <option value="⚡RS創高">⚡ RS領先創高</option>
                 </select>
                 <select id="sort-select" onchange="renderHistory()" class="bg-cardbg border border-gray-700 rounded-lg px-4 py-2 text-sm text-white focus:outline-none focus:border-blue-500">
                     <option value="date-desc">排序：最新入選日 (新➔舊)</option>
@@ -231,16 +234,22 @@
                 'S1_底部突破': 'bg-purple-900/60 text-purple-300 border-purple-700/50',
                 'S2_創高動能': 'bg-red-900/60 text-red-300 border-red-700/50',
                 'S3_投信認養': 'bg-amber-900/60 text-amber-300 border-amber-700/50',
+                'S4_強勢回測網球': 'bg-emerald-900/60 text-emerald-300 border-emerald-700/50',
                 'S4_恐慌抄底': 'bg-emerald-900/60 text-emerald-300 border-emerald-700/50',
                 'S5_投信作帳VCP': 'bg-cyan-900/60 text-cyan-300 border-cyan-700/50',
                 'S6_營收口袋樞紐': 'bg-blue-900/60 text-blue-300 border-blue-700/50',
-                'S7_漲停強勢旗形': 'bg-pink-900/60 text-pink-300 border-pink-700/50'
+                'S7_漲停強勢旗形': 'bg-pink-900/60 text-pink-300 border-pink-700/50',
+                '👑週轉折共振': 'bg-yellow-500/20 text-yellow-300 border-yellow-500/50 font-semibold',
+                '⚡RS創高': 'bg-orange-500/20 text-orange-300 border-orange-500/50 font-semibold'
             };
             const list = Array.isArray(stratArrayOrStr) ? stratArrayOrStr : stratArrayOrStr.split(',');
             return list.map(s => {
                 const cleanS = s.trim();
                 if (!cleanS) return '';
-                const colorClass = colors[cleanS] || 'bg-gray-800 text-gray-300 border-gray-700';
+                let colorClass = colors[cleanS] || 'bg-gray-800 text-gray-300 border-gray-700';
+                if (cleanS.startsWith('🐳')) {
+                    colorClass = 'bg-indigo-500/20 text-indigo-300 border-indigo-500/50 font-semibold';
+                }
                 return `<span class="inline-block px-2.5 py-0.5 text-xs font-medium rounded-full border ${colorClass} mr-1.5 mb-1">${cleanS}</span>`;
             }).join('');
         }
