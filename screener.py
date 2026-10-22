@@ -18,33 +18,61 @@ warnings.filterwarnings('ignore')
 
 # ================= 參數設定區 =================
 DISCORD_WEBHOOK_URL = os.environ.get("DISCORD_WEBHOOK_URL", "")
-FINMIND_TOKEN = os.environ.get("FINMIND_TOKEN", "")
+FINMIND_TOKEN = os.environ.get("FINMIND_TOKEN", "").strip()
 # ============================================
 
 STOCK_INFO = {}
 REVENUE_DATA = {}
+TWII_SERIES = pd.Series(dtype=float)
+WEEKLY_TURN_SET = set()
+HOLDERS_DATA = {}
 error_count = 0
 DEBUG_CHIPS_COUNT = 0
 MARKET_BULL = True  
 
 def check_market_regime():
-    """建立大盤環境濾網"""
-    global MARKET_BULL
-    print("⏳ 正在判斷大盤趨勢環境...")
+    """建立大盤環境濾網，並儲存大盤收盤價序列供 RS 相對強度線計算"""
+    global MARKET_BULL, TWII_SERIES
+    print("⏳ 正在判斷大盤趨勢環境並建立 RS 基準線...")
     try:
-        twii = yf.Ticker('^TWII').history(period="1y")
+        twii = yf.Ticker('^TWII').history(period="2y")
         if twii.empty:
-            twii = yf.Ticker('0050.TW').history(period="1y")
+            twii = yf.Ticker('0050.TW').history(period="2y")
+
+        if not twii.empty:
+            twii.index = pd.to_datetime(twii.index).tz_localize(None).normalize()
+            TWII_SERIES = twii['Close']
 
         if len(twii) > 200:
             twii['MA50'] = twii['Close'].rolling(window=50).mean()
             twii['MA200'] = twii['Close'].rolling(window=200).mean()
             MARKET_BULL = twii['MA50'].iloc[-1] > twii['MA200'].iloc[-1]
     except Exception as e:
-        pass
+        print(f"⚠️ 大盤資料讀取異常: {e}")
 
     status = "🟢 多頭 (允許 S1 底部突破)" if MARKET_BULL else "🔴 空頭或盤整 (濾除 S1，防禦假突破)"
     print(f"📊 大盤狀態: {status}\n")
+
+def load_auxiliary_databases():
+    """載入週轉折與大戶籌碼資料庫，供第 6 點跨維度共振比對使用"""
+    global WEEKLY_TURN_SET, HOLDERS_DATA
+    if os.path.exists("data/weekly_turn.json"):
+        try:
+            with open("data/weekly_turn.json", "r", encoding="utf-8") as f:
+                data = json.load(f)
+                for s in data.get("stocks", []):
+                    WEEKLY_TURN_SET.add(str(s.get("代碼", "")))
+            print(f"🔄 成功載入週轉折資料庫 ({len(WEEKLY_TURN_SET)} 檔強勢股)")
+        except Exception as e:
+            print(f"⚠️ 讀取 weekly_turn.json 失敗: {e}")
+
+    if os.path.exists("data/holders.json"):
+        try:
+            with open("data/holders.json", "r", encoding="utf-8") as f:
+                HOLDERS_DATA = json.load(f)
+            print(f"🐳 成功載入集保大戶資料庫 ({len(HOLDERS_DATA)} 檔標的)")
+        except Exception as e:
+            print(f"⚠️ 讀取 holders.json 失敗: {e}")
 
 def send_discord_webhook(webhook_url, msg):
     if not webhook_url:
@@ -99,7 +127,6 @@ def fetch_all_revenue():
                 print(f"⚠️ {market}營收下載中斷: {e}")
 
             if attempt < max_retries - 1:
-                print(f"🔄 正在進行第 {attempt + 2} 次重試...")
                 time.sleep(2)
             else:
                 print(f"❌ {market}營收下載失敗，後續將自動轉由 FinMind 補查。")
@@ -134,123 +161,169 @@ def check_technical(ticker):
 
         if df.empty or len(df) < 252: return None
         df = df.dropna()
+        df.index = pd.to_datetime(df.index).tz_localize(None).normalize()
 
         # 均線與成交量均線計算
         df['MA5'] = df['Close'].rolling(window=5).mean()
+        df['MA10'] = df['Close'].rolling(window=10).mean()
         df['MA20'] = df['Close'].rolling(window=20).mean()
         df['MA50'] = df['Close'].rolling(window=50).mean()
         df['MA60'] = df['Close'].rolling(window=60).mean()
         df['MA150'] = df['Close'].rolling(window=150).mean()
         df['MA200'] = df['Close'].rolling(window=200).mean()
+        df['Vol_5MA'] = df['Volume'].rolling(window=5).mean()
         df['Vol_20MA'] = df['Volume'].rolling(window=20).mean()
         df['Vol_50MA'] = df['Volume'].rolling(window=50).mean()
 
-        # RSI 與 KD 計算
-        delta = df['Close'].diff()
-        gain = (delta.where(delta > 0, 0)).ewm(alpha=1/14, adjust=False).mean()
-        loss = (-delta.where(delta < 0, 0)).ewm(alpha=1/14, adjust=False).mean()
-        rs = gain / loss
-        df['RSI'] = 100 - (100 / (1 + rs))
-
-        lowest_low = df['Low'].rolling(window=9).min()
-        highest_high = df['High'].rolling(window=9).max()
-        rsv = 100 * (df['Close'] - lowest_low) / (highest_high - lowest_low)
-        df['K'] = rsv.fillna(50).ewm(com=2, adjust=False).mean()
-
         today = df.iloc[-1]
         yesterday = df.iloc[-2]
+        
+        # 統一基礎流動性與股價門檻：過濾殭屍股與雞蛋水餃股
+        if today['Close'] < 20.0 or today['Vol_20MA'] < 600000 or today['Volume'] < 500000:
+            return None
+
         high_1y = df['High'].iloc[-252:].max()
+        low_1y = df['Low'].iloc[-252:].min()
+
+        # =====================================================================
+        # 【進化 1】計算真實台股相對強度線 (RS Line = 個股收盤價 / 大盤收盤價)
+        # =====================================================================
+        rs_strong = True
+        rs_new_high = False
+        if not TWII_SERIES.empty:
+            aligned_twii = TWII_SERIES.reindex(df.index).ffill()
+            if not aligned_twii.isna().all():
+                df['RS_Line'] = df['Close'] / aligned_twii
+                df['RS_MA20'] = df['RS_Line'].rolling(window=20).mean()
+                # RS 線在 20MA 之上且較 10 日前上升，代表近期明確跑贏大盤
+                rs_strong = (df['RS_Line'].iloc[-1] > df['RS_MA20'].iloc[-1]) and (df['RS_Line'].iloc[-1] > df['RS_Line'].iloc[-10])
+                # RS 線創下近 60 日新高 (領先股價突破的強烈訊號)
+                rs_new_high = df['RS_Line'].iloc[-1] >= (df['RS_Line'].iloc[-60:].max() * 0.98)
+
+        # =====================================================================
+        # 【進化 2】計算當日 K 棒收盤位置 (Close Position)，防範隔日沖長上影線(Squat)
+        # =====================================================================
+        day_range = today['High'] - today['Low']
+        close_pos = (today['Close'] - today['Low']) / day_range if day_range > 0 else 0
+
+        # 《超級績效》第二階段趨勢樣板 (Stage 2 Trend Template) 基底
+        stage2_trend = (
+            today['Close'] > today['MA50'] > today['MA150'] > today['MA200'] and
+            today['MA200'] > df['MA200'].iloc[-20] and  # 年線明確向上翻揚
+            today['Close'] >= (low_1y * 1.25) and       # 高於一年低點 25% 以上
+            today['Close'] >= 25.0                      # 排除 25 元以下低價股
+        )
 
         passed_strats = []
 
-        # --- S1：底部突破 (含大盤多頭濾網) ---
+        # --- S1：底部突破 (含大盤濾網 + RS轉強 + 收盤位階>=65%防長上影線) ---
         past_40_days_close = df['Close'].iloc[-41:-1]
         box_high, box_low = past_40_days_close.max(), past_40_days_close.min()
         ma_yest = [yesterday['MA5'], yesterday['MA20'], yesterday['MA60']]
         ma_max, ma_min = max(ma_yest), min(ma_yest)
 
-        if (MARKET_BULL and
+        if (MARKET_BULL and rs_strong and
             box_low <= (high_1y * 0.75) and
             (box_high - box_low) / box_low <= 0.20 and
             (ma_max - ma_min) / ma_min <= 0.10 and
             (today['Close'] - yesterday['Close']) / yesterday['Close'] >= 0.04 and
+            close_pos >= 0.65 and
             today['Close'] > ma_max and
             today['MA5'] > yesterday['MA5'] and
-            today['Volume'] >= 2000000 and
+            today['Volume'] >= 1000000 and
             today['Volume'] >= (1.5 * today['Vol_20MA'])):
             passed_strats.append("S1_底部突破")
 
-        # --- S2：創高動能 (含高潮頭部防禦) ---
-        if (today['Close'] > today['MA20'] > today['MA60'] > today['MA200'] and
-            today['MA200'] > df['MA200'].iloc[-20] and
+        # --- S2：創高動能 (Stage 2 + RS創高或轉強 + 收盤位階>=65%) ---
+        if (stage2_trend and rs_strong and
+            today['Close'] > today['MA20'] and
             today['Close'] >= (high_1y * 0.85) and
             today['Close'] <= (today['MA200'] * 2.0) and
             today['Volume'] >= (2 * today['Vol_20MA']) and
             today['Close'] > today['Open'] and
-            today['Volume'] >= 2000000):
+            close_pos >= 0.65 and
+            today['Volume'] >= 1000000):
             passed_strats.append("S2_創高動能")
 
-        # --- S3：投信認養 ---
-        if (today['Close'] > today['MA20'] and today['MA20'] > yesterday['MA20'] and
+        # --- S3：投信認養 (RS轉強 + 實體紅K收高>=65%) ---
+        if (rs_strong and
+            today['Close'] > today['MA20'] and today['MA20'] > yesterday['MA20'] and
             (today['Close'] - today['MA20']) / today['MA20'] <= 0.10 and
-            today['Volume'] >= 2000000 and (today['Close'] - today['Open']) / today['Open'] > 0.02):
+            today['Volume'] >= 1000000 and 
+            (today['Close'] - today['Open']) / today['Open'] > 0.02 and
+            close_pos >= 0.65):
             passed_strats.append("S3_投信認養")
 
-        # --- S4：恐慌抄底 (含隔日反轉確認) ---
-        yest_real_body = abs(yesterday['Close'] - yesterday['Open'])
-        yest_lower_shadow = min(yesterday['Open'], yesterday['Close']) - yesterday['Low']
+        # --- 【進化 5】S4：強勢回測網球 (取代原恐慌抄底：強勢股首次量縮回測 10/20MA 彈起) ---
+        high_120d = df['High'].iloc[-120:].max()
+        recent_15d_high = df['High'].iloc[-16:-1].max()
+        was_leader = recent_15d_high >= (high_120d * 0.95)  # 近 15 日內曾接近半年新高
 
-        if (yesterday['RSI'] < 30 and yesterday['K'] < 20 and
-            yesterday['Close'] <= (yesterday['MA20'] * 0.90) and
-            yesterday['Volume'] >= (1.3 * yesterday['Vol_20MA']) and
-            yest_lower_shadow >= (1.5 * yest_real_body) and
-            yesterday['Volume'] >= 1000000 and
-            today['Close'] > yesterday['High']):
-            passed_strats.append("S4_恐慌抄底")
-
-        # =====================================================================
-        # 《超級績效》第二階段趨勢樣板 (Stage 2 Trend Template) 基底
-        # =====================================================================
-        stage2_trend = (
-            today['Close'] > today['MA50'] > today['MA150'] > today['MA200'] and
-            today['MA200'] > df['MA200'].iloc[-20] and  # 年線明確向上翻揚
-            today['Close'] >= 25.0                       # 排除 25 元以下低價股
+        # 昨日或今日低點回測 10MA 或 20MA (誤差 2.5% 內) 且守住 20MA
+        pullback_to_ma = (
+            ( yesterday['Low'] <= yesterday['MA10'] * 1.02 or yesterday['Low'] <= yesterday['MA20'] * 1.025 or
+              today['Low'] <= today['MA10'] * 1.02 or today['Low'] <= today['MA20'] * 1.025 ) and
+            today['Close'] > today['MA20'] and yesterday['Close'] >= yesterday['MA20'] * 0.98
+        )
+        # 整理期間量縮，且今日轉強收紅突破昨日高點 (網球反彈確認)
+        vol_contracted = yesterday['Volume'] < yesterday['Vol_20MA']
+        tennis_bounce = (
+            today['Close'] > yesterday['High'] and
+            today['Close'] > today['Open'] and
+            close_pos >= 0.60 and
+            today['Volume'] >= yesterday['Volume'] * 1.15 and
+            today['Volume'] >= 800000
         )
 
-        # --- S5：投信作帳VCP (嚴格版：Stage 2 + 15日震幅<=10% + 量縮至均量65%以下) ---
-        past_15_days = df.iloc[-16:-1]
-        if not past_15_days.empty:
-            box_15_high = past_15_days['High'].max()
-            box_15_low = past_15_days['Low'].min()
-            vcp_contraction = (box_15_high - box_15_low) / box_15_low if box_15_low > 0 else 1.0
+        if stage2_trend and rs_strong and was_leader and pullback_to_ma and vol_contracted and tennis_bounce:
+            passed_strats.append("S4_強勢回測網球")
 
-            if (stage2_trend and
-                today['Close'] >= (high_1y * 0.80) and
+        # --- 【進化 3】S5：投信作帳VCP (真VCP：左半部T1 > 右半部T2波幅遞減 + 窒息量) ---
+        t1_df = df.iloc[-31:-16] # 左半部 (前 30~16 日)
+        t2_df = df.iloc[-16:-1]  # 右半部 (近 15 日)
+        if not t1_df.empty and not t2_df.empty:
+            t1_high, t1_low = t1_df['High'].max(), t1_df['Low'].min()
+            t2_high, t2_low = t2_df['High'].max(), t2_df['Low'].min()
+            t1_range = (t1_high - t1_low) / t1_low if t1_low > 0 else 1.0
+            t2_range = (t2_high - t2_low) / t2_low if t2_low > 0 else 1.0
+
+            # 真 VCP 條件：右半部震幅 <= 左半部的 75% (波幅明確收斂)，且近15日震幅 <= 10%
+            true_vcp = (t2_range <= t1_range * 0.75) and (t2_range <= 0.10)
+            # 樞紐點量縮：今日量 <= 50MA 的 65% 或 5日均量 <= 50MA 的 70%
+            vdu_pass = (today['Volume'] <= 0.65 * today['Vol_50MA']) or (today['Vol_5MA'] <= 0.70 * today['Vol_50MA'])
+
+            if (stage2_trend and rs_strong and
+                today['Close'] >= (high_1y * 0.85) and
                 today['Close'] >= today['MA20'] * 0.98 and
-                vcp_contraction <= 0.10 and
-                today['Volume'] <= (0.65 * today['Vol_50MA']) and
-                today['Vol_50MA'] >= 1000000):
+                true_vcp and vdu_pass and
+                today['Vol_50MA'] >= 800000):
                 passed_strats.append("S5_投信作帳VCP")
 
-        # --- S6：營收口袋樞紐 (嚴格版：Stage 2 + 量>10日最大黑K量 & >1.5倍均量 + 漲幅>=3%收高) ---
+        # --- S6：營收口袋樞紐 (Stage 2基底 + RS轉強 + 量>10日最大黑K量 + 收盤位階>=65%) ---
         past_10_days = df.iloc[-11:-1]
         down_days = past_10_days[past_10_days['Close'] < past_10_days['Open']]
         max_down_vol = down_days['Volume'].max() if not down_days.empty else 0
-        day_range = today['High'] - today['Low']
-        close_pos = (today['Close'] - today['Low']) / day_range if day_range > 0 else 0
 
-        if (stage2_trend and
-            today['Close'] >= (high_1y * 0.80) and
+        # 口袋樞紐允許在 50MA 附近起漲，故檢查 MA150 與 MA200 多頭排列
+        stage2_pocket_base = (
+            today['Close'] > today['MA150'] > today['MA200'] and
+            today['MA50'] > today['MA150'] and
+            today['MA200'] > df['MA200'].iloc[-20] and
+            today['Close'] >= (high_1y * 0.85) and
+            today['Close'] >= 25.0
+        )
+
+        if (stage2_pocket_base and rs_strong and
             today['Close'] > today['MA20'] and
             (today['Close'] - today['MA20']) / today['MA20'] <= 0.06 and
             (today['Close'] - yesterday['Close']) / yesterday['Close'] >= 0.03 and
             close_pos >= 0.65 and
             today['Volume'] > max_down_vol and
             today['Volume'] >= 1.5 * today['Vol_50MA'] and
-            today['Volume'] >= 1500000):
+            today['Volume'] >= 1200000):
             passed_strats.append("S6_營收口袋樞紐")
 
-        # --- S7：漲停強勢旗形 (嚴格版：40日漲55% + 曾漲停 + 近10日窄幅旗面<=12% + 量縮守高檔) ---
+        # --- S7：漲停強勢旗形 (40日漲55% + 曾漲停 + 近10日窄幅旗面<=12% + 量縮守高檔) ---
         past_40_days_df = df.iloc[-41:-1]
         low_40 = past_40_days_df['Low'].min()
         high_40 = past_40_days_df['High'].max()
@@ -262,7 +335,7 @@ def check_technical(ticker):
         flag_low = past_10_flag['Low'].min()
         flag_tightness = (flag_high - flag_low) / flag_low if flag_low > 0 else 1.0
 
-        if (stage2_trend and
+        if (stage2_trend and rs_strong and
             low_40 > 0 and high_40 >= low_40 * 1.55 and
             has_limit_up and
             today['Close'] >= high_40 * 0.92 and
@@ -284,6 +357,7 @@ def check_technical(ticker):
             '收盤價': round(today['Close'], 2),
             '成交量(張)': int(today['Volume'] / 1000),
             '距年高點跌幅': f"{drop_pct}%",
+            'RS創高': rs_new_high,
             'strats': passed_strats
         }
     except Exception as e:
@@ -332,12 +406,14 @@ def check_revenue(stock_dict):
         return evaluate_strats(rev['mom'], rev['yoy'], True)
 
     start_date = (datetime.datetime.now() - datetime.timedelta(days=400)).strftime('%Y-%m-%d')
-    token_param = f"&token={FINMIND_TOKEN}" if FINMIND_TOKEN else ""
-    url = f"https://api.finmindtrade.com/api/v4/data?dataset=TaiwanStockMonthRevenue&data_id={ticker}&start_date={start_date}{token_param}"
+    url = f"https://api.finmindtrade.com/api/v4/data?dataset=TaiwanStockMonthRevenue&data_id={ticker}&start_date={start_date}"
+    headers = {"User-Agent": "Mozilla/5.0"}
+    if FINMIND_TOKEN:
+        headers["Authorization"] = f"Bearer {FINMIND_TOKEN}"
 
     try:
         time.sleep(0.3)
-        res = requests.get(url, timeout=5).json()
+        res = requests.get(url, headers=headers, timeout=5).json()
         if 'data' not in res or len(res['data']) < 13:
             return evaluate_strats(0, 0, False)
         df = pd.DataFrame(res['data'])
@@ -359,13 +435,14 @@ def check_revenue(stock_dict):
 
 def check_chips(stock_dict):
     """
-    籌碼濾網：
+    【進化 4】籌碼濃度雙軌濾網 (兼顧大型股張數與中小型股成交量佔比)：
     - S1_底部突破：今日外資 > 0 或 今日投信 > 0
-    - S3_投信認養：投信連兩日買超 且 今日投信 >= 100張
-    - S5_投信作帳VCP：投信近 3 日合計買超 >= 300 張 且 今日投信 >= 0 張
+    - S3_投信認養：投信連兩買 且 (今日買超 >= 100張 或 佔今日成交量 >= 4%)
+    - S5_投信作帳VCP：投信今日不賣超 且 (近3日合計 >= 200張 或 佔今日成交量 >= 8%)
     """
     global DEBUG_CHIPS_COUNT
     ticker = stock_dict['代碼']
+    today_vol_lots = stock_dict.get('成交量(張)', 1)
     strats = stock_dict['strats'].copy()
 
     chip_strats = ["S1_底部突破", "S3_投信認養", "S5_投信作帳VCP"]
@@ -373,8 +450,10 @@ def check_chips(stock_dict):
         return stock_dict
 
     start_date = (datetime.datetime.now() - datetime.timedelta(days=20)).strftime('%Y-%m-%d')
-    token_param = f"&token={FINMIND_TOKEN}" if FINMIND_TOKEN else ""
-    url = f"https://api.finmindtrade.com/api/v4/data?dataset=TaiwanStockInstitutionalInvestorsBuySell&data_id={ticker}&start_date={start_date}{token_param}"
+    url = f"https://api.finmindtrade.com/api/v4/data?dataset=TaiwanStockInstitutionalInvestorsBuySell&data_id={ticker}&start_date={start_date}"
+    headers = {"User-Agent": "Mozilla/5.0"}
+    if FINMIND_TOKEN:
+        headers["Authorization"] = f"Bearer {FINMIND_TOKEN}"
 
     def fail_chip():
         rem_strats = [s for s in strats if s not in chip_strats]
@@ -383,12 +462,12 @@ def check_chips(stock_dict):
 
     try:
         time.sleep(0.5)
-        res = requests.get(url, timeout=10)
+        res = requests.get(url, headers=headers, timeout=10)
         res_json = res.json()
 
         if 'msg' in res_json and 'limit' in res_json['msg'].lower():
             if DEBUG_CHIPS_COUNT < 3:
-                print(f"\n🔍 [Debug] {ticker} 失敗：FinMind API 額度已滿！請確認 Token。")
+                print(f"\n🔍 [Debug] {ticker} 失敗：FinMind API 額度已滿！")
                 DEBUG_CHIPS_COUNT += 1
             return fail_chip()
         if 'data' not in res_json or not res_json['data']:
@@ -413,23 +492,27 @@ def check_chips(stock_dict):
         t_t1 = sum(pivot.loc[t1, c] for c in trust_cols) if trust_cols else 0
         t_3d_sum = pivot.loc[recent_3_dates, trust_cols].sum().sum() if trust_cols else 0
 
+        # 計算投信買超佔今日成交量濃度 (%)
+        trust_t0_ratio = (t_t0 / today_vol_lots) * 100 if today_vol_lots > 0 else 0
+        trust_3d_ratio = (t_3d_sum / today_vol_lots) * 100 if today_vol_lots > 0 else 0
+
         # S1 籌碼驗證
         s1_pass = (f_t0 > 0) or (t_t0 > 0)
         if "S1_底部突破" in strats and not s1_pass:
             strats.remove("S1_底部突破")
 
-        # S3 籌碼驗證
-        s3_pass = (t_t0 > 0 and t_t1 > 0) and (t_t0 >= 100)
+        # S3 籌碼驗證 (雙軌制：買超 >= 100張 或 買盤濃度 >= 4%)
+        s3_pass = (t_t0 > 0 and t_t1 > 0) and (t_t0 >= 100 or trust_t0_ratio >= 4.0)
         if "S3_投信認養" in strats and not s3_pass:
             strats.remove("S3_投信認養")
 
-        # S5 籌碼驗證：近 3 日投信合計買超 >= 300 張 且 今日不賣超
-        s5_pass = (t_3d_sum >= 300) and (t_t0 >= 0)
+        # S5 籌碼驗證 (雙軌制：3日買超 >= 200張 或 3日買盤佔今日量 >= 8%，且今日不賣超)
+        s5_pass = (t_t0 >= 0) and (t_3d_sum >= 200 or trust_3d_ratio >= 8.0)
         if "S5_投信作帳VCP" in strats and not s5_pass:
             strats.remove("S5_投信作帳VCP")
 
         stock_dict['外資動向'] = f"今:{int(f_t0)}張"
-        stock_dict['投信動向'] = f"今:{int(t_t0)}張(3日:{int(t_3d_sum)})"
+        stock_dict['投信動向'] = f"今:{int(t_t0)}張({trust_t0_ratio:.1f}%)"
         stock_dict['strats'] = strats
 
         return stock_dict if strats else None
@@ -438,6 +521,41 @@ def check_chips(stock_dict):
             print(f"\n🔍 [Debug] {ticker} 籌碼運算異常: {e}")
             DEBUG_CHIPS_COUNT += 1
         return fail_chip()
+
+def enrich_with_resonance(final_stocks):
+    """【進化 6】串聯週轉折與集保大戶資料庫，加上皇冠共振標記"""
+    for stock in final_stocks:
+        code = str(stock['代碼'])
+        resonance_tags = []
+
+        # 1. 檢查是否為 RS 領先創高股
+        if stock.get('RS創高'):
+            resonance_tags.append("⚡RS創高")
+
+        # 2. 檢查是否同時在「週轉折強勢股」名單中
+        if code in WEEKLY_TURN_SET:
+            resonance_tags.append("👑週轉折共振")
+
+        # 3. 檢查集保 400張 / 1000張 大戶持股比例是否增加
+        if code in HOLDERS_DATA:
+            h_info = HOLDERS_DATA[code]
+            p400_list = h_info.get('p400', [])
+            p1000_list = h_info.get('p1000', [])
+            if len(p400_list) >= 2:
+                diff_400 = round(p400_list[-1] - p400_list[-2], 2)
+                diff_1000 = round(p1000_list[-1] - p1000_list[-2], 2) if len(p1000_list) >= 2 else 0
+                if diff_400 > 0 or diff_1000 > 0:
+                    resonance_tags.append(f"🐳大戶增持(+{max(diff_400, diff_1000)}%)")
+            elif len(p400_list) == 1 and p400_list[0] >= 60.0:
+                resonance_tags.append(f"🐳高籌碼集中({p400_list[0]}%)")
+
+        stock['共振標記'] = resonance_tags
+        # 亦將共振標籤附加進 strats 陣列末端，讓前端卡片與歷史表格自動渲染出徽章！
+        for tag in resonance_tags:
+            if tag not in stock['strats']:
+                stock['strats'].append(tag)
+
+    return final_stocks
 
 def update_and_save_json(final_stocks):
     """將今日選股存成 JSON，並自動更新舊股票的歷史報價與績效"""
@@ -452,8 +570,11 @@ def update_and_save_json(final_stocks):
     history_file = "data/history.json"
     history_data = {}
     if os.path.exists(history_file):
-        with open(history_file, "r", encoding="utf-8") as f:
-            history_data = json.load(f)
+        try:
+            with open(history_file, "r", encoding="utf-8") as f:
+                history_data = json.load(f)
+        except:
+            history_data = {}
 
     historical_tickers = list(history_data.keys())
     if historical_tickers:
@@ -502,13 +623,14 @@ def update_and_save_json(final_stocks):
 # ================= 主程式執行 =================
 if __name__ == "__main__":
     check_market_regime()
+    load_auxiliary_databases()
     fetch_all_revenue()
 
     print("\n⏳ 步驟 1: 獲取全市場股票清單 (包含名稱)...")
     all_tickers = get_tw_stocks()
     print(f"✅ 共獲取 {len(all_tickers)} 檔股票。")
 
-    print("\n🚀 步驟 2: 啟動多執行緒掃描技術面 (S1 ~ S7 嚴格版)...")
+    print("\n🚀 步驟 2: 啟動多執行緒掃描技術面 (S1 ~ S7 大師進化版)...")
     passed_technical = []
 
     with ThreadPoolExecutor(max_workers=5) as executor:
@@ -518,10 +640,6 @@ if __name__ == "__main__":
             if result: passed_technical.append(result)
 
     print(f"\n🔍 【階段一：技術面初篩完成】共 {len(passed_technical)} 檔")
-    if passed_technical:
-        tech_df = pd.DataFrame(passed_technical)
-        tech_df['符合策略'] = tech_df['strats'].apply(lambda x: ", ".join(x))
-        print(tech_df[['代碼', '名稱', '市場', '收盤價', '成交量(張)', '符合策略']].sort_values(by='成交量(張)', ascending=False).to_string(index=False))
     print("-" * 50)
 
     print(f"\n📊 步驟 3: 針對 {len(passed_technical)} 檔初篩名單進行【月營收】驗證...")
@@ -531,21 +649,16 @@ if __name__ == "__main__":
         if rev_result: passed_revenue.append(rev_result)
 
     print(f"\n🔍 【階段二：營收驗證完成】進入籌碼審查前，共 {len(passed_revenue)} 檔")
-    if passed_revenue:
-        rev_df = pd.DataFrame(passed_revenue)
-        rev_df['符合策略'] = rev_df['strats'].apply(lambda x: ", ".join(x))
-        rev_df.fillna('-', inplace=True)
-        cols = ['代碼', '名稱', '收盤價', '成交量(張)']
-        if 'MoM' in rev_df.columns: cols.extend(['MoM', 'YoY'])
-        cols.append('符合策略')
-        print(rev_df[cols].sort_values(by='成交量(張)', ascending=False).to_string(index=False))
     print("-" * 50)
 
-    print(f"\n🏦 步驟 4: 針對 {len(passed_revenue)} 檔名單進行【法人籌碼】驗證...")
+    print(f"\n🏦 步驟 4: 針對 {len(passed_revenue)} 檔名單進行【法人籌碼濃度】驗證...")
     final_stocks = []
     for stock in tqdm(passed_revenue, desc="籌碼面掃描"):
         chip_result = check_chips(stock)
         if chip_result: final_stocks.append(chip_result)
+
+    # 步驟 5: 進行週轉折與大戶籌碼共振加冕
+    final_stocks = enrich_with_resonance(final_stocks)
 
     # ================= 整理結果與發送 =================
     print("\n========== 🎯 七大策略最終篩選結果 ==========")
@@ -556,7 +669,7 @@ if __name__ == "__main__":
         "S1_底部突破": [], 
         "S2_創高動能": [], 
         "S3_投信認養": [], 
-        "S4_恐慌抄底": [],
+        "S4_強勢回測網球": [],
         "S5_投信作帳VCP": [],
         "S6_營收口袋樞紐": [],
         "S7_漲停強勢旗形": []
@@ -567,7 +680,7 @@ if __name__ == "__main__":
                 results_by_strat[s].append(stock)
 
     today_str = datetime.datetime.now().strftime("%Y-%m-%d")
-    notify_msg = f"## 📊 【{today_str} 台股七核心選股報告】\n*整合《超級績效》Stage 2 趨勢樣板、VCP、口袋樞紐與強勢旗形*\n"
+    notify_msg = f"## 📊 【{today_str} 台股七核心選股報告】\n*整合 RS相對強度、真VCP、網球回測與大戶週轉折共振*\n"
 
     for strat_name, stocks in results_by_strat.items():
         print(f"\n📁 【{strat_name}】符合標的：{len(stocks)} 檔")
@@ -589,7 +702,12 @@ if __name__ == "__main__":
         print(df.to_string(index=False))
 
         for _, row in df.iterrows():
-            notify_msg += f"**📌 {row['代碼']} {row['名稱']} ({row['市場']})**\n"
+            # 找出該股票的共振標籤
+            orig_stock = next((x for x in stocks if x['代碼'] == row['代碼']), {})
+            res_tags = " ".join([f"`{t}`" for t in orig_stock.get('共振標記', [])])
+            title_line = f"**📌 {row['代碼']} {row['名稱']} ({row['市場']})** {res_tags}".strip()
+            
+            notify_msg += f"{title_line}\n"
             notify_msg += f"> 收盤: `{row['收盤價']}` ｜ 量: `{row['成交量(張)']}張` ｜ 距高: `{row['距年高點跌幅']}`\n"
             if 'MoM' in row:
                 notify_msg += f"> 營收: MoM `{row['MoM']}` ｜ YoY `{row['YoY']}`\n"
