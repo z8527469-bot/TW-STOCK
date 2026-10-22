@@ -357,7 +357,7 @@ def check_technical(ticker):
             '收盤價': round(today['Close'], 2),
             '成交量(張)': int(today['Volume'] / 1000),
             '距年高點跌幅': f"{drop_pct}%",
-            'RS創高': rs_new_high,
+            'RS創高': bool(rs_new_high),
             'strats': passed_strats
         }
     except Exception as e:
@@ -565,7 +565,7 @@ def update_and_save_json(final_stocks):
 
     daily_data = {"date": today_str, "picks": final_stocks}
     with open("data/daily_picks.json", "w", encoding="utf-8") as f:
-        json.dump(daily_data, f, ensure_ascii=False, indent=4)
+        json.dump(daily_data, f, ensure_ascii=False, indent=4, default=str)
 
     history_file = "data/history.json"
     history_data = {}
@@ -616,7 +616,7 @@ def update_and_save_json(final_stocks):
             })
 
     with open(history_file, "w", encoding="utf-8") as f:
-        json.dump(history_data, f, ensure_ascii=False, indent=4)
+        json.dump(history_data, f, ensure_ascii=False, indent=4, default=str)
         
     print("✅ JSON 資料庫更新完成！")
 
