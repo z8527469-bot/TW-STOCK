@@ -1075,6 +1075,14 @@
             "entry_price": 50.6,
             "current_price": 50.6,
             "return_pct": 0.0
+        },
+        {
+            "name": "大成鋼",
+            "pick_date": "2026-10-23",
+            "strategies": "S4_強勢回測網球, 👑週轉折共振, 🐳大戶增持(+0.62%)",
+            "entry_price": 50.6,
+            "current_price": 50.6,
+            "return_pct": 0.0
         }
     ],
     "2104.TW": [
@@ -1275,6 +1283,14 @@
             "entry_price": 158.0,
             "current_price": 158.0,
             "return_pct": 0.0
+        },
+        {
+            "name": "中華電",
+            "pick_date": "2026-10-23",
+            "strategies": "S3_投信認養, S4_強勢回測網球, 👑週轉折共振, 🐳大戶增持(+0.29%)",
+            "entry_price": 158.0,
+            "current_price": 158.0,
+            "return_pct": 0.0
         }
     ],
     "2886.TW": [
@@ -1289,6 +1305,14 @@
         {
             "name": "兆豐金",
             "pick_date": "2026-10-22",
+            "strategies": "S4_強勢回測網球, 👑週轉折共振, 🐳大戶增持(+0.25%)",
+            "entry_price": 55.2,
+            "current_price": 55.2,
+            "return_pct": 0.0
+        },
+        {
+            "name": "兆豐金",
+            "pick_date": "2026-10-23",
             "strategies": "S4_強勢回測網球, 👑週轉折共振, 🐳大戶增持(+0.25%)",
             "entry_price": 55.2,
             "current_price": 55.2,
@@ -1583,6 +1607,14 @@
             "entry_price": 149.5,
             "current_price": 149.5,
             "return_pct": 0.0
+        },
+        {
+            "name": "天品",
+            "pick_date": "2026-10-23",
+            "strategies": "S4_強勢回測網球, ⚡RS創高, 🐳大戶增持(+1.74%)",
+            "entry_price": 149.5,
+            "current_price": 149.5,
+            "return_pct": 0.0
         }
     ],
     "6214.TW": [
@@ -1592,6 +1624,24 @@
             "strategies": "S4_強勢回測網球, ⚡RS創高, 👑週轉折共振",
             "entry_price": 201.0,
             "current_price": 201.0,
+            "return_pct": 0.0
+        },
+        {
+            "name": "精誠",
+            "pick_date": "2026-10-23",
+            "strategies": "S4_強勢回測網球, ⚡RS創高, 👑週轉折共振",
+            "entry_price": 201.0,
+            "current_price": 201.0,
+            "return_pct": 0.0
+        }
+    ],
+    "6902.TW": [
+        {
+            "name": "GOGOLOOK",
+            "pick_date": "2026-10-23",
+            "strategies": "S2_創高動能, ⚡RS創高, 🐳大戶增持(+0.01%)",
+            "entry_price": 166.0,
+            "current_price": 166.0,
             "return_pct": 0.0
         }
     ]
