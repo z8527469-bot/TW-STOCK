@@ -1029,8 +1029,8 @@
             "pick_date": "2026-10-14",
             "strategies": "S1_底部突破",
             "entry_price": 12.9,
-            "current_price": 12.9,
-            "return_pct": 0.0
+            "current_price": 11.2,
+            "return_pct": -13.18
         }
     ],
     "1815.TWO": [
@@ -1039,24 +1039,24 @@
             "pick_date": "2026-10-14",
             "strategies": "S2_創高動能",
             "entry_price": 134.0,
-            "current_price": 134.0,
-            "return_pct": 0.0
+            "current_price": 139.0,
+            "return_pct": 3.73
         },
         {
             "name": "富喬",
             "pick_date": "2026-10-16",
             "strategies": "S2_創高動能",
             "entry_price": 140.0,
-            "current_price": 140.0,
-            "return_pct": 0.0
+            "current_price": 139.0,
+            "return_pct": -0.71
         },
         {
             "name": "富喬",
             "pick_date": "2026-10-19",
             "strategies": "S2_創高動能",
             "entry_price": 154.0,
-            "current_price": 154.0,
-            "return_pct": 0.0
+            "current_price": 139.0,
+            "return_pct": -9.74
         }
     ],
     "2027.TW": [
@@ -1195,8 +1195,8 @@
             "pick_date": "2026-10-14",
             "strategies": "S1_底部突破",
             "entry_price": 183.5,
-            "current_price": 183.5,
-            "return_pct": 0.0
+            "current_price": 156.5,
+            "return_pct": -14.71
         }
     ],
     "3580.TWO": [
