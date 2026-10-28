@@ -705,8 +705,10 @@
             "pick_date": "2026-10-12",
             "strategies": "S2_創高動能",
             "entry_price": 65.3,
-            "current_price": 65.3,
-            "return_pct": 0.0
+            "current_price": NaN,
+            "return_pct": NaN,
+            "highest_price": 65.3,
+            "max_return_pct": 0.0
         }
     ],
     "6156.TWO": [
@@ -1661,10 +1663,10 @@
         {
             "name": "精誠",
             "pick_date": "2026-10-22",
-            "strategies": "S4_強勢回測網球, ⚡RS創高, 👑週轉折共振",
+            "strategies": "S4_強勢回測網球, ⚡RS創高, 👑週轉折共振, S2_創高動能",
             "entry_price": 201.0,
-            "current_price": 201.0,
-            "return_pct": 0.0
+            "current_price": 203.0,
+            "return_pct": 1.0
         },
         {
             "name": "精誠",
