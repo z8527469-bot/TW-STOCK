@@ -29,11 +29,13 @@ HOLDERS_DATA = {}
 error_count = 0
 DEBUG_CHIPS_COUNT = 0
 MARKET_BULL = True
+LATEST_MARKET_DATE = None  # 記錄大盤最新交易日，作為資料新鮮度基準
+STALE_COUNT = 0            # 記錄被 YF 延遲沒更新的股票數量
 
 def check_market_regime():
     """建立大盤環境濾網，並儲存大盤收盤價序列供 RS 相對強度線計算"""
-    global MARKET_BULL, TWII_SERIES
-    print("⏳ 正在判斷大盤趨勢環境並建立 RS 基準線...")
+    global MARKET_BULL, TWII_SERIES, LATEST_MARKET_DATE
+    print("⏳ 正在判斷大盤趨勢環境並建立基準線...")
     try:
         twii = yf.Ticker('^TWII').history(period="2y")
         if twii.empty:
@@ -42,6 +44,8 @@ def check_market_regime():
         if not twii.empty:
             twii.index = pd.to_datetime(twii.index).tz_localize(None).normalize()
             TWII_SERIES = twii['Close']
+            LATEST_MARKET_DATE = twii.index[-1]  # 記錄大盤最新日期
+            print(f"📌 大盤基準日期已鎖定為: {LATEST_MARKET_DATE.strftime('%Y-%m-%d')}")
 
         if len(twii) > 200:
             twii['MA50'] = twii['Close'].rolling(window=50).mean()
@@ -123,16 +127,13 @@ def fetch_all_revenue():
                                 REVENUE_DATA[code] = {'yoy': 0.0, 'mom': 0.0}
                         break
                     except Exception as e:
-                        print(f"⚠️ {market}營收解析失敗 ({e})")
+                        pass
                 else:
-                    print(f"⚠️ {market}營收連線拒絕 (狀態碼 {res.status_code})")
+                    pass
             except Exception as e:
-                print(f"⚠️ {market}營收下載中斷: {e}")
-
+                pass
             if attempt < max_retries - 1:
                 time.sleep(2)
-            else:
-                print(f"❌ {market}營收下載失敗，後續將自動轉由 FinMind 補查。")
 
     if REVENUE_DATA:
         print(f"✅ 成功下載 {len(REVENUE_DATA)} 檔股票的月營收資料！")
@@ -158,7 +159,7 @@ def get_tw_stocks():
 
 
 def check_technical(ticker):
-    global error_count
+    global error_count, STALE_COUNT
     try:
         time.sleep(random.uniform(0.1, 0.3))
         stock = yf.Ticker(ticker)
@@ -167,6 +168,14 @@ def check_technical(ticker):
         if df.empty or len(df) < 252: return None
         df = df.dropna()
         df.index = pd.to_datetime(df.index).tz_localize(None).normalize()
+
+        # ==========================================
+        # 🛡️ 資料延遲防呆過濾
+        # 如果該檔股票的最新 K 線日期落後於大盤，代表 YF 尚未更新這檔股票，直接跳過！
+        if LATEST_MARKET_DATE is not None and df.index[-1] < LATEST_MARKET_DATE:
+            STALE_COUNT += 1
+            return None
+        # ==========================================
 
         df['MA5'] = df['Close'].rolling(window=5).mean()
         df['MA10'] = df['Close'].rolling(window=10).mean()
@@ -200,7 +209,7 @@ def check_technical(ticker):
                 rs_strong = bool((df['RS_Line'].iloc[-1] > df['RS_MA20'].iloc[-1]) and (df['RS_Line'].iloc[-1] > df['RS_Line'].iloc[-10]))
                 rs_new_high = bool(df['RS_Line'].iloc[-1] >= (df['RS_Line'].iloc[-60:].max() * 0.98))
 
-        # 2. 當日 K 棒收盤位階 (Close Position)，避免長上影線隔日沖陷阱
+        # 2. 當日 K 棒收盤位階 (Close Position)
         day_range = today['High'] - today['Low']
         close_pos = float((today['Close'] - today['Low']) / day_range) if day_range > 0 else 0.0
 
@@ -214,7 +223,7 @@ def check_technical(ticker):
 
         passed_strats = []
 
-        # S1：底部突破 (含大盤濾網 + RS領先 + 收盤位階>=65%)
+        # S1：底部突破
         past_40_days_close = df['Close'].iloc[-41:-1]
         box_high, box_low = past_40_days_close.max(), past_40_days_close.min()
         ma_yest = [yesterday['MA5'], yesterday['MA20'], yesterday['MA60']]
@@ -232,7 +241,7 @@ def check_technical(ticker):
             today['Volume'] >= (1.5 * today['Vol_20MA'])):
             passed_strats.append("S1_底部突破")
 
-        # S2：創高動能 (Stage 2 + RS強勢 + 收盤位階>=65%)
+        # S2：創高動能
         if (stage2_trend and rs_strong and
             today['Close'] > today['MA20'] and
             today['Close'] >= (high_1y * 0.85) and
@@ -243,7 +252,7 @@ def check_technical(ticker):
             today['Volume'] >= 1000000):
             passed_strats.append("S2_創高動能")
 
-        # S3：投信認養 (RS轉強 + 實體紅K收高>=65%)
+        # S3：投信認養
         if (rs_strong and
             today['Close'] > today['MA20'] and today['MA20'] > yesterday['MA20'] and
             (today['Close'] - today['MA20']) / today['MA20'] <= 0.10 and
@@ -252,7 +261,7 @@ def check_technical(ticker):
             close_pos >= 0.65):
             passed_strats.append("S3_投信認養")
 
-        # S4：強勢回測網球 (Stage 2 龍頭回測 10MA/20MA 彈起)
+        # S4：強勢回測網球
         high_120d = df['High'].iloc[-120:].max()
         recent_15d_high = df['High'].iloc[-16:-1].max()
         was_leader = recent_15d_high >= (high_120d * 0.95)
@@ -274,7 +283,7 @@ def check_technical(ticker):
         if stage2_trend and rs_strong and was_leader and pullback_to_ma and vol_contracted and tennis_bounce:
             passed_strats.append("S4_強勢回測網球")
 
-        # S5：投信作帳VCP (真VCP：波幅收斂 T2 <= T1*0.75 且 T2 <= 10%)
+        # S5：投信作帳VCP
         t1_df = df.iloc[-31:-16]
         t2_df = df.iloc[-16:-1]
         if not t1_df.empty and not t2_df.empty:
@@ -533,11 +542,7 @@ def enrich_with_resonance(final_stocks):
 
 def update_and_save_json(final_stocks):
     """
-    更新選股紀錄與歷史績效：
-    - 改抓 5 日以克服收盤時間戳與延遲問題
-    - 新增 highest_price 與 max_return_pct 追蹤真實波段漲幅
-    - 7 日內重複入選改為合併標籤，保護原始買點
-    - 加入 default=str 徹底消除 JSON 序列化例外
+    更新選股紀錄與歷史績效
     """
     print("\n💾 正在更新選股紀錄與歷史績效...")
     os.makedirs("data", exist_ok=True)
@@ -555,7 +560,6 @@ def update_and_save_json(final_stocks):
             with open(history_file, "r", encoding="utf-8") as f:
                 history_data = json.load(f)
         except Exception as e:
-            print(f"⚠️ history.json 讀取重設: {e}")
             history_data = {}
 
     historical_tickers = list(history_data.keys())
@@ -583,7 +587,6 @@ def update_and_save_json(final_stocks):
                         entry_p = float(record['entry_price'])
                         record['return_pct'] = round((latest_price - entry_p) / entry_p * 100, 2)
                         
-                        # 追蹤入選以來的最高價與最大潛在報酬 (MFE)
                         prev_highest = float(record.get('highest_price', entry_p))
                         curr_highest = max(prev_highest, latest_price, recent_high or latest_price)
                         record['highest_price'] = round(curr_highest, 2)
@@ -603,7 +606,6 @@ def update_and_save_json(final_stocks):
             try:
                 pick_dt = datetime.datetime.strptime(record['pick_date'], "%Y-%m-%d")
                 days_diff = (today_dt - pick_dt).days
-                # 7 日內再度入選，更新其策略標籤，不洗板覆蓋發動價
                 if 0 <= days_diff <= 7:
                     existing_strats = [s.strip() for s in record['strategies'].split(',') if s.strip()]
                     merged_strats = list(dict.fromkeys(existing_strats + stock['strats']))
@@ -635,15 +637,18 @@ def update_and_save_json(final_stocks):
 
 # ================= 主程式執行 =================
 if __name__ == "__main__":
-# --- 新增：資料新鮮度探測 ---
+    # --- 新增：資料新鮮度探測 ---
     print("\n📡 正在檢查 Yahoo Finance 資料庫新鮮度...")
-    test_df = yf.Ticker("2330.TW").history(period="5d")
-    if not test_df.empty:
-        latest_date = test_df.index[-1].strftime("%Y-%m-%d")
-        print(f"📌 目前 YF 伺服器最新的台股 K 線日期為: {latest_date}")
-        today_str = datetime.datetime.now().strftime("%Y-%m-%d")
-        if latest_date != today_str:
-            print(f"⚠️ 警告：今天已經是 {today_str}，但 YF 資料還停留在 {latest_date}！選股結果可能為昨日舊資料。")
+    try:
+        test_df = yf.Ticker("2330.TW").history(period="5d")
+        if not test_df.empty:
+            latest_date_str = test_df.index[-1].strftime("%Y-%m-%d")
+            print(f"📌 目前 YF 伺服器最新的台股 K 線日期為: {latest_date_str}")
+            today_str = datetime.datetime.now().strftime("%Y-%m-%d")
+            if latest_date_str != today_str:
+                print(f"⚠️ 警告：今天已經是 {today_str}，但 YF 資料還停留在 {latest_date_str}！\n")
+    except Exception as e:
+        print(f"⚠️ 探測失敗: {e}\n")
     # --------------------------
 
     check_market_regime()
@@ -738,5 +743,11 @@ if __name__ == "__main__":
                 notify_msg += f"> 籌碼: 外資 `{row['外資動向']}` ｜ 投信 `{row['投信動向']}`\n"
         notify_msg += "───────────────\n"
 
-    send_discord_webhook(DISCORD_WEBHOOK_URL, notify_msg)
+    # 新增：若有延遲股票，發送警告通知
+    if STALE_COUNT > 0:
+        warning_msg = f"\n⚠️ 系統警告：今日共有 {STALE_COUNT} 檔股票因 Yahoo Finance 延遲未更新（停留在舊日期），已被防呆機制強制排除！\n💡 建議：請將 GitHub Actions 排程延後至台灣時間晚上 8 點以後執行。"
+        print(warning_msg)
+        notify_msg += warning_msg
+
+    send_discord_webhook(DISCORD_WEBHOOK_URL, {"content": notify_msg})
     print("\n✅ 選股作業結束，JSON 資料庫已更新，通知已發送至 Discord！")
