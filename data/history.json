@@ -1,1 +1,146 @@
-{}
+{
+    "2031.TW": [
+        {
+            "name": "新光鋼",
+            "pick_date": "2026-10-28",
+            "strategies": "S2_創高動能, S4_強勢回測網球, ⚡RS創高, 🐳大戶增持(+0.51%)",
+            "entry_price": 48.8,
+            "current_price": 48.8,
+            "highest_price": 48.8,
+            "return_pct": 0.0,
+            "max_return_pct": 0.0
+        }
+    ],
+    "2347.TW": [
+        {
+            "name": "聯強",
+            "pick_date": "2026-10-28",
+            "strategies": "S4_強勢回測網球, ⚡RS創高, 🐳大戶增持(+0.08%)",
+            "entry_price": 102.0,
+            "current_price": 102.0,
+            "highest_price": 102.0,
+            "return_pct": 0.0,
+            "max_return_pct": 0.0
+        }
+    ],
+    "2520.TW": [
+        {
+            "name": "冠德",
+            "pick_date": "2026-10-28",
+            "strategies": "S2_創高動能, S4_強勢回測網球, ⚡RS創高, 🐳大戶增持(+0.05%)",
+            "entry_price": 38.1,
+            "current_price": 38.1,
+            "highest_price": 38.1,
+            "return_pct": 0.0,
+            "max_return_pct": 0.0
+        }
+    ],
+    "2603.TW": [
+        {
+            "name": "長榮",
+            "pick_date": "2026-10-28",
+            "strategies": "S4_強勢回測網球, ⚡RS創高, 🐳大戶增持(+0.14%)",
+            "entry_price": 261.5,
+            "current_price": 261.5,
+            "highest_price": 261.5,
+            "return_pct": 0.0,
+            "max_return_pct": 0.0
+        }
+    ],
+    "3010.TW": [
+        {
+            "name": "華立",
+            "pick_date": "2026-10-28",
+            "strategies": "S4_強勢回測網球, ⚡RS創高, 🐳大戶增持(+0.61%)",
+            "entry_price": 137.0,
+            "current_price": 137.0,
+            "highest_price": 137.0,
+            "return_pct": 0.0,
+            "max_return_pct": 0.0
+        }
+    ],
+    "3034.TW": [
+        {
+            "name": "聯詠",
+            "pick_date": "2026-10-28",
+            "strategies": "S4_強勢回測網球, ⚡RS創高, 🐳大戶增持(+0.33%)",
+            "entry_price": 599.0,
+            "current_price": 599.0,
+            "highest_price": 599.0,
+            "return_pct": 0.0,
+            "max_return_pct": 0.0
+        }
+    ],
+    "3045.TW": [
+        {
+            "name": "台灣大",
+            "pick_date": "2026-10-28",
+            "strategies": "S4_強勢回測網球, ⚡RS創高, 🐳大戶增持(+0.06%)",
+            "entry_price": 134.5,
+            "current_price": 134.5,
+            "highest_price": 134.5,
+            "return_pct": 0.0,
+            "max_return_pct": 0.0
+        }
+    ],
+    "3498.TWO": [
+        {
+            "name": "陽程",
+            "pick_date": "2026-10-28",
+            "strategies": "S4_強勢回測網球, ⚡RS創高, 🐳大戶增持(+0.16%)",
+            "entry_price": 252.0,
+            "current_price": 252.0,
+            "highest_price": 252.0,
+            "return_pct": 0.0,
+            "max_return_pct": 0.0
+        }
+    ],
+    "4540.TW": [
+        {
+            "name": "全球傳動",
+            "pick_date": "2026-10-28",
+            "strategies": "S1_底部突破, 🐳大戶增持(+0.14%)",
+            "entry_price": 61.5,
+            "current_price": 61.5,
+            "highest_price": 61.5,
+            "return_pct": 0.0,
+            "max_return_pct": 0.0
+        }
+    ],
+    "4566.TW": [
+        {
+            "name": "時碩工業",
+            "pick_date": "2026-10-28",
+            "strategies": "S4_強勢回測網球, ⚡RS創高, 🐳大戶增持(+3.42%)",
+            "entry_price": 87.2,
+            "current_price": 87.2,
+            "highest_price": 87.2,
+            "return_pct": 0.0,
+            "max_return_pct": 0.0
+        }
+    ],
+    "6214.TW": [
+        {
+            "name": "精誠",
+            "pick_date": "2026-10-28",
+            "strategies": "S2_創高動能, S4_強勢回測網球, ⚡RS創高",
+            "entry_price": 203.0,
+            "current_price": 203.0,
+            "highest_price": 203.0,
+            "return_pct": 0.0,
+            "max_return_pct": 0.0
+        }
+    ],
+    "6532.TWO": [
+        {
+            "name": "瑞耘",
+            "pick_date": "2026-10-28",
+            "strategies": "S4_強勢回測網球",
+            "entry_price": 116.0,
+            "current_price": 116.0,
+            "highest_price": 116.0,
+            "return_pct": 0.0,
+            "max_return_pct": 0.0
+        }
+    ]
+}
