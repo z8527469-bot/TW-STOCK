@@ -729,6 +729,3 @@ if __name__ == "__main__":
 
     send_discord_webhook(DISCORD_WEBHOOK_URL, notify_msg)
     print("\n✅ 選股作業結束，JSON 資料庫已更新，通知已發送至 Discord！")
-```eof
-
-這次排版與縮排絕對正常了，直接覆蓋過去，再執行一次 `python screener.py` 應該就能完美跑完了。執行成功的話可以回到網頁上看看「歷史選股表現」的全新 MFE 統計欄位！
