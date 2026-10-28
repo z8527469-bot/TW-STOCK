@@ -1,102 +1,119 @@
-<!DOCTYPE html>
-<html lang="zh-TW" class="dark">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>台股七核心動能戰情室</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <!-- 引入 Chart.js -->
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script>
-        tailwind.config = {
-            darkMode: 'class',
-            theme: {
-                extend: {
-                    colors: {
-                        darkbg: '#0f172a',
-                        cardbg: '#1e293b',
-                        twred: '#ef4444',
-                        twgreen: '#10b981'
-                    }
-                }
-            }
-        }
-    </script>
-    <style>
-        body { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; }
-        .tab-active { border-bottom: 2px solid #3b82f6; color: #60a5fa; font-weight: 600; }
-        .scrollbar-hide::-webkit-scrollbar { display: none; }
-        .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
-    </style>
-</head>
-<body class="bg-darkbg text-gray-200 min-h-screen pb-12">
+<!-- Header 頂部導航 -->
+<header class="border-b border-bordercolor bg-cardbg/80 backdrop-blur sticky top-0 z-50">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex justify-between items-center h-16">
+        <div class="flex items-center space-x-3">
+            <span class="text-2xl">⚡</span>
+            <span class="text-xl font-bold tracking-tight bg-gradient-to-r from-blue-400 to-indigo-400 bg-clip-text text-transparent">台股超級績效戰情室</span>
+        </div>
+        <div id="latest-date" class="text-sm text-gray-400 bg-slate-800/80 px-3 py-1.5 rounded-full border border-slate-700">
+            更新中...
+        </div>
+    </div>
+    <!-- 頁籤選單 -->
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex space-x-8 overflow-x-auto custom-scrollbar">
+        <button onclick="switchTab('daily')" id="tab-daily" class="tab-btn active py-3 text-sm whitespace-nowrap text-gray-400 hover:text-white transition">🎯 今日策略精選</button>
+        <button onclick="switchTab('weekly-uptrend')" id="tab-weekly-uptrend" class="tab-btn py-3 text-sm whitespace-nowrap text-gray-400 hover:text-white transition">📈 週多頭排列</button>
+        <button onclick="switchTab('weekly-turn')" id="tab-weekly-turn" class="tab-btn py-3 text-sm whitespace-nowrap text-gray-400 hover:text-white transition">🔄 三週轉折強勢</button>
+        <button onclick="switchTab('holders')" id="tab-holders" class="tab-btn py-3 text-sm whitespace-nowrap text-gray-400 hover:text-white transition">🐳 大戶籌碼追蹤</button>
+        <button onclick="switchTab('history')" id="tab-history" class="tab-btn py-3 text-sm whitespace-nowrap text-gray-400 hover:text-white transition">📜 歷史選股表現</button>
+    </div>
+</header>
 
-    <!-- 頂部導覽列 -->
-    <header class="bg-cardbg border-b border-gray-800 sticky top-0 z-10 shadow-md">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex flex-col sm:flex-row justify-between items-center gap-2">
-            <div class="flex items-center space-x-3">
-                <span class="text-2xl">📈</span>
-                <h1 class="text-xl font-bold text-white tracking-wide">台股七核心動能戰情室</h1>
+<!-- Main 內容主體區 -->
+<main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 flex-grow w-full">
+
+    <!-- 1. 今日策略精選分頁 -->
+    <section id="content-daily" class="space-y-6">
+        <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-2 border-b border-bordercolor">
+            <div>
+                <h2 class="text-xl font-bold">今日核心精選標的</h2>
+                <p class="text-sm text-gray-400 mt-1">融合 RS 相對強度、真 VCP 波動收縮、法人濃度與共振加冕</p>
             </div>
-            <div class="text-sm text-gray-400">
-                最新選股日期：<span id="update-date" class="font-mono text-blue-400 font-semibold">載入中...</span>
+            <div class="flex items-center space-x-2">
+                <span id="daily-count" class="text-xs bg-blue-950 text-blue-300 border border-blue-800 px-3 py-1 rounded-full">符合標的: 0 檔</span>
             </div>
         </div>
-    </header>
+        <div id="daily-cards" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <!-- 今日選股卡片動態渲染 -->
+        </div>
+    </section>
 
-    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-6">
-        
-        <!-- 歷史績效總覽卡片 -->
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-            <div class="bg-cardbg p-5 rounded-xl border border-gray-800 shadow">
-                <div class="text-gray-400 text-sm mb-1">追蹤個股檔數 (已合併重複)</div>
-                <div id="stat-total" class="text-2xl font-bold text-white font-mono">0</div>
-            </div>
-            <div class="bg-cardbg p-5 rounded-xl border border-gray-800 shadow">
-                <div class="text-gray-400 text-sm mb-1">當前篩選正報酬勝率</div>
-                <div id="stat-winrate" class="text-2xl font-bold text-white font-mono">0.0%</div>
-            </div>
-            <div class="bg-cardbg p-5 rounded-xl border border-gray-800 shadow">
-                <div class="text-gray-400 text-sm mb-1">當前篩選平均報酬率</div>
-                <div id="stat-avg-return" class="text-2xl font-bold text-white font-mono">0.00%</div>
+    <!-- 2. 週多頭排列分頁 -->
+    <section id="content-weekly-uptrend" class="hidden space-y-6">
+        <div class="pb-2 border-b border-bordercolor">
+            <h2 class="text-xl font-bold">週線多頭排列清單 (Stage 2)</h2>
+            <p class="text-sm text-gray-400 mt-1">中長線週 MA10 > MA20 > MA50 > MA150 穩健起跑波段股</p>
+        </div>
+        <div class="bg-cardbg rounded-xl border border-bordercolor overflow-hidden shadow">
+            <div class="overflow-x-auto">
+                <table class="w-full text-left text-sm text-gray-300">
+                    <thead class="bg-slate-800/80 text-gray-400 uppercase text-xs border-b border-bordercolor">
+                        <tr>
+                            <th class="py-3.5 px-4">股票</th>
+                            <th class="py-3.5 px-4">市場</th>
+                            <th class="py-3.5 px-4">週收盤</th>
+                            <th class="py-3.5 px-4">週均量</th>
+                            <th class="py-3.5 px-4">週漲跌</th>
+                            <th class="py-3.5 px-4">外連</th>
+                        </tr>
+                    </thead>
+                    <tbody id="uptrend-tbody" class="divide-y divide-bordercolor"></tbody>
+                </table>
             </div>
         </div>
+    </section>
 
-        <!-- 頁籤切換 (擴展為 5 個分頁) -->
-        <div class="flex border-b border-gray-800 mb-6 space-x-4 sm:space-x-6 overflow-x-auto whitespace-nowrap scrollbar-hide">
-            <button onclick="switchTab('daily')" id="tab-daily" class="pb-3 px-2 tab-active transition-colors shrink-0">
-                🎯 最新選股名單
-            </button>
-            <button onclick="switchTab('history')" id="tab-history" class="pb-3 px-2 text-gray-400 hover:text-gray-200 transition-colors shrink-0">
-                📊 歷史績效追蹤庫
-            </button>
-            <button onclick="switchTab('uptrend')" id="tab-uptrend" class="pb-3 px-2 text-gray-400 hover:text-gray-200 transition-colors shrink-0">
-                🌊 第2階段大趨勢股
-            </button>
-            <button onclick="switchTab('turn')" id="tab-turn" class="pb-3 px-2 text-gray-400 hover:text-gray-200 transition-colors shrink-0">
-                🔄 週轉折強勢股
-            </button>
-            <button onclick="switchTab('chips')" id="tab-chips" class="pb-3 px-2 text-gray-400 hover:text-gray-200 transition-colors shrink-0">
-                🐳 大戶籌碼追蹤
-            </button>
+    <!-- 3. 三週轉折強勢分頁 -->
+    <section id="content-weekly-turn" class="hidden space-y-6">
+        <div class="pb-2 border-b border-bordercolor">
+            <h2 class="text-xl font-bold">三週轉折價突破股</h2>
+            <p class="text-sm text-gray-400 mt-1">突破過去 3 週最高價收盤，中期動能翻揚確立</p>
         </div>
-
-        <!-- ================== 區塊 1：今日最新選股 ================== -->
-        <div id="section-daily" class="space-y-6">
-            <div id="daily-container" class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div class="col-span-full text-center py-12 text-gray-500">正在載入今日選股資料...</div>
+        <div class="bg-cardbg rounded-xl border border-bordercolor overflow-hidden shadow">
+            <div class="overflow-x-auto">
+                <table class="w-full text-left text-sm text-gray-300">
+                    <thead class="bg-slate-800/80 text-gray-400 uppercase text-xs border-b border-bordercolor">
+                        <tr>
+                            <th class="py-3.5 px-4">股票</th>
+                            <th class="py-3.5 px-4">收盤價</th>
+                            <th class="py-3.5 px-4">轉折參考價</th>
+                            <th class="py-3.5 px-4">強弱幅度</th>
+                            <th class="py-3.5 px-4">外連</th>
+                        </tr>
+                    </thead>
+                    <tbody id="turn-tbody" class="divide-y divide-bordercolor"></tbody>
+                </table>
             </div>
         </div>
+    </section>
 
-        <!-- ================== 區塊 2：歷史績效追蹤 ================== -->
-        <div id="section-history" class="hidden">
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 mb-4">
-                <input type="text" id="search-input" oninput="renderHistory()" placeholder="🔍 搜尋代碼或名稱..." 
-                       class="bg-cardbg border border-gray-700 rounded-lg px-4 py-2 text-sm text-white focus:outline-none focus:border-blue-500">
-                <select id="date-filter" onchange="renderHistory()" class="bg-cardbg border border-gray-700 rounded-lg px-4 py-2 text-sm text-white focus:outline-none focus:border-blue-500">
-                    <option value="ALL">📅 所有選出日期</option>
-                </select>
-                <select id="strat-filter" onchange="renderHistory()" class="bg-cardbg border border-gray-700 rounded-lg px-4 py-2 text-sm text-white focus:outline-none focus:border-blue-500">
+    <!-- 4. 大戶籌碼追蹤分頁 -->
+    <section id="content-holders" class="hidden space-y-6">
+        <div class="pb-2 border-b border-bordercolor">
+            <h2 class="text-xl font-bold">🐳 集保大戶股權分散趨勢</h2>
+            <p class="text-sm text-gray-400 mt-1">每週追蹤 400 張與 1000 張大戶持股比例變化，觀察主力籌碼沉澱</p>
+        </div>
+        <div class="bg-cardbg p-6 rounded-xl border border-bordercolor space-y-4">
+            <div class="flex flex-col sm:flex-row gap-3">
+                <input type="text" id="chip-stock-input" placeholder="輸入股票代碼 (例: 2330)" class="bg-darkbg border border-bordercolor rounded-lg px-4 py-2 text-sm text-white focus:outline-none focus:border-brand w-full sm:w-64">
+                <button onclick="renderChipChart()" class="bg-brand hover:bg-blue-600 px-5 py-2 rounded-lg text-sm font-medium transition text-white">查詢籌碼走勢</button>
+            </div>
+            <div id="chip-info-text" class="text-sm text-gray-400"></div>
+            <div class="w-full h-80 pt-4">
+                <canvas id="chipChart"></canvas>
+            </div>
+        </div>
+    </section>
+
+    <!-- 5. 歷史選股表現分頁 -->
+    <section id="content-history" class="hidden space-y-6">
+        <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-2 border-b border-bordercolor">
+            <div>
+                <h2 class="text-xl font-bold">📜 歷史入選與波段績效追蹤</h2>
+                <p class="text-sm text-gray-400 mt-1">追蹤起漲發動點、最新現價與入選以來的波段最大漲幅 (MFE)</p>
+            </div>
+            <div class="flex flex-wrap items-center gap-3">
+                <select id="strat-filter" onchange="renderHistory()" class="bg-cardbg border border-gray-700 rounded-lg px-4 py-2 text-sm text-white focus:outline-none focus:border-brand">
                     <option value="ALL">🎯 所有策略 (S1 ~ S7)</option>
                     <option value="S1_底部突破">S1_底部突破</option>
                     <option value="S2_創高動能">S2_創高動能</option>
@@ -107,619 +124,341 @@
                     <option value="S7_漲停強勢旗形">S7_漲停強勢旗形</option>
                     <option value="👑週轉折共振">👑 週轉折共振</option>
                     <option value="🐳">🐳 大戶籌碼加持</option>
-                    <option value="⚡RS創高">⚡ RS領先創高</option>
-                </select>
-                <select id="sort-select" onchange="renderHistory()" class="bg-cardbg border border-gray-700 rounded-lg px-4 py-2 text-sm text-white focus:outline-none focus:border-blue-500">
-                    <option value="date-desc">排序：最新入選日 (新➔舊)</option>
-                    <option value="first-date-desc">排序：首次入選日 (新➔舊)</option>
-                    <option value="return-desc">排序：報酬率 (最高➔最低)</option>
-                    <option value="return-asc">排序：報酬率 (最低➔最高)</option>
-                    <option value="count-desc">排序：入選次數 (最多➔最少)</option>
+                    <option value="⚡RS創高">⚡ RS 領先創高</option>
                 </select>
             </div>
-            <div class="bg-cardbg rounded-xl border border-gray-800 overflow-x-auto shadow">
-                <table class="w-full text-left border-collapse min-w-[800px]">
-                    <thead>
-                        <tr class="border-b border-gray-800 text-gray-400 text-xs uppercase bg-gray-900/50">
-                            <th class="py-3.5 px-4">選出日期 (入選紀錄)</th>
-                            <th class="py-3.5 px-4">股票代碼 / 名稱</th>
-                            <th class="py-3.5 px-4">觸發策略 (累積)</th>
-                            <th class="py-3.5 px-4 text-right">當時進場價</th>
-                            <th class="py-3.5 px-4 text-right">最新收盤價</th>
-                            <th class="py-3.5 px-4 text-right">累積報酬率</th>
+        </div>
+
+        <!-- 歷史紀錄表格 -->
+        <div class="bg-cardbg rounded-xl border border-bordercolor overflow-hidden shadow">
+            <div class="overflow-x-auto">
+                <table class="w-full text-left text-sm text-gray-300">
+                    <thead class="bg-slate-800/80 text-gray-400 uppercase text-xs border-b border-bordercolor">
+                        <tr>
+                            <th class="py-3.5 px-4">入選日期</th>
+                            <th class="py-3.5 px-4">股票</th>
+                            <th class="py-3.5 px-4">發動策略標籤</th>
+                            <th class="py-3.5 px-4">進場價</th>
+                            <th class="py-3.5 px-4">最新現價</th>
+                            <th class="py-3.5 px-4">波段最高價</th>
+                            <th class="py-3.5 px-4">目前報酬率</th>
+                            <th class="py-3.5 px-4">波段最大漲幅</th>
+                            <th class="py-3.5 px-4">外連</th>
                         </tr>
                     </thead>
-                    <tbody id="history-tbody" class="divide-y divide-gray-800/60 text-sm">
-                        <tr><td colspan="6" class="text-center py-8 text-gray-500">載入中...</td></tr>
+                    <tbody id="history-tbody" class="divide-y divide-bordercolor">
+                        <!-- 歷史選股資料動態渲染 -->
                     </tbody>
                 </table>
             </div>
         </div>
+    </section>
 
-        <!-- ================== 區塊 3：第2階段大趨勢股 ================== -->
-        <div id="section-uptrend" class="hidden">
-            <div class="mb-4 text-sm text-gray-400 bg-gray-800/50 p-4 rounded-lg border border-gray-700 shadow">
-                💡 <b>說明：</b> 每週六更新，嚴格執行《超級績效》「第2階段趨勢模板」8 大準則。
-                <div class="mt-2 flex items-center gap-4">
-                    <span>更新日期：<span id="uptrend-date" class="text-blue-400 font-mono font-semibold">載入中...</span></span>
-                    <span>符合檔數：<span id="uptrend-count" class="text-twred font-bold font-mono text-lg">0</span> 檔</span>
-                </div>
-            </div>
-            <div class="bg-cardbg rounded-xl border border-gray-800 overflow-x-auto shadow">
-                <table class="w-full text-left border-collapse min-w-[700px]">
-                    <thead>
-                        <tr class="border-b border-gray-800 text-gray-400 text-xs uppercase bg-gray-900/50">
-                            <th class="py-3.5 px-4 w-1/3">股票代碼 / 名稱</th>
-                            <th class="py-3.5 px-4 text-right">最新收盤價</th>
-                            <th class="py-3.5 px-4 text-right">本週成交量(張)</th>
-                            <th class="py-3.5 px-4 text-right">距年高點跌幅</th>
-                            <th class="py-3.5 px-4 text-right">自年低點反彈</th>
-                        </tr>
-                    </thead>
-                    <tbody id="uptrend-tbody" class="divide-y divide-gray-800/60 text-sm">
-                        <tr><td colspan="5" class="text-center py-8 text-gray-500">載入中...</td></tr>
-                    </tbody>
-                </table>
-            </div>
-        </div>
+</main>
 
-        <!-- ================== 區塊 4：週轉折強勢股 ================== -->
-        <div id="section-turn" class="hidden">
-            <div class="mb-4 text-sm text-gray-400 bg-gray-800/50 p-4 rounded-lg border border-gray-700 shadow">
-                💡 <b>說明：</b> 依據控盤轉折公式，篩選出「當週收盤價已大於未來三週(W1、W2、W3)轉折價」的股票，下檔防守鐵板強勁。
-                <div class="mt-2 flex items-center gap-4">
-                    <span>更新日期：<span id="turn-date" class="text-blue-400 font-mono font-semibold">載入中...</span></span>
-                    <span>符合檔數：<span id="turn-count" class="text-twred font-bold font-mono text-lg">0</span> 檔</span>
-                </div>
-            </div>
-            <div class="bg-cardbg rounded-xl border border-gray-800 overflow-x-auto shadow">
-                <table class="w-full text-left border-collapse min-w-[800px]">
-                    <thead>
-                        <tr class="border-b border-gray-800 text-gray-400 text-xs uppercase bg-gray-900/50">
-                            <th class="py-3.5 px-4">股票代碼 / 名稱</th>
-                            <th class="py-3.5 px-4 text-right">本週收盤價</th>
-                            <th class="py-3.5 px-4 text-right">本週成交量(張)</th>
-                            <th class="py-3.5 px-4 text-right text-indigo-300">W+1 轉折價</th>
-                            <th class="py-3.5 px-4 text-right text-indigo-300">W+2 轉折價</th>
-                            <th class="py-3.5 px-4 text-right text-indigo-300">W+3 轉折價</th>
-                        </tr>
-                    </thead>
-                    <tbody id="turn-tbody" class="divide-y divide-gray-800/60 text-sm">
-                        <tr><td colspan="6" class="text-center py-8 text-gray-500">載入中...</td></tr>
-                    </tbody>
-                </table>
-            </div>
-        </div>
+<!-- Footer 頁尾 -->
+<footer class="border-t border-bordercolor py-6 text-center text-xs text-gray-500 bg-cardbg/50">
+    <p>台股超級績效戰情室 ｜ Super Performance Trading System ｜ 僅供量化策略研究使用，非投資建議</p>
+</footer>
 
-        <!-- ================== 區塊 5：大戶籌碼追蹤 ================== -->
-        <div id="section-chips" class="hidden">
-            <div class="bg-cardbg rounded-xl border border-gray-800 p-6 shadow mb-6">
-                <div class="flex flex-col sm:flex-row gap-4 items-center mb-6">
-                    <input type="text" id="chip-input" placeholder="輸入股票代碼 (例: 2330)" 
-                           class="bg-darkbg border border-gray-700 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-blue-500 w-full sm:w-64">
-                    <button onclick="drawChipChart()" class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-6 rounded-lg transition-colors">
-                        繪製圖表
-                    </button>
-                    <span id="chip-status" class="text-sm text-gray-400 ml-2"></span>
-                </div>
-                
-                <!-- Chart.js 畫布 -->
-                <div class="relative w-full h-[400px]">
-                    <canvas id="chipChart"></canvas>
-                </div>
-            </div>
-        </div>
+<!-- JavaScript 核心邏輯 -->
+<script>
+    let GLOBAL_DATA = {
+        daily: null,
+        history: null,
+        uptrend: null,
+        turn: null,
+        holders: null
+    };
+    let chipChartInstance = null;
 
-    </main>
+    // 頁籤切換
+    function switchTab(tabId) {
+        document.querySelectorAll('main > section').forEach(el => el.classList.add('hidden'));
+        document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
 
-    <script>
-        let globalMergedList = [];
-        let globalHoldersData = {};
-        let currentChart = null;
+        const targetSection = document.getElementById(`content-${tabId}`);
+        const targetBtn = document.getElementById(`tab-${tabId}`);
+        if (targetSection) targetSection.classList.remove('hidden');
+        if (targetBtn) targetBtn.classList.add('active');
 
-        // 切換頁籤 (管理 5 個分頁)
-        function switchTab(tab) {
-            const tabs = ['daily', 'history', 'uptrend', 'turn', 'chips'];
-            tabs.forEach(t => {
-                document.getElementById(`section-${t}`).classList.toggle('hidden', tab !== t);
-                const activeClass = 'pb-3 px-2 tab-active transition-colors shrink-0';
-                const inactiveClass = 'pb-3 px-2 text-gray-400 hover:text-gray-200 transition-colors shrink-0';
-                document.getElementById(`tab-${t}`).className = tab === t ? activeClass : inactiveClass;
-            });
-        }
+        if (tabId === 'history') renderHistory();
+    }
 
-        function getStrategyBadges(stratArrayOrStr) {
-            if (!stratArrayOrStr) return '';
-            const colors = {
-                'S1_底部突破': 'bg-purple-900/60 text-purple-300 border-purple-700/50',
-                'S2_創高動能': 'bg-red-900/60 text-red-300 border-red-700/50',
-                'S3_投信認養': 'bg-amber-900/60 text-amber-300 border-amber-700/50',
-                'S4_強勢回測網球': 'bg-emerald-900/60 text-emerald-300 border-emerald-700/50',
-                'S4_恐慌抄底': 'bg-emerald-900/60 text-emerald-300 border-emerald-700/50',
-                'S5_投信作帳VCP': 'bg-cyan-900/60 text-cyan-300 border-cyan-700/50',
-                'S6_營收口袋樞紐': 'bg-blue-900/60 text-blue-300 border-blue-700/50',
-                'S7_漲停強勢旗形': 'bg-pink-900/60 text-pink-300 border-pink-700/50',
-                '👑週轉折共振': 'bg-yellow-500/20 text-yellow-300 border-yellow-500/50 font-semibold',
-                '⚡RS創高': 'bg-orange-500/20 text-orange-300 border-orange-500/50 font-semibold'
+    // 策略徽章渲染與色彩分組
+    function getStrategyBadges(stratArrayOrStr) {
+        if (!stratArrayOrStr) return '';
+        const colors = {
+            'S1_底部突破': 'bg-purple-900/60 text-purple-300 border-purple-700/50',
+            'S2_創高動能': 'bg-red-900/60 text-red-300 border-red-700/50',
+            'S3_投信認養': 'bg-amber-900/60 text-amber-300 border-amber-700/50',
+            'S4_強勢回測網球': 'bg-emerald-900/60 text-emerald-300 border-emerald-700/50',
+            'S4_恐慌抄底': 'bg-emerald-900/60 text-emerald-300 border-emerald-700/50',
+            'S5_投信作帳VCP': 'bg-cyan-900/60 text-cyan-300 border-cyan-700/50',
+            'S6_營收口袋樞紐': 'bg-blue-900/60 text-blue-300 border-blue-700/50',
+            'S7_漲停強勢旗形': 'bg-pink-900/60 text-pink-300 border-pink-700/50',
+            '👑週轉折共振': 'bg-yellow-500/20 text-yellow-300 border-yellow-500/50 font-semibold',
+            '⚡RS創高': 'bg-orange-500/20 text-orange-300 border-orange-500/50 font-semibold'
+        };
+        const list = Array.isArray(stratArrayOrStr) ? stratArrayOrStr : stratArrayOrStr.split(',');
+        return list.map(s => {
+            const cleanS = s.trim();
+            if (!cleanS) return '';
+            let colorClass = colors[cleanS] || 'bg-gray-800 text-gray-300 border-gray-700';
+            if (cleanS.startsWith('🐳')) {
+                colorClass = 'bg-indigo-500/20 text-indigo-300 border-indigo-500/50 font-semibold';
+            }
+            return `<span class="inline-block px-2.5 py-0.5 text-xs font-medium rounded-full border ${colorClass} mr-1.5 mb-1">${cleanS}</span>`;
+        }).join('');
+    }
+
+    // 初始化與讀取 JSON 資料庫
+    async function init() {
+        try {
+            const fetchJSON = async (url) => {
+                try {
+                    const r = await fetch(url + '?t=' + Date.now());
+                    return r.ok ? await r.json() : null;
+                } catch (e) { return null; }
             };
-            const list = Array.isArray(stratArrayOrStr) ? stratArrayOrStr : stratArrayOrStr.split(',');
-            return list.map(s => {
-                const cleanS = s.trim();
-                if (!cleanS) return '';
-                let colorClass = colors[cleanS] || 'bg-gray-800 text-gray-300 border-gray-700';
-                if (cleanS.startsWith('🐳')) {
-                    colorClass = 'bg-indigo-500/20 text-indigo-300 border-indigo-500/50 font-semibold';
-                }
-                return `<span class="inline-block px-2.5 py-0.5 text-xs font-medium rounded-full border ${colorClass} mr-1.5 mb-1">${cleanS}</span>`;
-            }).join('');
-        }
 
-        // ================== 五軌獨立載入機制 ==================
-        async function loadDaily() {
-            try {
-                const res = await fetch(`data/daily_picks.json?t=${Date.now()}`);
-                if (res.ok) {
-                    const data = await res.json();
-                    document.getElementById('update-date').textContent = data.date || '未知';
-                    renderDaily(data.picks || []);
-                } else {
-                    document.getElementById('update-date').textContent = '無今日資料';
-                    document.getElementById('daily-container').innerHTML = `<div class="col-span-full text-center py-12 text-gray-400">目前尚無今日選股資料</div>`;
-                }
-            } catch (e) {
-                document.getElementById('update-date').textContent = '讀取失敗';
-            }
-        }
+            const [daily, history, uptrend, turn, holders] = await Promise.all([
+                fetchJSON('data/daily_picks.json'),
+                fetchJSON('data/history.json'),
+                fetchJSON('data/weekly_uptrend.json'),
+                fetchJSON('data/weekly_turn.json'),
+                fetchJSON('data/holders.json')
+            ]);
 
-        async function loadHistory() {
-            try {
-                const res = await fetch(`data/history.json?t=${Date.now()}`);
-                if (res.ok) {
-                    const data = await res.json();
-                    processHistoryData(data);
-                } else {
-                    document.getElementById('history-tbody').innerHTML = `<tr><td colspan="6" class="text-center py-8 text-gray-500">尚無歷史追蹤資料</td></tr>`;
-                }
-            } catch (e) {}
-        }
+            GLOBAL_DATA = { daily, history, uptrend, turn, holders };
 
-        async function loadUptrend() {
-            try {
-                const res = await fetch(`data/weekly_uptrend.json?t=${Date.now()}`);
-                if (res.ok) {
-                    const data = await res.json();
-                    document.getElementById('uptrend-date').textContent = data.date || '未知';
-                    document.getElementById('uptrend-count').textContent = data.count || '0';
-                    renderUptrend(data.stocks || []);
-                } else {
-                    document.getElementById('uptrend-date').textContent = '無資料';
-                    document.getElementById('uptrend-tbody').innerHTML = `<tr><td colspan="5" class="text-center py-8 text-gray-500">尚無每週趨勢資料</td></tr>`;
-                }
-            } catch (e) {}
-        }
-
-        async function loadTurn() {
-            try {
-                const res = await fetch(`data/weekly_turn.json?t=${Date.now()}`);
-                if (res.ok) {
-                    const data = await res.json();
-                    document.getElementById('turn-date').textContent = data.date || '未知';
-                    document.getElementById('turn-count').textContent = data.count || '0';
-                    renderTurn(data.stocks || []);
-                } else {
-                    document.getElementById('turn-date').textContent = '無資料';
-                    document.getElementById('turn-tbody').innerHTML = `<tr><td colspan="6" class="text-center py-8 text-gray-500">尚無週轉折資料</td></tr>`;
-                }
-            } catch (e) {}
-        }
-
-        // 載入籌碼 JSON 到全域變數
-        async function loadHoldersData() {
-            try {
-                const res = await fetch(`data/holders.json?t=${Date.now()}`);
-                if (res.ok) {
-                    globalHoldersData = await res.json();
-                    document.getElementById('chip-status').textContent = "✅ 籌碼庫載入完成";
-                } else {
-                    document.getElementById('chip-status').textContent = "⚠️ 無法讀取 holders.json (可能尚未執行爬蟲)";
-                }
-            } catch (e) {
-                document.getElementById('chip-status').textContent = "❌ 讀取籌碼庫失敗";
-            }
-        }
-
-        function loadData() {
-            loadDaily();
-            loadHistory();
-            loadUptrend();
-            loadTurn();
-            loadHoldersData();
-        }
-
-        // ================== 渲染函數 ==================
-        function renderDaily(picks) {
-            const container = document.getElementById('daily-container');
-            if (!picks || picks.length === 0) {
-                container.innerHTML = `<div class="col-span-full bg-cardbg p-8 rounded-xl border border-gray-800 text-center text-gray-400">🎉 今日無符合嚴格條件之標的</div>`;
-                return;
+            if (daily && daily.date) {
+                document.getElementById('latest-date').innerText = `資料日期: ${daily.date}`;
             }
 
-            container.innerHTML = picks.map(stock => {
-                const badges = getStrategyBadges(stock.strats || []);
-                const yfSuffix = stock['市場'] === '上市' ? '.TW' : '.TWO';
-                const yfTicker = `${stock['代碼']}${yfSuffix}`;
-                const chipInfo = stock['外資動向'] && stock['外資動向'] !== '-' 
-                    ? `<div class="mt-3 pt-3 border-t border-gray-800/80 flex justify-between text-xs text-gray-400">
-                           <span>🏦 外資：<strong class="text-gray-200">${stock['外資動向']}</strong></span>
-                           <span>🏦 投信：<strong class="text-gray-200">${stock['投信動向']}</strong></span>
-                       </div>` : '';
-
-                return `
-                <div class="bg-cardbg p-5 rounded-xl border border-gray-800 hover:border-gray-700 transition-all shadow">
-                    <div class="flex justify-between items-start mb-2">
-                        <div>
-                            <a href="https://tw.stock.yahoo.com/quote/${yfTicker}" target="_blank" class="text-lg font-bold text-white hover:text-blue-400 transition-colors inline-flex items-center gap-1.5">
-                                ${stock['代碼']} ${stock['名稱']}
-                                <span class="text-xs font-normal px-2 py-0.5 bg-gray-800 text-gray-400 rounded">${stock['市場']}</span>
-                            </a>
-                        </div>
-                        <div class="text-right">
-                            <div class="text-xl font-bold font-mono text-white">${stock['收盤價']}</div>
-                            <div class="text-xs text-gray-400">成交量 ${stock['成交量(張)'].toLocaleString()} 張</div>
-                        </div>
-                    </div>
-                    <div class="my-2">${badges}</div>
-                    <div class="grid grid-cols-3 gap-2 mt-4 bg-gray-900/60 p-2.5 rounded-lg text-xs">
-                        <div>
-                            <span class="text-gray-500 block">月增 (MoM)</span>
-                            <span class="font-mono font-semibold text-gray-200">${stock['MoM'] || '-'}</span>
-                        </div>
-                        <div>
-                            <span class="text-gray-500 block">年增 (YoY)</span>
-                            <span class="font-mono font-semibold text-gray-200">${stock['YoY'] || '-'}</span>
-                        </div>
-                        <div>
-                            <span class="text-gray-500 block">距年高點</span>
-                            <span class="font-mono font-semibold text-gray-200">${stock['距年高點跌幅'] || '-'}</span>
-                        </div>
-                    </div>
-                    ${chipInfo}
-                </div>`;
-            }).join('');
-        }
-
-        function processHistoryData(histObj) {
-            globalMergedList = [];
-            const allDatesSet = new Set();
-
-            for (const [yfTicker, records] of Object.entries(histObj)) {
-                if (!records || records.length === 0) continue;
-                const cleanCode = yfTicker.replace('.TWO', '').replace('.TW', '');
-                const sortedRecords = [...records].sort((a, b) => a.pick_date.localeCompare(b.pick_date));
-
-                const pickDates = [];
-                const stratSet = new Set();
-                
-                sortedRecords.forEach(r => {
-                    if (r.pick_date) {
-                        allDatesSet.add(r.pick_date);
-                        if (!pickDates.includes(r.pick_date)) pickDates.push(r.pick_date);
-                    }
-                    if (r.strategies) {
-                        r.strategies.split(',').forEach(s => {
-                            const trimS = s.trim();
-                            if (trimS) stratSet.add(trimS);
-                        });
-                    }
-                });
-
-                const firstRecord = sortedRecords[0];
-                const latestRecord = sortedRecords[sortedRecords.length - 1];
-                const firstEntryPrice = Number(firstRecord.entry_price);
-                const currentPrice = Number(latestRecord.current_price);
-                const totalReturnPct = firstEntryPrice > 0 ? ((currentPrice - firstEntryPrice) / firstEntryPrice) * 100 : 0;
-
-                globalMergedList.push({
-                    yf_ticker: yfTicker,
-                    code: cleanCode,
-                    name: latestRecord.name || firstRecord.name || '',
-                    first_date: firstRecord.pick_date,
-                    latest_date: latestRecord.pick_date,
-                    pick_dates: pickDates,
-                    pick_count: sortedRecords.length,
-                    all_strategies: Array.from(stratSet),
-                    first_entry_price: firstEntryPrice,
-                    current_price: currentPrice,
-                    return_pct: totalReturnPct,
-                    raw_records: sortedRecords
-                });
-            }
-
-            const sortedDates = Array.from(allDatesSet).sort((a, b) => b.localeCompare(a));
-            const dateSelect = document.getElementById('date-filter');
-            dateSelect.innerHTML = `<option value="ALL">📅 所有選出日期 (共 ${sortedDates.length} 天)</option>` + 
-                sortedDates.map(d => `<option value="${d}">${d}</option>`).join('');
-
+            renderDaily();
+            renderWeeklyUptrend();
+            renderWeeklyTurn();
             renderHistory();
+        } catch (err) {
+            console.error("初始化資料失敗:", err);
+        }
+    }
+
+    // 渲染今日策略卡片
+    function renderDaily() {
+        const container = document.getElementById('daily-cards');
+        const picks = (GLOBAL_DATA.daily && GLOBAL_DATA.daily.picks) ? GLOBAL_DATA.daily.picks : [];
+        document.getElementById('daily-count').innerText = `符合標的: ${picks.length} 檔`;
+
+        if (picks.length === 0) {
+            container.innerHTML = `<div class="col-span-full py-12 text-center text-gray-500 text-sm">今日無符合條件之策略標的，耐心等待最佳訊號。</div>`;
+            return;
         }
 
-        function updateStatsCards(displayList) {
-            const total = displayList.length;
-            document.getElementById('stat-total').textContent = total;
-            const winEl = document.getElementById('stat-winrate');
-            const avgEl = document.getElementById('stat-avg-return');
+        container.innerHTML = picks.map(stock => {
+            const dropNum = parseFloat(stock['距年高點跌幅']);
+            const dropClass = dropNum <= 10 ? 'text-upred font-semibold' : 'text-gray-400';
+            const yfTicker = stock['市場'] === '上市' ? `${stock['代碼']}.TW` : `${stock['代碼']}.TWO`;
 
-            if (total > 0) {
-                const wins = displayList.filter(item => item.display_return > 0).length;
-                const winRate = ((wins / total) * 100).toFixed(1);
-                const avgReturn = (displayList.reduce((acc, cur) => acc + cur.display_return, 0) / total).toFixed(2);
-                winEl.textContent = `${winRate}%`;
-                winEl.className = `text-2xl font-bold font-mono ${winRate >= 50 ? 'text-twred' : 'text-twgreen'}`;
-                avgEl.textContent = `${avgReturn > 0 ? '+' : ''}${avgReturn}%`;
-                avgEl.className = `text-2xl font-bold font-mono ${avgReturn > 0 ? 'text-twred' : (avgReturn < 0 ? 'text-twgreen' : 'text-white')}`;
-            } else {
-                winEl.textContent = `0.0%`;
-                winEl.className = `text-2xl font-bold font-mono text-white`;
-                avgEl.textContent = `0.00%`;
-                avgEl.className = `text-2xl font-bold font-mono text-white`;
-            }
-        }
-
-        function renderHistory() {
-            const tbody = document.getElementById('history-tbody');
-            const searchKw = document.getElementById('search-input').value.trim().toLowerCase();
-            const dateFilter = document.getElementById('date-filter').value;
-            const stratFilter = document.getElementById('strat-filter').value;
-            const sortMode = document.getElementById('sort-select').value;
-
-            let filtered = [];
-            for (const item of globalMergedList) {
-                const matchKw = item.code.toLowerCase().includes(searchKw) || item.name.toLowerCase().includes(searchKw);
-                if (!matchKw) continue;
-
-                if (dateFilter !== 'ALL') {
-                    const recOnDate = item.raw_records.find(r => r.pick_date === dateFilter);
-                    if (!recOnDate) continue;
-                    if (stratFilter !== 'ALL' && !(recOnDate.strategies && recOnDate.strategies.includes(stratFilter))) continue;
-
-                    const entryOnDate = Number(recOnDate.entry_price);
-                    const retOnDate = entryOnDate > 0 ? ((item.current_price - entryOnDate) / entryOnDate) * 100 : 0;
-
-                    filtered.push({
-                        ...item,
-                        display_entry: entryOnDate,
-                        display_return: retOnDate,
-                        display_strategies: recOnDate.strategies ? recOnDate.strategies.split(',') : item.all_strategies
-                    });
-                } else {
-                    if (stratFilter !== 'ALL' && !item.all_strategies.includes(stratFilter)) continue;
-                    filtered.push({
-                        ...item,
-                        display_entry: item.first_entry_price,
-                        display_return: item.return_pct,
-                        display_strategies: item.all_strategies
-                    });
-                }
-            }
-
-            updateStatsCards(filtered);
-
-            filtered.sort((a, b) => {
-                if (sortMode === 'date-desc') return b.latest_date.localeCompare(a.latest_date);
-                if (sortMode === 'first-date-desc') return b.first_date.localeCompare(a.first_date);
-                if (sortMode === 'return-desc') return b.display_return - a.display_return;
-                if (sortMode === 'return-asc') return a.display_return - b.display_return;
-                if (sortMode === 'count-desc') return b.pick_count - a.pick_count || b.display_return - a.display_return;
-                return 0;
-            });
-
-            if (filtered.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="6" class="text-center py-8 text-gray-500">無符合篩選條件的歷史紀錄</td></tr>`;
-                return;
-            }
-
-            tbody.innerHTML = filtered.map(item => {
-                const isPos = item.display_return > 0;
-                const isNeg = item.display_return < 0;
-                const colorClass = isPos ? 'text-twred font-bold' : (isNeg ? 'text-twgreen font-bold' : 'text-gray-300');
-                const sign = isPos ? '+' : '';
-
-                let dateHtml = '';
-                if (dateFilter !== 'ALL') {
-                    dateHtml = `<div class="font-mono text-blue-400 font-semibold">${dateFilter}</div>`;
-                    if (item.pick_count > 1) {
-                        dateHtml += `<div class="text-xs text-gray-500 mt-0.5">共入選 ${item.pick_count} 次 (首日: ${item.first_date})</div>`;
-                    }
-                } else {
-                    if (item.pick_count > 1) {
-                        const historyTooltip = item.raw_records.map(r => `${r.pick_date} ($${Number(r.entry_price).toFixed(2)})`).join(' ➔ ');
-                        dateHtml = `
-                            <div class="font-mono text-gray-200">
-                                <span class="text-xs text-gray-400">首:</span> ${item.first_date}
-                                <span class="ml-1.5 px-1.5 py-0.5 text-[11px] bg-amber-500/20 text-amber-300 border border-amber-500/40 rounded font-sans">
-                                    🔥 ${item.pick_count}次
-                                </span>
-                            </div>
-                            <div class="text-xs text-gray-400 font-mono mt-0.5" title="${historyTooltip}">
-                                <span class="text-gray-500">近:</span> ${item.latest_date}
-                                <span class="text-gray-600 ml-1 cursor-help border-b border-dotted border-gray-600">(明細)</span>
-                            </div>
-                        `;
-                    } else {
-                        dateHtml = `<div class="font-mono text-gray-300">${item.first_date}</div>`;
-                    }
-                }
-
-                return `
-                <tr class="hover:bg-gray-800/40 transition-colors">
-                    <td class="py-3.5 px-4">${dateHtml}</td>
-                    <td class="py-3.5 px-4">
-                        <a href="https://tw.stock.yahoo.com/quote/${item.yf_ticker}" target="_blank" class="font-semibold text-white hover:text-blue-400 text-base">
-                            ${item.code} ${item.name}
-                        </a>
-                    </td>
-                    <td class="py-3.5 px-4">${getStrategyBadges(item.display_strategies)}</td>
-                    <td class="py-3.5 px-4 text-right font-mono">
-                        ${item.display_entry.toFixed(2)}
-                    </td>
-                    <td class="py-3.5 px-4 text-right font-mono">${item.current_price.toFixed(2)}</td>
-                    <td class="py-3.5 px-4 text-right font-mono text-base ${colorClass}">
-                        ${sign}${item.display_return.toFixed(2)}%
-                    </td>
-                </tr>`;
-            }).join('');
-        }
-
-        function renderUptrend(stocks) {
-            const tbody = document.getElementById('uptrend-tbody');
-            if (stocks.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="5" class="text-center py-8 text-gray-500">本週無符合第二階段趨勢的股票</td></tr>`;
-                return;
-            }
-
-            tbody.innerHTML = stocks.map(item => {
-                const yfSuffix = item['市場'] === '上市' ? '.TW' : '.TWO';
-                const yfTicker = `${item['代碼']}${yfSuffix}`;
+            return `
+            <div class="bg-cardbg rounded-xl border border-bordercolor p-5 shadow hover:border-slate-500 transition space-y-4">
+                <div class="flex justify-between items-start">
+                    <div>
+                        <div class="flex items-center space-x-2">
+                            <span class="text-lg font-bold text-white tracking-wide">${stock['名稱']}</span>
+                            <span class="text-xs bg-slate-800 text-gray-400 px-2 py-0.5 rounded border border-slate-700">${stock['代碼']}</span>
+                            <span class="text-xs text-gray-500">${stock['市場']}</span>
+                        </div>
+                    </div>
+                    <div class="text-right">
+                        <div class="text-xl font-bold text-white">$${stock['收盤價']}</div>
+                        <div class="text-xs text-gray-400">量 ${stock['成交量(張)'].toLocaleString()} 張</div>
+                    </div>
+                </div>
                 
-                return `
-                <tr class="hover:bg-gray-800/40 transition-colors">
-                    <td class="py-3.5 px-4">
-                        <a href="https://tw.stock.yahoo.com/quote/${yfTicker}" target="_blank" class="font-semibold text-white hover:text-blue-400 text-base">
-                            ${item['代碼']} ${item['名稱']}
-                        </a>
-                        <span class="text-xs font-normal px-2 py-0.5 bg-gray-800 text-gray-400 rounded ml-2">${item['市場']}</span>
-                    </td>
-                    <td class="py-3.5 px-4 text-right font-mono text-white">${item['收盤價'].toFixed(2)}</td>
-                    <td class="py-3.5 px-4 text-right font-mono text-gray-300">${item['成交量(張)'].toLocaleString()}</td>
-                    <td class="py-3.5 px-4 text-right font-mono text-twred">${item['距年高點跌幅']}</td>
-                    <td class="py-3.5 px-4 text-right font-mono text-twred">${item['自低點反彈']}</td>
-                </tr>`;
-            }).join('');
+                <div>${getStrategyBadges(stock['strats'])}</div>
+
+                <div class="grid grid-cols-2 gap-2 text-xs bg-darkbg/70 p-3 rounded-lg border border-bordercolor/60">
+                    <div><span class="text-gray-500">距年高:</span> <span class="${dropClass}">${stock['距年高點跌幅']}</span></div>
+                    <div><span class="text-gray-500">月營收:</span> <span class="text-gray-300">MoM ${stock['MoM'] || '-'} | YoY ${stock['YoY'] || '-'}</span></div>
+                    <div class="col-span-2"><span class="text-gray-500">法人動向:</span> <span class="text-gray-300">外資 ${stock['外資動向'] || '-'} | 投信 ${stock['投信動向'] || '-'}</span></div>
+                </div>
+
+                <div class="pt-1 flex justify-end space-x-3 text-xs">
+                    <a href="https://tw.stock.yahoo.com/quote/${yfTicker}" target="_blank" class="text-blue-400 hover:text-blue-300 transition">Yahoo 股市 ↗</a>
+                    <a href="https://goodinfo.tw/tw/StockDetail.asp?STOCK_ID=${stock['代碼']}" target="_blank" class="text-emerald-400 hover:text-emerald-300 transition">Goodinfo ↗</a>
+                </div>
+            </div>`;
+        }).join('');
+    }
+
+    // 渲染週多頭排列表格
+    function renderWeeklyUptrend() {
+        const tbody = document.getElementById('uptrend-tbody');
+        const stocks = (GLOBAL_DATA.uptrend && GLOBAL_DATA.uptrend.stocks) ? GLOBAL_DATA.uptrend.stocks : [];
+        if (stocks.length === 0) {
+            tbody.innerHTML = `<tr><td colspan="6" class="text-center py-8 text-gray-500">暫無資料</td></tr>`;
+            return;
         }
+        tbody.innerHTML = stocks.map(s => `
+            <tr class="hover:bg-slate-800/40 transition">
+                <td class="py-3 px-4 font-semibold text-white">${s['名稱']} <span class="text-xs text-gray-500">(${s['代碼']})</span></td>
+                <td class="py-3 px-4">${s['市場'] || '-'}</td>
+                <td class="py-3 px-4 font-medium text-white">$${s['週收盤價'] || s['收盤價']}</td>
+                <td class="py-3 px-4 text-gray-400">${(s['週成交量'] || s['成交量(張)'] || 0).toLocaleString()}</td>
+                <td class="py-3 px-4 text-upred font-medium">${s['週漲跌幅'] || '-'}</td>
+                <td class="py-3 px-4">
+                    <a href="https://tw.stock.yahoo.com/quote/${s['代碼']}.TW" target="_blank" class="text-blue-400 hover:underline text-xs">分析</a>
+                </td>
+            </tr>
+        `).join('');
+    }
 
-        function renderTurn(stocks) {
-            const tbody = document.getElementById('turn-tbody');
-            if (stocks.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="6" class="text-center py-8 text-gray-500">本週無符合轉折強勢的股票</td></tr>`;
-                return;
-            }
-
-            tbody.innerHTML = stocks.map(item => {
-                const yfSuffix = item['市場'] === '上市' ? '.TW' : '.TWO';
-                const yfTicker = `${item['代碼']}${yfSuffix}`;
-                const maxTurn = Math.max(item['W1轉折價'], item['W2轉折價'], item['W3轉折價']);
-                const strength = ((item['本週收盤價'] - maxTurn) / maxTurn * 100).toFixed(1);
-
-                return `
-                <tr class="hover:bg-gray-800/40 transition-colors">
-                    <td class="py-3.5 px-4">
-                        <a href="https://tw.stock.yahoo.com/quote/${yfTicker}" target="_blank" class="font-semibold text-white hover:text-blue-400 text-base">
-                            ${item['代碼']} ${item['名稱']}
-                        </a>
-                        <span class="text-xs font-normal px-2 py-0.5 bg-gray-800 text-gray-400 rounded ml-2">${item['市場']}</span>
-                        <div class="text-[11px] text-twred mt-1">領先轉折 +${strength}%</div>
-                    </td>
-                    <td class="py-3.5 px-4 text-right font-mono text-white text-base">${item['本週收盤價'].toFixed(2)}</td>
-                    <td class="py-3.5 px-4 text-right font-mono text-gray-300">${item['本週成交量(張)'].toLocaleString()}</td>
-                    <td class="py-3.5 px-4 text-right font-mono text-indigo-300">${item['W1轉折價'].toFixed(2)}</td>
-                    <td class="py-3.5 px-4 text-right font-mono text-indigo-300">${item['W2轉折價'].toFixed(2)}</td>
-                    <td class="py-3.5 px-4 text-right font-mono text-indigo-300">${item['W3轉折價'].toFixed(2)}</td>
-                </tr>`;
-            }).join('');
+    // 渲染三週轉折表格
+    function renderWeeklyTurn() {
+        const tbody = document.getElementById('turn-tbody');
+        const stocks = (GLOBAL_DATA.turn && GLOBAL_DATA.turn.stocks) ? GLOBAL_DATA.turn.stocks : [];
+        if (stocks.length === 0) {
+            tbody.innerHTML = `<tr><td colspan="5" class="text-center py-8 text-gray-500">暫無資料</td></tr>`;
+            return;
         }
+        tbody.innerHTML = stocks.map(s => `
+            <tr class="hover:bg-slate-800/40 transition">
+                <td class="py-3 px-4 font-semibold text-white">${s['名稱']} <span class="text-xs text-gray-500">(${s['代碼']})</span></td>
+                <td class="py-3 px-4 font-medium text-white">$${s['收盤價']}</td>
+                <td class="py-3 px-4 text-gray-400">$${s['轉折價']}</td>
+                <td class="py-3 px-4 text-emerald-400 font-medium">${s['突破幅度'] || '-'}</td>
+                <td class="py-3 px-4">
+                    <a href="https://tw.stock.yahoo.com/quote/${s['代碼']}.TW" target="_blank" class="text-blue-400 hover:underline text-xs">分析</a>
+                </td>
+            </tr>
+        `).join('');
+    }
 
-        // ================== 大戶籌碼繪圖邏輯 ==================
-        function drawChipChart() {
-            const code = document.getElementById('chip-input').value.trim();
-            const statusEl = document.getElementById('chip-status');
+    // 渲染歷史選股表格 (包含最新現價、波段最高價、最大漲幅 MFE)
+    function renderHistory() {
+        const tbody = document.getElementById('history-tbody');
+        const filterValue = document.getElementById('strat-filter').value;
+        const historyMap = GLOBAL_DATA.history || {};
 
-            if (!code) {
-                statusEl.textContent = "⚠️ 請輸入股票代碼";
-                return;
-            }
-            if (Object.keys(globalHoldersData).length === 0) {
-                statusEl.textContent = "⚠️ 尚未讀取到資料庫，請確認 JSON 是否存在";
-                return;
-            }
-            if (!globalHoldersData[code] || globalHoldersData[code].dates.length === 0) {
-                statusEl.textContent = "⚠️ 尚未追蹤此股票 (僅追蹤曾在戰情室入選之標的)";
-                return;
-            }
-
-            statusEl.textContent = `✅ 正在顯示 ${code} 大戶籌碼`;
-            const data = globalHoldersData[code];
-            const ctx = document.getElementById('chipChart').getContext('2d');
-
-            if (currentChart) {
-                currentChart.destroy();
-            }
-
-            currentChart = new Chart(ctx, {
-                type: 'line',
-                data: {
-                    labels: data.dates,
-                    datasets: [
-                        {
-                            label: '> 400張 大戶持股比例 (%)',
-                            data: data.p400,
-                            borderColor: '#f59e0b', // 橘黃色
-                            backgroundColor: 'rgba(245, 158, 11, 0.1)',
-                            borderWidth: 2,
-                            pointRadius: 3,
-                            fill: true,
-                            tension: 0.1
-                        },
-                        {
-                            label: '> 1000張 大戶持股比例 (%)',
-                            data: data.p1000,
-                            borderColor: '#ef4444', // 紅色
-                            backgroundColor: 'rgba(239, 68, 68, 0.1)',
-                            borderWidth: 2,
-                            pointRadius: 3,
-                            fill: true,
-                            tension: 0.1
-                        }
-                    ]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    interaction: {
-                        mode: 'index',
-                        intersect: false,
-                    },
-                    plugins: {
-                        legend: {
-                            labels: { color: '#e5e7eb' }
-                        },
-                        tooltip: {
-                            backgroundColor: 'rgba(15, 23, 42, 0.9)',
-                            titleColor: '#fff',
-                            bodyColor: '#cbd5e1',
-                            borderColor: '#334155',
-                            borderWidth: 1
-                        }
-                    },
-                    scales: {
-                        x: {
-                            ticks: { color: '#9ca3af' },
-                            grid: { color: '#334155' }
-                        },
-                        y: {
-                            ticks: { color: '#9ca3af' },
-                            grid: { color: '#334155' },
-                            title: {
-                                display: true,
-                                text: '持股比例 (%)',
-                                color: '#9ca3af'
-                            }
-                        }
-                    }
-                }
+        let allRecords = [];
+        for (const [ticker, list] of Object.entries(historyMap)) {
+            list.forEach(rec => {
+                const code = ticker.replace('.TWO', '').replace('.TW', '');
+                allRecords.push({ ticker, code, ...rec });
             });
         }
 
-        window.onload = loadData;
-    </script>
-</body>
-</html>
+        // 依據入選日期降冪排序 (最新在前)
+        allRecords.sort((a, b) => (b.pick_date || '').localeCompare(a.pick_date || ''));
+
+        // 策略過濾條件
+        if (filterValue !== 'ALL') {
+            allRecords = allRecords.filter(r => (r.strategies || '').includes(filterValue));
+        }
+
+        if (allRecords.length === 0) {
+            tbody.innerHTML = `<tr><td colspan="9" class="text-center py-12 text-gray-500">無符合篩選條件的歷史紀錄</td></tr>`;
+            return;
+        }
+
+        tbody.innerHTML = allRecords.map(r => {
+            const ret = parseFloat(r.return_pct || 0);
+            const retClass = ret >= 0 ? 'text-upred font-semibold' : 'text-downgreen font-semibold';
+            const retPrefix = ret > 0 ? '+' : '';
+
+            // 波段最高價與最大漲幅
+            const maxRet = parseFloat(r.max_return_pct !== undefined ? r.max_return_pct : ret);
+            const highestP = r.highest_price !== undefined ? r.highest_price : r.current_price;
+            const maxBadgeClass = maxRet >= 15.0 
+                ? 'bg-amber-500/20 text-amber-300 border-amber-500/50' 
+                : maxRet > 0 
+                    ? 'bg-red-500/10 text-upred border-red-500/30' 
+                    : 'text-gray-400 border-transparent';
+
+            return `
+            <tr class="hover:bg-slate-800/40 transition">
+                <td class="py-3 px-4 text-gray-400 text-xs">${r.pick_date}</td>
+                <td class="py-3 px-4 font-semibold text-white">${r.name} <span class="text-xs text-gray-500">(${r.code})</span></td>
+                <td class="py-3 px-4 max-w-xs">${getStrategyBadges(r.strategies)}</td>
+                <td class="py-3 px-4 font-medium text-gray-300">$${r.entry_price}</td>
+                <td class="py-3 px-4 font-bold text-white">$${r.current_price}</td>
+                <td class="py-3 px-4 font-medium text-amber-400">$${highestP}</td>
+                <td class="py-3 px-4 ${retClass}">${retPrefix}${ret.toFixed(2)}%</td>
+                <td class="py-3 px-4">
+                    <span class="inline-block px-2.5 py-0.5 text-xs font-bold rounded-full border ${maxBadgeClass}">
+                        +${maxRet.toFixed(2)}%
+                    </span>
+                </td>
+                <td class="py-3 px-4">
+                    <a href="https://tw.stock.yahoo.com/quote/${r.ticker}" target="_blank" class="text-blue-400 hover:underline text-xs">圖表 ↗</a>
+                </td>
+            </tr>`;
+        }).join('');
+    }
+
+    // 大戶籌碼折線圖繪製
+    function renderChipChart() {
+        const codeInput = document.getElementById('chip-stock-input').value.trim();
+        const infoText = document.getElementById('chip-info-text');
+        const holders = GLOBAL_DATA.holders || {};
+
+        if (!codeInput) {
+            infoText.innerText = "⚠️ 請先輸入股票代碼！";
+            return;
+        }
+
+        const stockData = holders[codeInput];
+        if (!stockData || !stockData.dates || stockData.dates.length === 0) {
+            infoText.innerText = `⚠️ 查無代碼 ${codeInput} 的籌碼歷史數據。`;
+            if (chipChartInstance) chipChartInstance.destroy();
+            return;
+        }
+
+        infoText.innerHTML = `📊 <span class="text-white font-semibold">${codeInput}</span> 集保籌碼走勢 (共 ${stockData.dates.length} 週記錄)`;
+
+        const ctx = document.getElementById('chipChart').getContext('2d');
+        if (chipChartInstance) chipChartInstance.destroy();
+
+        chipChartInstance = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: stockData.dates,
+                datasets: [
+                    {
+                        label: '400張以上大戶比例 (%)',
+                        data: stockData.p400,
+                        borderColor: '#38bdf8',
+                        backgroundColor: 'rgba(56, 189, 248, 0.1)',
+                        borderWidth: 2.5,
+                        tension: 0.2,
+                        fill: true
+                    },
+                    {
+                        label: '1000張以上千張大戶比例 (%)',
+                        data: stockData.p1000,
+                        borderColor: '#818cf8',
+                        backgroundColor: 'transparent',
+                        borderWidth: 2,
+                        borderDash: [5, 5],
+                        tension: 0.2
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { labels: { color: '#94a3b8' } }
+                },
+                scales: {
+                    x: { ticks: { color: '#64748b' }, grid: { color: '#1e293b' } },
+                    y: { ticks: { color: '#64748b' }, grid: { color: '#334155' } }
+                }
+            }
+        });
+    }
+
+    window.onload = init;
+</script>
