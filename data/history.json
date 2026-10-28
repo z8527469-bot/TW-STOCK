@@ -1,1 +1,110 @@
-{}
+{
+    "1569.TWO": [
+        {
+            "name": "濱川",
+            "pick_date": "2026-10-28",
+            "strategies": "S2_創高動能, ⚡RS創高, 🐳大戶增持(+2.29%)",
+            "entry_price": 99.0,
+            "current_price": 99.0,
+            "highest_price": 99.0,
+            "return_pct": 0.0,
+            "max_return_pct": 0.0
+        }
+    ],
+    "1815.TWO": [
+        {
+            "name": "富喬",
+            "pick_date": "2026-10-28",
+            "strategies": "S3_投信認養, 🐳大戶增持(+6.24%)",
+            "entry_price": 144.0,
+            "current_price": 144.0,
+            "highest_price": 144.0,
+            "return_pct": 0.0,
+            "max_return_pct": 0.0
+        }
+    ],
+    "2393.TW": [
+        {
+            "name": "億光",
+            "pick_date": "2026-10-28",
+            "strategies": "S4_強勢回測網球, ⚡RS創高, 🐳大戶增持(+0.18%)",
+            "entry_price": 69.0,
+            "current_price": 69.0,
+            "highest_price": 69.0,
+            "return_pct": 0.0,
+            "max_return_pct": 0.0
+        }
+    ],
+    "2451.TW": [
+        {
+            "name": "創見",
+            "pick_date": "2026-10-28",
+            "strategies": "S1_底部突破, 🐳大戶增持(+0.35%)",
+            "entry_price": 293.5,
+            "current_price": 293.5,
+            "highest_price": 293.5,
+            "return_pct": 0.0,
+            "max_return_pct": 0.0
+        }
+    ],
+    "3374.TWO": [
+        {
+            "name": "精材",
+            "pick_date": "2026-10-28",
+            "strategies": "S2_創高動能, ⚡RS創高, 🐳大戶增持(+0.81%)",
+            "entry_price": 500.0,
+            "current_price": 500.0,
+            "highest_price": 500.0,
+            "return_pct": 0.0,
+            "max_return_pct": 0.0
+        }
+    ],
+    "4540.TW": [
+        {
+            "name": "全球傳動",
+            "pick_date": "2026-10-28",
+            "strategies": "S1_底部突破, ⚡RS創高, 🐳大戶增持(+0.14%)",
+            "entry_price": 64.3,
+            "current_price": 64.3,
+            "highest_price": 64.3,
+            "return_pct": 0.0,
+            "max_return_pct": 0.0
+        }
+    ],
+    "4938.TW": [
+        {
+            "name": "和碩",
+            "pick_date": "2026-10-28",
+            "strategies": "S4_強勢回測網球, ⚡RS創高, 🐳大戶增持(+0.54%)",
+            "entry_price": 108.0,
+            "current_price": 108.0,
+            "highest_price": 108.0,
+            "return_pct": 0.0,
+            "max_return_pct": 0.0
+        }
+    ],
+    "4967.TW": [
+        {
+            "name": "十銓",
+            "pick_date": "2026-10-28",
+            "strategies": "S2_創高動能, 🐳大戶增持(+0.2%)",
+            "entry_price": 279.5,
+            "current_price": 279.5,
+            "highest_price": 279.5,
+            "return_pct": 0.0,
+            "max_return_pct": 0.0
+        }
+    ],
+    "6179.TWO": [
+        {
+            "name": "亞通",
+            "pick_date": "2026-10-28",
+            "strategies": "S4_強勢回測網球, 🐳大戶增持(+1.35%)",
+            "entry_price": 40.0,
+            "current_price": 40.0,
+            "highest_price": 40.0,
+            "return_pct": 0.0,
+            "max_return_pct": 0.0
+        }
+    ]
+}
