@@ -5,8 +5,10 @@
             "pick_date": "2026-10-07",
             "strategies": "S1_底部突破",
             "entry_price": 13.05,
-            "current_price": 13.1,
-            "return_pct": 0.38
+            "current_price": NaN,
+            "return_pct": NaN,
+            "highest_price": 13.1,
+            "max_return_pct": 0.38
         }
     ],
     "1305.TW": [
@@ -15,8 +17,10 @@
             "pick_date": "2026-10-07",
             "strategies": "S1_底部突破",
             "entry_price": 12.9,
-            "current_price": 13.15,
-            "return_pct": 1.94
+            "current_price": NaN,
+            "return_pct": NaN,
+            "highest_price": 12.9,
+            "max_return_pct": 0.0
         }
     ],
     "1325.TW": [
@@ -25,8 +29,10 @@
             "pick_date": "2026-10-07",
             "strategies": "S1_底部突破",
             "entry_price": 27.8,
-            "current_price": 31.0,
-            "return_pct": 11.51
+            "current_price": NaN,
+            "return_pct": NaN,
+            "highest_price": 27.8,
+            "max_return_pct": 0.0
         }
     ],
     "1802.TW": [
@@ -35,16 +41,20 @@
             "pick_date": "2026-10-07",
             "strategies": "S1_底部突破",
             "entry_price": 65.7,
-            "current_price": 63.5,
-            "return_pct": -3.35
+            "current_price": NaN,
+            "return_pct": NaN,
+            "highest_price": 73.6,
+            "max_return_pct": 12.02
         },
         {
             "name": "台玻",
             "pick_date": "2026-10-16",
             "strategies": "S3_投信認養",
             "entry_price": 66.9,
-            "current_price": 66.9,
-            "return_pct": 0.0
+            "current_price": NaN,
+            "return_pct": NaN,
+            "highest_price": 73.6,
+            "max_return_pct": 10.01
         }
     ],
     "2241.TW": [
@@ -53,16 +63,20 @@
             "pick_date": "2026-10-07",
             "strategies": "S2_創高動能",
             "entry_price": 52.0,
-            "current_price": 51.5,
-            "return_pct": -0.96
+            "current_price": NaN,
+            "return_pct": NaN,
+            "highest_price": 52.0,
+            "max_return_pct": 0.0
         },
         {
             "name": "艾姆勒",
             "pick_date": "2026-10-08",
             "strategies": "S7_漲停強勢旗形",
             "entry_price": 50.5,
-            "current_price": 51.5,
-            "return_pct": 1.98
+            "current_price": NaN,
+            "return_pct": NaN,
+            "highest_price": 50.5,
+            "max_return_pct": 0.0
         }
     ],
     "2340.TW": [
@@ -71,32 +85,40 @@
             "pick_date": "2026-10-07",
             "strategies": "S2_創高動能",
             "entry_price": 48.15,
-            "current_price": 51.4,
-            "return_pct": 6.75
+            "current_price": NaN,
+            "return_pct": NaN,
+            "highest_price": 49.7,
+            "max_return_pct": 3.22
         },
         {
             "name": "台亞",
             "pick_date": "2026-10-08",
             "strategies": "S2_創高動能, S6_營收口袋樞紐, S7_漲停強勢旗形",
             "entry_price": 52.9,
-            "current_price": 51.4,
-            "return_pct": -2.84
+            "current_price": NaN,
+            "return_pct": NaN,
+            "highest_price": 52.9,
+            "max_return_pct": 0.0
         },
         {
             "name": "台亞",
             "pick_date": "2026-10-09",
             "strategies": "S2_創高動能",
             "entry_price": 52.9,
-            "current_price": 51.4,
-            "return_pct": -2.84
+            "current_price": NaN,
+            "return_pct": NaN,
+            "highest_price": 52.9,
+            "max_return_pct": 0.0
         },
         {
             "name": "台亞",
             "pick_date": "2026-10-13",
             "strategies": "S2_創高動能",
             "entry_price": 53.7,
-            "current_price": 53.7,
-            "return_pct": 0.0
+            "current_price": NaN,
+            "return_pct": NaN,
+            "highest_price": 53.7,
+            "max_return_pct": 0.0
         }
     ],
     "2402.TW": [
@@ -105,16 +127,20 @@
             "pick_date": "2026-10-07",
             "strategies": "S1_底部突破",
             "entry_price": 61.9,
-            "current_price": 62.2,
-            "return_pct": 0.48
+            "current_price": NaN,
+            "return_pct": NaN,
+            "highest_price": 61.9,
+            "max_return_pct": 0.0
         },
         {
             "name": "毅嘉",
             "pick_date": "2026-10-14",
             "strategies": "S1_底部突破",
             "entry_price": 65.6,
-            "current_price": 65.6,
-            "return_pct": 0.0
+            "current_price": NaN,
+            "return_pct": NaN,
+            "highest_price": 65.6,
+            "max_return_pct": 0.0
         }
     ],
     "2439.TW": [
@@ -123,8 +149,10 @@
             "pick_date": "2026-10-07",
             "strategies": "S1_底部突破",
             "entry_price": 78.7,
-            "current_price": 81.0,
-            "return_pct": 2.92
+            "current_price": NaN,
+            "return_pct": NaN,
+            "highest_price": 82.2,
+            "max_return_pct": 4.45
         }
     ],
     "2472.TW": [
@@ -133,8 +161,10 @@
             "pick_date": "2026-10-07",
             "strategies": "S1_底部突破",
             "entry_price": 243.5,
-            "current_price": 243.5,
-            "return_pct": 0.0
+            "current_price": NaN,
+            "return_pct": NaN,
+            "highest_price": 243.5,
+            "max_return_pct": 0.0
         }
     ],
     "2607.TW": [
@@ -143,8 +173,10 @@
             "pick_date": "2026-10-07",
             "strategies": "S1_底部突破",
             "entry_price": 55.7,
-            "current_price": 57.3,
-            "return_pct": 2.87
+            "current_price": NaN,
+            "return_pct": NaN,
+            "highest_price": 56.6,
+            "max_return_pct": 1.62
         }
     ],
     "3234.TWO": [
@@ -153,16 +185,20 @@
             "pick_date": "2026-10-07",
             "strategies": "S2_創高動能",
             "entry_price": 191.0,
-            "current_price": 183.5,
-            "return_pct": -3.93
+            "current_price": NaN,
+            "return_pct": NaN,
+            "highest_price": 203.0,
+            "max_return_pct": 6.28
         },
         {
             "name": "光環",
             "pick_date": "2026-10-21",
             "strategies": "S2_創高動能",
             "entry_price": 196.5,
-            "current_price": 196.5,
-            "return_pct": 0.0
+            "current_price": NaN,
+            "return_pct": NaN,
+            "highest_price": 203.0,
+            "max_return_pct": 3.31
         }
     ],
     "3311.TW": [
@@ -171,16 +207,20 @@
             "pick_date": "2026-10-07",
             "strategies": "S2_創高動能",
             "entry_price": 47.35,
-            "current_price": 51.5,
-            "return_pct": 8.76
+            "current_price": NaN,
+            "return_pct": NaN,
+            "highest_price": 48.1,
+            "max_return_pct": 1.58
         },
         {
             "name": "閎暉",
             "pick_date": "2026-10-08",
             "strategies": "S7_漲停強勢旗形",
             "entry_price": 46.9,
-            "current_price": 51.5,
-            "return_pct": 9.81
+            "current_price": NaN,
+            "return_pct": NaN,
+            "highest_price": 48.1,
+            "max_return_pct": 2.56
         }
     ],
     "4167.TWO": [
@@ -189,24 +229,30 @@
             "pick_date": "2026-10-07",
             "strategies": "S2_創高動能",
             "entry_price": 20.45,
-            "current_price": 21.65,
-            "return_pct": 5.87
+            "current_price": NaN,
+            "return_pct": NaN,
+            "highest_price": 21.25,
+            "max_return_pct": 3.91
         },
         {
             "name": "松瑞藥",
             "pick_date": "2026-10-08",
             "strategies": "S2_創高動能, S6_營收口袋樞紐",
             "entry_price": 22.0,
-            "current_price": 21.65,
-            "return_pct": -1.59
+            "current_price": NaN,
+            "return_pct": NaN,
+            "highest_price": 22.0,
+            "max_return_pct": 0.0
         },
         {
             "name": "松瑞藥",
             "pick_date": "2026-10-09",
             "strategies": "S2_創高動能",
             "entry_price": 22.0,
-            "current_price": 21.65,
-            "return_pct": -1.59
+            "current_price": NaN,
+            "return_pct": NaN,
+            "highest_price": 22.0,
+            "max_return_pct": 0.0
         }
     ],
     "4989.TW": [
@@ -215,8 +261,10 @@
             "pick_date": "2026-10-07",
             "strategies": "S1_底部突破",
             "entry_price": 73.7,
-            "current_price": 71.1,
-            "return_pct": -3.53
+            "current_price": NaN,
+            "return_pct": NaN,
+            "highest_price": 75.4,
+            "max_return_pct": 2.31
         }
     ],
     "5244.TW": [
@@ -225,8 +273,10 @@
             "pick_date": "2026-10-07",
             "strategies": "S1_底部突破",
             "entry_price": 40.75,
-            "current_price": 38.6,
-            "return_pct": -5.28
+            "current_price": NaN,
+            "return_pct": NaN,
+            "highest_price": 40.75,
+            "max_return_pct": 0.0
         }
     ],
     "5340.TWO": [
@@ -235,16 +285,20 @@
             "pick_date": "2026-10-07",
             "strategies": "S1_底部突破",
             "entry_price": 90.0,
-            "current_price": 95.0,
-            "return_pct": 5.56
+            "current_price": NaN,
+            "return_pct": NaN,
+            "highest_price": 99.6,
+            "max_return_pct": 10.67
         },
         {
             "name": "建榮",
             "pick_date": "2026-10-08",
             "strategies": "S6_營收口袋樞紐",
             "entry_price": 94.4,
-            "current_price": 95.0,
-            "return_pct": 0.64
+            "current_price": NaN,
+            "return_pct": NaN,
+            "highest_price": 99.6,
+            "max_return_pct": 5.51
         }
     ],
     "5426.TWO": [
@@ -253,8 +307,10 @@
             "pick_date": "2026-10-07",
             "strategies": "S1_底部突破",
             "entry_price": 30.2,
-            "current_price": 28.3,
-            "return_pct": -6.29
+            "current_price": NaN,
+            "return_pct": NaN,
+            "highest_price": 33.3,
+            "max_return_pct": 10.26
         }
     ],
     "5460.TWO": [
@@ -263,32 +319,40 @@
             "pick_date": "2026-10-07",
             "strategies": "S1_底部突破, S2_創高動能",
             "entry_price": 19.25,
-            "current_price": 20.6,
-            "return_pct": 7.01
+            "current_price": NaN,
+            "return_pct": NaN,
+            "highest_price": 21.0,
+            "max_return_pct": 9.09
         },
         {
             "name": "同協",
             "pick_date": "2026-10-08",
             "strategies": "S1_底部突破, S2_創高動能, S6_營收口袋樞紐",
             "entry_price": 20.75,
-            "current_price": 20.6,
-            "return_pct": -0.72
+            "current_price": NaN,
+            "return_pct": NaN,
+            "highest_price": 21.0,
+            "max_return_pct": 1.2
         },
         {
             "name": "同協",
             "pick_date": "2026-10-09",
             "strategies": "S2_創高動能",
             "entry_price": 20.75,
-            "current_price": 20.6,
-            "return_pct": -0.72
+            "current_price": NaN,
+            "return_pct": NaN,
+            "highest_price": 21.0,
+            "max_return_pct": 1.2
         },
         {
             "name": "同協",
             "pick_date": "2026-10-14",
             "strategies": "S2_創高動能",
             "entry_price": 22.65,
-            "current_price": 22.65,
-            "return_pct": 0.0
+            "current_price": NaN,
+            "return_pct": NaN,
+            "highest_price": 22.65,
+            "max_return_pct": 0.0
         }
     ],
     "6197.TW": [
@@ -297,24 +361,30 @@
             "pick_date": "2026-10-07",
             "strategies": "S2_創高動能",
             "entry_price": 371.0,
-            "current_price": 390.5,
-            "return_pct": 5.26
+            "current_price": NaN,
+            "return_pct": NaN,
+            "highest_price": 371.0,
+            "max_return_pct": 0.0
         },
         {
             "name": "佳必琪",
             "pick_date": "2026-10-08",
             "strategies": "S2_創高動能, S6_營收口袋樞紐",
             "entry_price": 381.5,
-            "current_price": 390.5,
-            "return_pct": 2.36
+            "current_price": NaN,
+            "return_pct": NaN,
+            "highest_price": 381.5,
+            "max_return_pct": 0.0
         },
         {
             "name": "佳必琪",
             "pick_date": "2026-10-09",
             "strategies": "S2_創高動能",
             "entry_price": 381.5,
-            "current_price": 390.5,
-            "return_pct": 2.36
+            "current_price": NaN,
+            "return_pct": NaN,
+            "highest_price": 381.5,
+            "max_return_pct": 0.0
         }
     ],
     "6667.TWO": [
@@ -323,8 +393,10 @@
             "pick_date": "2026-10-07",
             "strategies": "S1_底部突破",
             "entry_price": 278.5,
-            "current_price": 274.0,
-            "return_pct": -1.62
+            "current_price": NaN,
+            "return_pct": NaN,
+            "highest_price": 278.5,
+            "max_return_pct": 0.0
         }
     ],
     "6716.TWO": [
@@ -333,8 +405,10 @@
             "pick_date": "2026-10-07",
             "strategies": "S2_創高動能",
             "entry_price": 153.5,
-            "current_price": 125.0,
-            "return_pct": -18.57
+            "current_price": NaN,
+            "return_pct": NaN,
+            "highest_price": 153.5,
+            "max_return_pct": 0.0
         }
     ],
     "6811.TWO": [
@@ -343,16 +417,20 @@
             "pick_date": "2026-10-07",
             "strategies": "S2_創高動能",
             "entry_price": 273.0,
-            "current_price": 275.5,
-            "return_pct": 0.92
+            "current_price": NaN,
+            "return_pct": NaN,
+            "highest_price": 293.0,
+            "max_return_pct": 7.33
         },
         {
             "name": "宏�硌穈T",
             "pick_date": "2026-10-09",
             "strategies": "S2_創高動能",
             "entry_price": 281.0,
-            "current_price": 275.5,
-            "return_pct": -1.96
+            "current_price": NaN,
+            "return_pct": NaN,
+            "highest_price": 293.0,
+            "max_return_pct": 4.27
         }
     ],
     "6834.TW": [
@@ -361,8 +439,10 @@
             "pick_date": "2026-10-07",
             "strategies": "S2_創高動能",
             "entry_price": 125.0,
-            "current_price": 145.0,
-            "return_pct": 16.0
+            "current_price": NaN,
+            "return_pct": NaN,
+            "highest_price": 149.5,
+            "max_return_pct": 19.6
         }
     ],
     "2428.TW": [
@@ -371,16 +451,20 @@
             "pick_date": "2026-10-08",
             "strategies": "S1_底部突破",
             "entry_price": 282.0,
-            "current_price": 281.5,
-            "return_pct": -0.18
+            "current_price": NaN,
+            "return_pct": NaN,
+            "highest_price": 282.0,
+            "max_return_pct": 0.0
         },
         {
             "name": "興勤",
             "pick_date": "2026-10-09",
             "strategies": "S1_底部突破",
             "entry_price": 282.0,
-            "current_price": 281.5,
-            "return_pct": -0.18
+            "current_price": NaN,
+            "return_pct": NaN,
+            "highest_price": 282.0,
+            "max_return_pct": 0.0
         }
     ],
     "3264.TWO": [
@@ -389,16 +473,20 @@
             "pick_date": "2026-10-08",
             "strategies": "S3_投信認養",
             "entry_price": 256.0,
-            "current_price": 272.5,
-            "return_pct": 6.45
+            "current_price": NaN,
+            "return_pct": NaN,
+            "highest_price": 279.5,
+            "max_return_pct": 9.18
         },
         {
             "name": "欣銓",
             "pick_date": "2026-10-09",
             "strategies": "S3_投信認養",
             "entry_price": 256.0,
-            "current_price": 272.5,
-            "return_pct": 6.45
+            "current_price": NaN,
+            "return_pct": NaN,
+            "highest_price": 279.5,
+            "max_return_pct": 9.18
         }
     ],
     "3685.TWO": [
@@ -407,16 +495,20 @@
             "pick_date": "2026-10-08",
             "strategies": "S1_底部突破",
             "entry_price": 37.9,
-            "current_price": 38.8,
-            "return_pct": 2.37
+            "current_price": NaN,
+            "return_pct": NaN,
+            "highest_price": 37.9,
+            "max_return_pct": 0.0
         },
         {
             "name": "元創精密",
             "pick_date": "2026-10-09",
             "strategies": "S1_底部突破",
             "entry_price": 37.9,
-            "current_price": 38.8,
-            "return_pct": 2.37
+            "current_price": NaN,
+            "return_pct": NaN,
+            "highest_price": 37.9,
+            "max_return_pct": 0.0
         }
     ],
     "4157.TWO": [
@@ -425,16 +517,20 @@
             "pick_date": "2026-10-08",
             "strategies": "S1_底部突破",
             "entry_price": 9.33,
-            "current_price": 9.19,
-            "return_pct": -1.5
+            "current_price": NaN,
+            "return_pct": NaN,
+            "highest_price": 9.33,
+            "max_return_pct": 0.0
         },
         {
             "name": "太景*-KY",
             "pick_date": "2026-10-09",
             "strategies": "S1_底部突破",
             "entry_price": 9.33,
-            "current_price": 9.19,
-            "return_pct": -1.5
+            "current_price": NaN,
+            "return_pct": NaN,
+            "highest_price": 9.33,
+            "max_return_pct": 0.0
         }
     ],
     "4171.TWO": [
@@ -443,16 +539,20 @@
             "pick_date": "2026-10-08",
             "strategies": "S1_底部突破",
             "entry_price": 19.85,
-            "current_price": 19.0,
-            "return_pct": -4.28
+            "current_price": NaN,
+            "return_pct": NaN,
+            "highest_price": 19.85,
+            "max_return_pct": 0.0
         },
         {
             "name": "瑞基",
             "pick_date": "2026-10-09",
             "strategies": "S1_底部突破",
             "entry_price": 19.85,
-            "current_price": 19.0,
-            "return_pct": -4.28
+            "current_price": NaN,
+            "return_pct": NaN,
+            "highest_price": 19.85,
+            "max_return_pct": 0.0
         }
     ],
     "4714.TWO": [
@@ -461,16 +561,20 @@
             "pick_date": "2026-10-08",
             "strategies": "S1_底部突破",
             "entry_price": 12.45,
-            "current_price": 12.4,
-            "return_pct": -0.4
+            "current_price": NaN,
+            "return_pct": NaN,
+            "highest_price": 12.45,
+            "max_return_pct": 0.0
         },
         {
             "name": "永捷",
             "pick_date": "2026-10-09",
             "strategies": "S1_底部突破",
             "entry_price": 12.45,
-            "current_price": 12.4,
-            "return_pct": -0.4
+            "current_price": NaN,
+            "return_pct": NaN,
+            "highest_price": 12.45,
+            "max_return_pct": 0.0
         }
     ],
     "4934.TW": [
@@ -479,16 +583,20 @@
             "pick_date": "2026-10-08",
             "strategies": "S1_底部突破",
             "entry_price": 17.1,
-            "current_price": 16.85,
-            "return_pct": -1.46
+            "current_price": NaN,
+            "return_pct": NaN,
+            "highest_price": 17.1,
+            "max_return_pct": 0.0
         },
         {
             "name": "太極",
             "pick_date": "2026-10-09",
             "strategies": "S1_底部突破",
             "entry_price": 17.1,
-            "current_price": 16.85,
-            "return_pct": -1.46
+            "current_price": NaN,
+            "return_pct": NaN,
+            "highest_price": 17.1,
+            "max_return_pct": 0.0
         }
     ],
     "5230.TWO": [
@@ -497,32 +605,40 @@
             "pick_date": "2026-10-08",
             "strategies": "S2_創高動能",
             "entry_price": 25.0,
-            "current_price": 25.05,
-            "return_pct": 0.2
+            "current_price": NaN,
+            "return_pct": NaN,
+            "highest_price": 27.6,
+            "max_return_pct": 10.4
         },
         {
             "name": "雷笛克光學",
             "pick_date": "2026-10-09",
             "strategies": "S2_創高動能",
             "entry_price": 25.0,
-            "current_price": 25.05,
-            "return_pct": 0.2
+            "current_price": NaN,
+            "return_pct": NaN,
+            "highest_price": 27.6,
+            "max_return_pct": 10.4
         },
         {
             "name": "雷笛克光學",
             "pick_date": "2026-10-13",
             "strategies": "S2_創高動能",
             "entry_price": 27.55,
-            "current_price": 27.55,
-            "return_pct": 0.0
+            "current_price": NaN,
+            "return_pct": NaN,
+            "highest_price": 27.6,
+            "max_return_pct": 0.18
         },
         {
             "name": "雷笛克光學",
             "pick_date": "2026-10-16",
             "strategies": "S2_創高動能",
             "entry_price": 27.8,
-            "current_price": 27.8,
-            "return_pct": 0.0
+            "current_price": NaN,
+            "return_pct": NaN,
+            "highest_price": 27.8,
+            "max_return_pct": 0.0
         }
     ],
     "1416.TW": [
@@ -531,16 +647,20 @@
             "pick_date": "2026-10-12",
             "strategies": "S2_創高動能",
             "entry_price": 12.65,
-            "current_price": 12.65,
-            "return_pct": 0.0
+            "current_price": NaN,
+            "return_pct": NaN,
+            "highest_price": 13.45,
+            "max_return_pct": 6.32
         },
         {
             "name": "廣豐",
             "pick_date": "2026-10-13",
             "strategies": "S2_創高動能",
             "entry_price": 12.95,
-            "current_price": 12.95,
-            "return_pct": 0.0
+            "current_price": NaN,
+            "return_pct": NaN,
+            "highest_price": 13.45,
+            "max_return_pct": 3.86
         }
     ],
     "1519.TW": [
@@ -549,8 +669,10 @@
             "pick_date": "2026-10-12",
             "strategies": "S1_底部突破",
             "entry_price": 724.0,
-            "current_price": 724.0,
-            "return_pct": 0.0
+            "current_price": NaN,
+            "return_pct": NaN,
+            "highest_price": 724.0,
+            "max_return_pct": 0.0
         }
     ],
     "1605.TW": [
@@ -559,16 +681,20 @@
             "pick_date": "2026-10-12",
             "strategies": "S2_創高動能",
             "entry_price": 40.15,
-            "current_price": 40.15,
-            "return_pct": 0.0
+            "current_price": NaN,
+            "return_pct": NaN,
+            "highest_price": 40.15,
+            "max_return_pct": 0.0
         },
         {
             "name": "華新",
             "pick_date": "2026-10-14",
             "strategies": "S2_創高動能",
             "entry_price": 40.7,
-            "current_price": 40.7,
-            "return_pct": 0.0
+            "current_price": NaN,
+            "return_pct": NaN,
+            "highest_price": 40.7,
+            "max_return_pct": 0.0
         }
     ],
     "2603.TW": [
@@ -577,16 +703,20 @@
             "pick_date": "2026-10-12",
             "strategies": "S2_創高動能",
             "entry_price": 255.5,
-            "current_price": 255.5,
-            "return_pct": 0.0
+            "current_price": NaN,
+            "return_pct": NaN,
+            "highest_price": 263.0,
+            "max_return_pct": 2.94
         },
         {
             "name": "長榮",
             "pick_date": "2026-10-13",
             "strategies": "S2_創高動能",
             "entry_price": 264.0,
-            "current_price": 264.0,
-            "return_pct": 0.0
+            "current_price": NaN,
+            "return_pct": NaN,
+            "highest_price": 264.0,
+            "max_return_pct": 0.0
         },
         {
             "name": "長榮",
@@ -594,7 +724,9 @@
             "strategies": "S4_強勢回測網球, ⚡RS創高, 🐳大戶增持(+0.14%)",
             "entry_price": 261.5,
             "current_price": 261.5,
-            "return_pct": 0.0
+            "return_pct": 0.0,
+            "highest_price": 263.0,
+            "max_return_pct": 0.57
         }
     ],
     "2611.TW": [
@@ -603,8 +735,10 @@
             "pick_date": "2026-10-12",
             "strategies": "S2_創高動能",
             "entry_price": 16.6,
-            "current_price": 16.6,
-            "return_pct": 0.0
+            "current_price": NaN,
+            "return_pct": NaN,
+            "highest_price": 16.6,
+            "max_return_pct": 0.0
         }
     ],
     "2609.TW": [
@@ -613,16 +747,20 @@
             "pick_date": "2026-10-12",
             "strategies": "S2_創高動能",
             "entry_price": 63.6,
-            "current_price": 63.6,
-            "return_pct": 0.0
+            "current_price": NaN,
+            "return_pct": NaN,
+            "highest_price": 63.6,
+            "max_return_pct": 0.0
         },
         {
             "name": "陽明",
             "pick_date": "2026-10-13",
             "strategies": "S2_創高動能, S3_投信認養",
             "entry_price": 64.5,
-            "current_price": 64.5,
-            "return_pct": 0.0
+            "current_price": NaN,
+            "return_pct": NaN,
+            "highest_price": 64.5,
+            "max_return_pct": 0.0
         }
     ],
     "2615.TW": [
@@ -631,24 +769,30 @@
             "pick_date": "2026-10-12",
             "strategies": "S2_創高動能",
             "entry_price": 121.0,
-            "current_price": 121.0,
-            "return_pct": 0.0
+            "current_price": NaN,
+            "return_pct": NaN,
+            "highest_price": 121.5,
+            "max_return_pct": 0.41
         },
         {
             "name": "萬海",
             "pick_date": "2026-10-13",
             "strategies": "S2_創高動能",
             "entry_price": 121.5,
-            "current_price": 121.5,
-            "return_pct": 0.0
+            "current_price": NaN,
+            "return_pct": NaN,
+            "highest_price": 121.5,
+            "max_return_pct": 0.0
         },
         {
             "name": "萬海",
             "pick_date": "2026-10-14",
             "strategies": "S2_創高動能",
             "entry_price": 125.0,
-            "current_price": 125.0,
-            "return_pct": 0.0
+            "current_price": NaN,
+            "return_pct": NaN,
+            "highest_price": 125.0,
+            "max_return_pct": 0.0
         }
     ],
     "3597.TWO": [
@@ -657,8 +801,10 @@
             "pick_date": "2026-10-12",
             "strategies": "S2_創高動能",
             "entry_price": 44.2,
-            "current_price": 44.2,
-            "return_pct": 0.0
+            "current_price": NaN,
+            "return_pct": NaN,
+            "highest_price": 51.3,
+            "max_return_pct": 16.06
         }
     ],
     "4938.TW": [
@@ -667,16 +813,20 @@
             "pick_date": "2026-10-12",
             "strategies": "S2_創高動能",
             "entry_price": 98.6,
-            "current_price": 98.6,
-            "return_pct": 0.0
+            "current_price": NaN,
+            "return_pct": NaN,
+            "highest_price": 114.0,
+            "max_return_pct": 15.62
         },
         {
             "name": "和碩",
             "pick_date": "2026-10-13",
             "strategies": "S2_創高動能",
             "entry_price": 102.5,
-            "current_price": 102.5,
-            "return_pct": 0.0
+            "current_price": NaN,
+            "return_pct": NaN,
+            "highest_price": 114.0,
+            "max_return_pct": 11.22
         }
     ],
     "5443.TWO": [
@@ -685,8 +835,10 @@
             "pick_date": "2026-10-12",
             "strategies": "S1_底部突破",
             "entry_price": 115.5,
-            "current_price": 115.5,
-            "return_pct": 0.0
+            "current_price": NaN,
+            "return_pct": NaN,
+            "highest_price": 115.5,
+            "max_return_pct": 0.0
         }
     ],
     "5469.TW": [
@@ -695,8 +847,10 @@
             "pick_date": "2026-10-12",
             "strategies": "S1_底部突破",
             "entry_price": 83.5,
-            "current_price": 83.5,
-            "return_pct": 0.0
+            "current_price": NaN,
+            "return_pct": NaN,
+            "highest_price": 87.0,
+            "max_return_pct": 4.19
         }
     ],
     "6122.TWO": [
@@ -717,8 +871,10 @@
             "pick_date": "2026-10-12",
             "strategies": "S1_底部突破",
             "entry_price": 26.15,
-            "current_price": 26.15,
-            "return_pct": 0.0
+            "current_price": NaN,
+            "return_pct": NaN,
+            "highest_price": 26.15,
+            "max_return_pct": 0.0
         }
     ],
     "6191.TW": [
@@ -727,16 +883,20 @@
             "pick_date": "2026-10-12",
             "strategies": "S1_底部突破",
             "entry_price": 93.5,
-            "current_price": 93.5,
-            "return_pct": 0.0
+            "current_price": NaN,
+            "return_pct": NaN,
+            "highest_price": 93.6,
+            "max_return_pct": 0.11
         },
         {
             "name": "精成科",
             "pick_date": "2026-10-13",
             "strategies": "S1_底部突破",
             "entry_price": 96.4,
-            "current_price": 96.4,
-            "return_pct": 0.0
+            "current_price": NaN,
+            "return_pct": NaN,
+            "highest_price": 96.4,
+            "max_return_pct": 0.0
         }
     ],
     "6271.TW": [
@@ -745,8 +905,10 @@
             "pick_date": "2026-10-12",
             "strategies": "S3_投信認養",
             "entry_price": 247.5,
-            "current_price": 247.5,
-            "return_pct": 0.0
+            "current_price": NaN,
+            "return_pct": NaN,
+            "highest_price": 247.5,
+            "max_return_pct": 0.0
         }
     ],
     "6278.TW": [
@@ -755,16 +917,20 @@
             "pick_date": "2026-10-12",
             "strategies": "S2_創高動能",
             "entry_price": 272.5,
-            "current_price": 290.5,
-            "return_pct": 6.61
+            "current_price": NaN,
+            "return_pct": NaN,
+            "highest_price": 316.5,
+            "max_return_pct": 16.15
         },
         {
             "name": "台表科",
             "pick_date": "2026-10-15",
             "strategies": "S2_創高動能",
             "entry_price": 303.0,
-            "current_price": 290.5,
-            "return_pct": -4.13
+            "current_price": NaN,
+            "return_pct": NaN,
+            "highest_price": 316.5,
+            "max_return_pct": 4.46
         }
     ],
     "6548.TWO": [
@@ -773,24 +939,30 @@
             "pick_date": "2026-10-12",
             "strategies": "S1_底部突破",
             "entry_price": 85.0,
-            "current_price": 85.0,
-            "return_pct": 0.0
+            "current_price": NaN,
+            "return_pct": NaN,
+            "highest_price": 85.0,
+            "max_return_pct": 0.0
         },
         {
             "name": "長科*",
             "pick_date": "2026-10-13",
             "strategies": "S1_底部突破",
             "entry_price": 86.6,
-            "current_price": 86.6,
-            "return_pct": 0.0
+            "current_price": NaN,
+            "return_pct": NaN,
+            "highest_price": 86.6,
+            "max_return_pct": 0.0
         },
         {
             "name": "長科*",
             "pick_date": "2026-10-15",
             "strategies": "S3_投信認養",
             "entry_price": 82.2,
-            "current_price": 82.2,
-            "return_pct": 0.0
+            "current_price": NaN,
+            "return_pct": NaN,
+            "highest_price": 82.2,
+            "max_return_pct": 0.0
         }
     ],
     "9105.TW": [
@@ -799,8 +971,10 @@
             "pick_date": "2026-10-12",
             "strategies": "S1_底部突破",
             "entry_price": 9.05,
-            "current_price": 9.05,
-            "return_pct": 0.0
+            "current_price": NaN,
+            "return_pct": NaN,
+            "highest_price": 9.32,
+            "max_return_pct": 2.98
         }
     ],
     "1312.TW": [
@@ -809,16 +983,20 @@
             "pick_date": "2026-10-13",
             "strategies": "S2_創高動能",
             "entry_price": 17.65,
-            "current_price": 17.65,
-            "return_pct": 0.0
+            "current_price": NaN,
+            "return_pct": NaN,
+            "highest_price": 17.65,
+            "max_return_pct": 0.0
         },
         {
             "name": "國喬",
             "pick_date": "2026-10-14",
             "strategies": "S2_創高動能",
             "entry_price": 18.9,
-            "current_price": 18.9,
-            "return_pct": 0.0
+            "current_price": NaN,
+            "return_pct": NaN,
+            "highest_price": 18.9,
+            "max_return_pct": 0.0
         }
     ],
     "1710.TW": [
@@ -827,16 +1005,20 @@
             "pick_date": "2026-10-13",
             "strategies": "S2_創高動能",
             "entry_price": 19.5,
-            "current_price": 19.5,
-            "return_pct": 0.0
+            "current_price": NaN,
+            "return_pct": NaN,
+            "highest_price": 19.5,
+            "max_return_pct": 0.0
         },
         {
             "name": "東聯",
             "pick_date": "2026-10-14",
             "strategies": "S2_創高動能",
             "entry_price": 20.0,
-            "current_price": 20.0,
-            "return_pct": 0.0
+            "current_price": NaN,
+            "return_pct": NaN,
+            "highest_price": 20.0,
+            "max_return_pct": 0.0
         }
     ],
     "2468.TW": [
@@ -845,8 +1027,10 @@
             "pick_date": "2026-10-13",
             "strategies": "S2_創高動能",
             "entry_price": 46.35,
-            "current_price": 46.35,
-            "return_pct": 0.0
+            "current_price": NaN,
+            "return_pct": NaN,
+            "highest_price": 56.9,
+            "max_return_pct": 22.76
         }
     ],
     "2480.TW": [
@@ -855,8 +1039,10 @@
             "pick_date": "2026-10-13",
             "strategies": "S2_創高動能",
             "entry_price": 192.5,
-            "current_price": 192.5,
-            "return_pct": 0.0
+            "current_price": NaN,
+            "return_pct": NaN,
+            "highest_price": 192.5,
+            "max_return_pct": 0.0
         }
     ],
     "3034.TW": [
@@ -865,32 +1051,40 @@
             "pick_date": "2026-10-13",
             "strategies": "S3_投信認養",
             "entry_price": 546.0,
-            "current_price": 546.0,
-            "return_pct": 0.0
+            "current_price": NaN,
+            "return_pct": NaN,
+            "highest_price": 608.0,
+            "max_return_pct": 11.36
         },
         {
             "name": "聯詠",
             "pick_date": "2026-10-14",
             "strategies": "S3_投信認養",
             "entry_price": 560.0,
-            "current_price": 560.0,
-            "return_pct": 0.0
+            "current_price": NaN,
+            "return_pct": NaN,
+            "highest_price": 608.0,
+            "max_return_pct": 8.57
         },
         {
             "name": "聯詠",
             "pick_date": "2026-10-15",
             "strategies": "S3_投信認養",
             "entry_price": 565.0,
-            "current_price": 565.0,
-            "return_pct": 0.0
+            "current_price": NaN,
+            "return_pct": NaN,
+            "highest_price": 608.0,
+            "max_return_pct": 7.61
         },
         {
             "name": "聯詠",
             "pick_date": "2026-10-16",
             "strategies": "S3_投信認養",
             "entry_price": 577.0,
-            "current_price": 577.0,
-            "return_pct": 0.0
+            "current_price": NaN,
+            "return_pct": NaN,
+            "highest_price": 608.0,
+            "max_return_pct": 5.37
         },
         {
             "name": "聯詠",
@@ -898,7 +1092,9 @@
             "strategies": "S4_強勢回測網球, ⚡RS創高, 🐳大戶增持(+0.33%)",
             "entry_price": 599.0,
             "current_price": 599.0,
-            "return_pct": 0.0
+            "return_pct": 0.0,
+            "highest_price": 608.0,
+            "max_return_pct": 1.5
         }
     ],
     "3041.TW": [
@@ -907,8 +1103,10 @@
             "pick_date": "2026-10-13",
             "strategies": "S1_底部突破",
             "entry_price": 25.55,
-            "current_price": 23.15,
-            "return_pct": -9.39
+            "current_price": NaN,
+            "return_pct": NaN,
+            "highest_price": 25.55,
+            "max_return_pct": 0.0
         }
     ],
     "3287.TWO": [
@@ -917,32 +1115,40 @@
             "pick_date": "2026-10-13",
             "strategies": "S2_創高動能",
             "entry_price": 52.5,
-            "current_price": 52.5,
-            "return_pct": 0.0
+            "current_price": NaN,
+            "return_pct": NaN,
+            "highest_price": 71.7,
+            "max_return_pct": 36.57
         },
         {
             "name": "廣寰科",
             "pick_date": "2026-10-14",
             "strategies": "S2_創高動能",
             "entry_price": 57.7,
-            "current_price": 57.7,
-            "return_pct": 0.0
+            "current_price": NaN,
+            "return_pct": NaN,
+            "highest_price": 71.7,
+            "max_return_pct": 24.26
         },
         {
             "name": "廣寰科",
             "pick_date": "2026-10-15",
             "strategies": "S2_創高動能",
             "entry_price": 58.7,
-            "current_price": 58.7,
-            "return_pct": 0.0
+            "current_price": NaN,
+            "return_pct": NaN,
+            "highest_price": 71.7,
+            "max_return_pct": 22.15
         },
         {
             "name": "廣寰科",
             "pick_date": "2026-10-16",
             "strategies": "S2_創高動能",
             "entry_price": 59.6,
-            "current_price": 59.6,
-            "return_pct": 0.0
+            "current_price": NaN,
+            "return_pct": NaN,
+            "highest_price": 71.7,
+            "max_return_pct": 20.3
         }
     ],
     "3483.TWO": [
@@ -951,8 +1157,10 @@
             "pick_date": "2026-10-13",
             "strategies": "S1_底部突破",
             "entry_price": 89.6,
-            "current_price": 92.4,
-            "return_pct": 3.13
+            "current_price": NaN,
+            "return_pct": NaN,
+            "highest_price": 101.0,
+            "max_return_pct": 12.72
         }
     ],
     "3564.TWO": [
@@ -961,8 +1169,10 @@
             "pick_date": "2026-10-13",
             "strategies": "S2_創高動能",
             "entry_price": 75.3,
-            "current_price": 75.3,
-            "return_pct": 0.0
+            "current_price": NaN,
+            "return_pct": NaN,
+            "highest_price": 75.3,
+            "max_return_pct": 0.0
         }
     ],
     "6117.TW": [
@@ -971,8 +1181,10 @@
             "pick_date": "2026-10-13",
             "strategies": "S1_底部突破",
             "entry_price": 71.1,
-            "current_price": 71.1,
-            "return_pct": 0.0
+            "current_price": NaN,
+            "return_pct": NaN,
+            "highest_price": 71.1,
+            "max_return_pct": 0.0
         }
     ],
     "6150.TWO": [
@@ -981,8 +1193,10 @@
             "pick_date": "2026-10-13",
             "strategies": "S1_底部突破",
             "entry_price": 72.9,
-            "current_price": 72.9,
-            "return_pct": 0.0
+            "current_price": NaN,
+            "return_pct": NaN,
+            "highest_price": 72.9,
+            "max_return_pct": 0.0
         }
     ],
     "6505.TW": [
@@ -991,16 +1205,20 @@
             "pick_date": "2026-10-13",
             "strategies": "S2_創高動能",
             "entry_price": 119.0,
-            "current_price": 119.0,
-            "return_pct": 0.0
+            "current_price": NaN,
+            "return_pct": NaN,
+            "highest_price": 119.0,
+            "max_return_pct": 0.0
         },
         {
             "name": "台塑化",
             "pick_date": "2026-10-14",
             "strategies": "S2_創高動能",
             "entry_price": 119.5,
-            "current_price": 119.5,
-            "return_pct": 0.0
+            "current_price": NaN,
+            "return_pct": NaN,
+            "highest_price": 119.5,
+            "max_return_pct": 0.0
         }
     ],
     "1326.TW": [
@@ -1009,16 +1227,20 @@
             "pick_date": "2026-10-14",
             "strategies": "S2_創高動能",
             "entry_price": 85.5,
-            "current_price": 85.5,
-            "return_pct": 0.0
+            "current_price": NaN,
+            "return_pct": NaN,
+            "highest_price": 85.5,
+            "max_return_pct": 0.0
         },
         {
             "name": "台化",
             "pick_date": "2026-10-16",
             "strategies": "S3_投信認養",
             "entry_price": 78.7,
-            "current_price": 78.7,
-            "return_pct": 0.0
+            "current_price": NaN,
+            "return_pct": NaN,
+            "highest_price": 78.7,
+            "max_return_pct": 0.0
         }
     ],
     "1409.TW": [
@@ -1027,8 +1249,10 @@
             "pick_date": "2026-10-14",
             "strategies": "S1_底部突破",
             "entry_price": 27.3,
-            "current_price": 27.3,
-            "return_pct": 0.0
+            "current_price": NaN,
+            "return_pct": NaN,
+            "highest_price": 27.3,
+            "max_return_pct": 0.0
         }
     ],
     "1597.TW": [
@@ -1037,8 +1261,10 @@
             "pick_date": "2026-10-14",
             "strategies": "S1_底部突破",
             "entry_price": 160.5,
-            "current_price": 160.5,
-            "return_pct": 0.0
+            "current_price": NaN,
+            "return_pct": NaN,
+            "highest_price": 160.5,
+            "max_return_pct": 0.0
         }
     ],
     "1718.TW": [
@@ -1047,8 +1273,10 @@
             "pick_date": "2026-10-14",
             "strategies": "S1_底部突破",
             "entry_price": 12.9,
-            "current_price": 11.2,
-            "return_pct": -13.18
+            "current_price": NaN,
+            "return_pct": NaN,
+            "highest_price": 12.9,
+            "max_return_pct": 0.0
         }
     ],
     "1815.TWO": [
@@ -1057,24 +1285,30 @@
             "pick_date": "2026-10-14",
             "strategies": "S2_創高動能",
             "entry_price": 134.0,
-            "current_price": 139.0,
-            "return_pct": 3.73
+            "current_price": NaN,
+            "return_pct": NaN,
+            "highest_price": 158.5,
+            "max_return_pct": 18.28
         },
         {
             "name": "富喬",
             "pick_date": "2026-10-16",
             "strategies": "S2_創高動能",
             "entry_price": 140.0,
-            "current_price": 139.0,
-            "return_pct": -0.71
+            "current_price": NaN,
+            "return_pct": NaN,
+            "highest_price": 158.5,
+            "max_return_pct": 13.21
         },
         {
             "name": "富喬",
             "pick_date": "2026-10-19",
             "strategies": "S2_創高動能",
             "entry_price": 154.0,
-            "current_price": 139.0,
-            "return_pct": -9.74
+            "current_price": NaN,
+            "return_pct": NaN,
+            "highest_price": 158.5,
+            "max_return_pct": 2.92
         }
     ],
     "2027.TW": [
@@ -1083,24 +1317,30 @@
             "pick_date": "2026-10-14",
             "strategies": "S3_投信認養",
             "entry_price": 50.0,
-            "current_price": 50.0,
-            "return_pct": 0.0
+            "current_price": NaN,
+            "return_pct": NaN,
+            "highest_price": 51.3,
+            "max_return_pct": 2.6
         },
         {
             "name": "大成鋼",
             "pick_date": "2026-10-22",
             "strategies": "S4_強勢回測網球, 👑週轉折共振, 🐳大戶增持(+0.62%)",
             "entry_price": 50.6,
-            "current_price": 50.6,
-            "return_pct": 0.0
+            "current_price": NaN,
+            "return_pct": NaN,
+            "highest_price": 51.3,
+            "max_return_pct": 1.38
         },
         {
             "name": "大成鋼",
             "pick_date": "2026-10-23",
             "strategies": "S4_強勢回測網球, 👑週轉折共振, 🐳大戶增持(+0.62%)",
             "entry_price": 50.6,
-            "current_price": 50.6,
-            "return_pct": 0.0
+            "current_price": NaN,
+            "return_pct": NaN,
+            "highest_price": 51.3,
+            "max_return_pct": 1.38
         }
     ],
     "2104.TW": [
@@ -1109,8 +1349,10 @@
             "pick_date": "2026-10-14",
             "strategies": "S1_底部突破",
             "entry_price": 12.25,
-            "current_price": 12.25,
-            "return_pct": 0.0
+            "current_price": NaN,
+            "return_pct": NaN,
+            "highest_price": 12.25,
+            "max_return_pct": 0.0
         }
     ],
     "2313.TW": [
@@ -1119,24 +1361,30 @@
             "pick_date": "2026-10-14",
             "strategies": "S3_投信認養",
             "entry_price": 250.5,
-            "current_price": 250.5,
-            "return_pct": 0.0
+            "current_price": NaN,
+            "return_pct": NaN,
+            "highest_price": 266.0,
+            "max_return_pct": 6.19
         },
         {
             "name": "華通",
             "pick_date": "2026-10-16",
             "strategies": "S3_投信認養",
             "entry_price": 248.0,
-            "current_price": 248.0,
-            "return_pct": 0.0
+            "current_price": NaN,
+            "return_pct": NaN,
+            "highest_price": 266.0,
+            "max_return_pct": 7.26
         },
         {
             "name": "華通",
             "pick_date": "2026-10-19",
             "strategies": "S3_投信認養",
             "entry_price": 248.0,
-            "current_price": 248.0,
-            "return_pct": 0.0
+            "current_price": NaN,
+            "return_pct": NaN,
+            "highest_price": 266.0,
+            "max_return_pct": 7.26
         }
     ],
     "2312.TW": [
@@ -1145,8 +1393,10 @@
             "pick_date": "2026-10-14",
             "strategies": "S1_底部突破",
             "entry_price": 33.25,
-            "current_price": 33.25,
-            "return_pct": 0.0
+            "current_price": NaN,
+            "return_pct": NaN,
+            "highest_price": 35.3,
+            "max_return_pct": 6.17
         }
     ],
     "2375.TW": [
@@ -1155,8 +1405,10 @@
             "pick_date": "2026-10-14",
             "strategies": "S1_底部突破",
             "entry_price": 136.5,
-            "current_price": 136.5,
-            "return_pct": 0.0
+            "current_price": NaN,
+            "return_pct": NaN,
+            "highest_price": 136.5,
+            "max_return_pct": 0.0
         }
     ],
     "2478.TW": [
@@ -1165,8 +1417,10 @@
             "pick_date": "2026-10-14",
             "strategies": "S1_底部突破",
             "entry_price": 137.5,
-            "current_price": 137.5,
-            "return_pct": 0.0
+            "current_price": NaN,
+            "return_pct": NaN,
+            "highest_price": 137.5,
+            "max_return_pct": 0.0
         }
     ],
     "2606.TW": [
@@ -1175,16 +1429,20 @@
             "pick_date": "2026-10-14",
             "strategies": "S5_投信作帳VCP",
             "entry_price": 78.2,
-            "current_price": 78.2,
-            "return_pct": 0.0
+            "current_price": NaN,
+            "return_pct": NaN,
+            "highest_price": 78.2,
+            "max_return_pct": 0.0
         },
         {
             "name": "裕民",
             "pick_date": "2026-10-15",
             "strategies": "S5_投信作帳VCP",
             "entry_price": 76.0,
-            "current_price": 76.0,
-            "return_pct": 0.0
+            "current_price": NaN,
+            "return_pct": NaN,
+            "highest_price": 76.0,
+            "max_return_pct": 0.0
         }
     ],
     "3026.TW": [
@@ -1193,8 +1451,10 @@
             "pick_date": "2026-10-14",
             "strategies": "S3_投信認養",
             "entry_price": 854.0,
-            "current_price": 854.0,
-            "return_pct": 0.0
+            "current_price": NaN,
+            "return_pct": NaN,
+            "highest_price": 859.0,
+            "max_return_pct": 0.59
         }
     ],
     "3048.TW": [
@@ -1203,8 +1463,10 @@
             "pick_date": "2026-10-14",
             "strategies": "S1_底部突破",
             "entry_price": 56.8,
-            "current_price": 56.8,
-            "return_pct": 0.0
+            "current_price": NaN,
+            "return_pct": NaN,
+            "highest_price": 56.8,
+            "max_return_pct": 0.0
         }
     ],
     "3090.TW": [
@@ -1213,8 +1475,10 @@
             "pick_date": "2026-10-14",
             "strategies": "S1_底部突破",
             "entry_price": 183.5,
-            "current_price": 156.5,
-            "return_pct": -14.71
+            "current_price": NaN,
+            "return_pct": NaN,
+            "highest_price": 183.5,
+            "max_return_pct": 0.0
         }
     ],
     "3580.TWO": [
@@ -1223,8 +1487,10 @@
             "pick_date": "2026-10-14",
             "strategies": "S2_創高動能",
             "entry_price": 121.0,
-            "current_price": 121.0,
-            "return_pct": 0.0
+            "current_price": NaN,
+            "return_pct": NaN,
+            "highest_price": 121.0,
+            "max_return_pct": 0.0
         }
     ],
     "3706.TW": [
@@ -1233,8 +1499,10 @@
             "pick_date": "2026-10-14",
             "strategies": "S2_創高動能",
             "entry_price": 84.2,
-            "current_price": 84.2,
-            "return_pct": 0.0
+            "current_price": NaN,
+            "return_pct": NaN,
+            "highest_price": 84.2,
+            "max_return_pct": 0.0
         }
     ],
     "5465.TWO": [
@@ -1243,16 +1511,20 @@
             "pick_date": "2026-10-14",
             "strategies": "S2_創高動能",
             "entry_price": 36.95,
-            "current_price": 36.95,
-            "return_pct": 0.0
+            "current_price": NaN,
+            "return_pct": NaN,
+            "highest_price": 45.35,
+            "max_return_pct": 22.73
         },
         {
             "name": "富驊",
             "pick_date": "2026-10-21",
             "strategies": "S2_創高動能",
             "entry_price": 41.55,
-            "current_price": 41.55,
-            "return_pct": 0.0
+            "current_price": NaN,
+            "return_pct": NaN,
+            "highest_price": 45.35,
+            "max_return_pct": 9.15
         }
     ],
     "5498.TWO": [
@@ -1261,8 +1533,10 @@
             "pick_date": "2026-10-14",
             "strategies": "S1_底部突破",
             "entry_price": 55.1,
-            "current_price": 55.1,
-            "return_pct": 0.0
+            "current_price": NaN,
+            "return_pct": NaN,
+            "highest_price": 65.6,
+            "max_return_pct": 19.06
         }
     ],
     "6153.TW": [
@@ -1271,8 +1545,10 @@
             "pick_date": "2026-10-14",
             "strategies": "S1_底部突破",
             "entry_price": 19.0,
-            "current_price": 19.0,
-            "return_pct": 0.0
+            "current_price": NaN,
+            "return_pct": NaN,
+            "highest_price": 19.2,
+            "max_return_pct": 1.05
         }
     ],
     "6532.TWO": [
@@ -1281,8 +1557,10 @@
             "pick_date": "2026-10-14",
             "strategies": "S2_創高動能",
             "entry_price": 125.5,
-            "current_price": 125.5,
-            "return_pct": 0.0
+            "current_price": NaN,
+            "return_pct": NaN,
+            "highest_price": 127.5,
+            "max_return_pct": 1.59
         },
         {
             "name": "瑞耘",
@@ -1290,7 +1568,9 @@
             "strategies": "S4_強勢回測網球",
             "entry_price": 116.0,
             "current_price": 116.0,
-            "return_pct": 0.0
+            "return_pct": 0.0,
+            "highest_price": 127.5,
+            "max_return_pct": 9.91
         }
     ],
     "2412.TW": [
@@ -1299,24 +1579,30 @@
             "pick_date": "2026-10-15",
             "strategies": "S2_創高動能",
             "entry_price": 152.5,
-            "current_price": 152.5,
-            "return_pct": 0.0
+            "current_price": NaN,
+            "return_pct": NaN,
+            "highest_price": 159.5,
+            "max_return_pct": 4.59
         },
         {
             "name": "中華電",
             "pick_date": "2026-10-22",
             "strategies": "S3_投信認養, S4_強勢回測網球, 👑週轉折共振, 🐳大戶增持(+0.29%)",
             "entry_price": 158.0,
-            "current_price": 158.0,
-            "return_pct": 0.0
+            "current_price": NaN,
+            "return_pct": NaN,
+            "highest_price": 159.5,
+            "max_return_pct": 0.95
         },
         {
             "name": "中華電",
             "pick_date": "2026-10-23",
             "strategies": "S3_投信認養, S4_強勢回測網球, 👑週轉折共振, 🐳大戶增持(+0.29%)",
             "entry_price": 158.0,
-            "current_price": 158.0,
-            "return_pct": 0.0
+            "current_price": NaN,
+            "return_pct": NaN,
+            "highest_price": 159.5,
+            "max_return_pct": 0.95
         }
     ],
     "2886.TW": [
@@ -1325,24 +1611,30 @@
             "pick_date": "2026-10-15",
             "strategies": "S2_創高動能",
             "entry_price": 52.5,
-            "current_price": 52.5,
-            "return_pct": 0.0
+            "current_price": NaN,
+            "return_pct": NaN,
+            "highest_price": 56.0,
+            "max_return_pct": 6.67
         },
         {
             "name": "兆豐金",
             "pick_date": "2026-10-22",
             "strategies": "S4_強勢回測網球, 👑週轉折共振, 🐳大戶增持(+0.25%)",
             "entry_price": 55.2,
-            "current_price": 55.2,
-            "return_pct": 0.0
+            "current_price": NaN,
+            "return_pct": NaN,
+            "highest_price": 56.0,
+            "max_return_pct": 1.45
         },
         {
             "name": "兆豐金",
             "pick_date": "2026-10-23",
             "strategies": "S4_強勢回測網球, 👑週轉折共振, 🐳大戶增持(+0.25%)",
             "entry_price": 55.2,
-            "current_price": 55.2,
-            "return_pct": 0.0
+            "current_price": NaN,
+            "return_pct": NaN,
+            "highest_price": 56.0,
+            "max_return_pct": 1.45
         }
     ],
     "3045.TW": [
@@ -1351,8 +1643,10 @@
             "pick_date": "2026-10-15",
             "strategies": "S2_創高動能, S3_投信認養",
             "entry_price": 131.0,
-            "current_price": 131.0,
-            "return_pct": 0.0
+            "current_price": NaN,
+            "return_pct": NaN,
+            "highest_price": 135.0,
+            "max_return_pct": 3.05
         },
         {
             "name": "台灣大",
@@ -1360,7 +1654,9 @@
             "strategies": "S4_強勢回測網球, ⚡RS創高, 🐳大戶增持(+0.06%)",
             "entry_price": 134.5,
             "current_price": 134.5,
-            "return_pct": 0.0
+            "return_pct": 0.0,
+            "highest_price": 135.0,
+            "max_return_pct": 0.37
         }
     ],
     "6209.TW": [
@@ -1369,24 +1665,30 @@
             "pick_date": "2026-10-15",
             "strategies": "S2_創高動能",
             "entry_price": 93.0,
-            "current_price": 93.0,
-            "return_pct": 0.0
+            "current_price": NaN,
+            "return_pct": NaN,
+            "highest_price": 120.0,
+            "max_return_pct": 29.03
         },
         {
             "name": "今國光",
             "pick_date": "2026-10-16",
             "strategies": "S2_創高動能",
             "entry_price": 100.5,
-            "current_price": 100.5,
-            "return_pct": 0.0
+            "current_price": NaN,
+            "return_pct": NaN,
+            "highest_price": 120.0,
+            "max_return_pct": 19.4
         },
         {
             "name": "今國光",
             "pick_date": "2026-10-19",
             "strategies": "S2_創高動能",
             "entry_price": 102.0,
-            "current_price": 102.0,
-            "return_pct": 0.0
+            "current_price": NaN,
+            "return_pct": NaN,
+            "highest_price": 120.0,
+            "max_return_pct": 17.65
         }
     ],
     "6446.TW": [
@@ -1395,8 +1697,10 @@
             "pick_date": "2026-10-15",
             "strategies": "S3_投信認養",
             "entry_price": 1205.0,
-            "current_price": 1205.0,
-            "return_pct": 0.0
+            "current_price": NaN,
+            "return_pct": NaN,
+            "highest_price": 1215.0,
+            "max_return_pct": 0.83
         }
     ],
     "2332.TW": [
@@ -1405,8 +1709,10 @@
             "pick_date": "2026-10-16",
             "strategies": "S1_底部突破",
             "entry_price": 21.35,
-            "current_price": 21.35,
-            "return_pct": 0.0
+            "current_price": NaN,
+            "return_pct": NaN,
+            "highest_price": 22.0,
+            "max_return_pct": 3.04
         }
     ],
     "3062.TW": [
@@ -1415,8 +1721,10 @@
             "pick_date": "2026-10-16",
             "strategies": "S1_底部突破",
             "entry_price": 23.0,
-            "current_price": 23.0,
-            "return_pct": 0.0
+            "current_price": NaN,
+            "return_pct": NaN,
+            "highest_price": 23.6,
+            "max_return_pct": 2.61
         }
     ],
     "3305.TW": [
@@ -1425,8 +1733,10 @@
             "pick_date": "2026-10-16",
             "strategies": "S1_底部突破",
             "entry_price": 113.0,
-            "current_price": 113.0,
-            "return_pct": 0.0
+            "current_price": NaN,
+            "return_pct": NaN,
+            "highest_price": 117.0,
+            "max_return_pct": 3.54
         }
     ],
     "3630.TWO": [
@@ -1435,8 +1745,10 @@
             "pick_date": "2026-10-16",
             "strategies": "S1_底部突破",
             "entry_price": 29.3,
-            "current_price": 29.3,
-            "return_pct": 0.0
+            "current_price": NaN,
+            "return_pct": NaN,
+            "highest_price": 30.7,
+            "max_return_pct": 4.78
         }
     ],
     "4958.TW": [
@@ -1445,8 +1757,10 @@
             "pick_date": "2026-10-16",
             "strategies": "S3_投信認養",
             "entry_price": 557.0,
-            "current_price": 557.0,
-            "return_pct": 0.0
+            "current_price": NaN,
+            "return_pct": NaN,
+            "highest_price": 614.0,
+            "max_return_pct": 10.23
         }
     ],
     "4961.TW": [
@@ -1455,8 +1769,10 @@
             "pick_date": "2026-10-16",
             "strategies": "S2_創高動能",
             "entry_price": 190.0,
-            "current_price": 190.0,
-            "return_pct": 0.0
+            "current_price": NaN,
+            "return_pct": NaN,
+            "highest_price": 191.0,
+            "max_return_pct": 0.53
         }
     ],
     "5289.TWO": [
@@ -1465,8 +1781,10 @@
             "pick_date": "2026-10-16",
             "strategies": "S4_恐慌抄底",
             "entry_price": 1175.0,
-            "current_price": 1175.0,
-            "return_pct": 0.0
+            "current_price": NaN,
+            "return_pct": NaN,
+            "highest_price": 1175.0,
+            "max_return_pct": 0.0
         }
     ],
     "6415.TW": [
@@ -1475,8 +1793,10 @@
             "pick_date": "2026-10-16",
             "strategies": "S1_底部突破",
             "entry_price": 489.0,
-            "current_price": 489.0,
-            "return_pct": 0.0
+            "current_price": NaN,
+            "return_pct": NaN,
+            "highest_price": 508.0,
+            "max_return_pct": 3.89
         }
     ],
     "4526.TW": [
@@ -1485,8 +1805,10 @@
             "pick_date": "2026-10-19",
             "strategies": "S1_底部突破",
             "entry_price": 35.65,
-            "current_price": 35.65,
-            "return_pct": 0.0
+            "current_price": NaN,
+            "return_pct": NaN,
+            "highest_price": 45.15,
+            "max_return_pct": 26.65
         }
     ],
     "4566.TW": [
@@ -1495,16 +1817,20 @@
             "pick_date": "2026-10-19",
             "strategies": "S2_創高動能",
             "entry_price": 80.2,
-            "current_price": 80.2,
-            "return_pct": 0.0
+            "current_price": NaN,
+            "return_pct": NaN,
+            "highest_price": 90.6,
+            "max_return_pct": 12.97
         },
         {
             "name": "時碩工業",
             "pick_date": "2026-10-20",
             "strategies": "S2_創高動能",
             "entry_price": 85.8,
-            "current_price": 85.8,
-            "return_pct": 0.0
+            "current_price": NaN,
+            "return_pct": NaN,
+            "highest_price": 90.6,
+            "max_return_pct": 5.59
         },
         {
             "name": "時碩工業",
@@ -1512,7 +1838,9 @@
             "strategies": "S4_強勢回測網球, ⚡RS創高, 🐳大戶增持(+3.42%)",
             "entry_price": 87.2,
             "current_price": 87.2,
-            "return_pct": 0.0
+            "return_pct": 0.0,
+            "highest_price": 90.6,
+            "max_return_pct": 3.9
         }
     ],
     "6274.TWO": [
@@ -1521,8 +1849,10 @@
             "pick_date": "2026-10-19",
             "strategies": "S3_投信認養",
             "entry_price": 1630.0,
-            "current_price": 1630.0,
-            "return_pct": 0.0
+            "current_price": NaN,
+            "return_pct": NaN,
+            "highest_price": 1635.0,
+            "max_return_pct": 0.31
         }
     ],
     "6277.TW": [
@@ -1531,16 +1861,20 @@
             "pick_date": "2026-10-19",
             "strategies": "S2_創高動能",
             "entry_price": 88.8,
-            "current_price": 88.8,
-            "return_pct": 0.0
+            "current_price": NaN,
+            "return_pct": NaN,
+            "highest_price": 103.5,
+            "max_return_pct": 16.55
         },
         {
             "name": "宏正",
             "pick_date": "2026-10-20",
             "strategies": "S2_創高動能",
             "entry_price": 96.1,
-            "current_price": 96.1,
-            "return_pct": 0.0
+            "current_price": NaN,
+            "return_pct": NaN,
+            "highest_price": 103.5,
+            "max_return_pct": 7.7
         }
     ],
     "6756.TW": [
@@ -1549,16 +1883,20 @@
             "pick_date": "2026-10-19",
             "strategies": "S2_創高動能",
             "entry_price": 121.0,
-            "current_price": 121.0,
-            "return_pct": 0.0
+            "current_price": NaN,
+            "return_pct": NaN,
+            "highest_price": 134.5,
+            "max_return_pct": 11.16
         },
         {
             "name": "威鋒電子",
             "pick_date": "2026-10-20",
             "strategies": "S2_創高動能",
             "entry_price": 124.5,
-            "current_price": 124.5,
-            "return_pct": 0.0
+            "current_price": NaN,
+            "return_pct": NaN,
+            "highest_price": 134.5,
+            "max_return_pct": 8.03
         }
     ],
     "6689.TW": [
@@ -1567,8 +1905,10 @@
             "pick_date": "2026-10-20",
             "strategies": "S1_底部突破",
             "entry_price": 73.0,
-            "current_price": 73.0,
-            "return_pct": 0.0
+            "current_price": NaN,
+            "return_pct": NaN,
+            "highest_price": 77.7,
+            "max_return_pct": 6.44
         }
     ],
     "2006.TW": [
@@ -1577,8 +1917,10 @@
             "pick_date": "2026-10-21",
             "strategies": "S3_投信認養",
             "entry_price": 93.3,
-            "current_price": 93.3,
-            "return_pct": 0.0
+            "current_price": NaN,
+            "return_pct": NaN,
+            "highest_price": 96.0,
+            "max_return_pct": 2.89
         }
     ],
     "2328.TW": [
@@ -1587,8 +1929,10 @@
             "pick_date": "2026-10-21",
             "strategies": "S1_底部突破",
             "entry_price": 54.3,
-            "current_price": 54.3,
-            "return_pct": 0.0
+            "current_price": NaN,
+            "return_pct": NaN,
+            "highest_price": 57.9,
+            "max_return_pct": 6.63
         }
     ],
     "3545.TW": [
@@ -1597,8 +1941,10 @@
             "pick_date": "2026-10-21",
             "strategies": "S1_底部突破",
             "entry_price": 53.7,
-            "current_price": 53.7,
-            "return_pct": 0.0
+            "current_price": NaN,
+            "return_pct": NaN,
+            "highest_price": 54.2,
+            "max_return_pct": 0.93
         }
     ],
     "3605.TW": [
@@ -1607,8 +1953,10 @@
             "pick_date": "2026-10-21",
             "strategies": "S3_投信認養",
             "entry_price": 178.0,
-            "current_price": 178.0,
-            "return_pct": 0.0
+            "current_price": NaN,
+            "return_pct": NaN,
+            "highest_price": 183.5,
+            "max_return_pct": 3.09
         }
     ],
     "4155.TW": [
@@ -1617,8 +1965,10 @@
             "pick_date": "2026-10-21",
             "strategies": "S2_創高動能",
             "entry_price": 17.2,
-            "current_price": 17.2,
-            "return_pct": 0.0
+            "current_price": NaN,
+            "return_pct": NaN,
+            "highest_price": 17.75,
+            "max_return_pct": 3.2
         }
     ],
     "4533.TWO": [
@@ -1627,8 +1977,10 @@
             "pick_date": "2026-10-21",
             "strategies": "S1_底部突破",
             "entry_price": 28.9,
-            "current_price": 28.9,
-            "return_pct": 0.0
+            "current_price": NaN,
+            "return_pct": NaN,
+            "highest_price": 30.6,
+            "max_return_pct": 5.88
         }
     ],
     "4770.TW": [
@@ -1637,8 +1989,10 @@
             "pick_date": "2026-10-21",
             "strategies": "S2_創高動能",
             "entry_price": 313.5,
-            "current_price": 313.5,
-            "return_pct": 0.0
+            "current_price": NaN,
+            "return_pct": NaN,
+            "highest_price": 316.0,
+            "max_return_pct": 0.8
         }
     ],
     "6199.TWO": [
@@ -1647,16 +2001,20 @@
             "pick_date": "2026-10-22",
             "strategies": "S4_強勢回測網球, ⚡RS創高, 🐳大戶增持(+1.74%)",
             "entry_price": 149.5,
-            "current_price": 149.5,
-            "return_pct": 0.0
+            "current_price": NaN,
+            "return_pct": NaN,
+            "highest_price": 153.0,
+            "max_return_pct": 2.34
         },
         {
             "name": "天品",
             "pick_date": "2026-10-23",
             "strategies": "S4_強勢回測網球, ⚡RS創高, 🐳大戶增持(+1.74%)",
             "entry_price": 149.5,
-            "current_price": 149.5,
-            "return_pct": 0.0
+            "current_price": NaN,
+            "return_pct": NaN,
+            "highest_price": 153.0,
+            "max_return_pct": 2.34
         }
     ],
     "6214.TW": [
@@ -1666,23 +2024,29 @@
             "strategies": "S4_強勢回測網球, ⚡RS創高, 👑週轉折共振, S2_創高動能",
             "entry_price": 201.0,
             "current_price": 203.0,
-            "return_pct": 1.0
+            "return_pct": 1.0,
+            "highest_price": 204.0,
+            "max_return_pct": 1.49
         },
         {
             "name": "精誠",
             "pick_date": "2026-10-23",
             "strategies": "S4_強勢回測網球, ⚡RS創高, 👑週轉折共振",
             "entry_price": 201.0,
-            "current_price": 201.0,
-            "return_pct": 0.0
+            "current_price": NaN,
+            "return_pct": NaN,
+            "highest_price": 204.0,
+            "max_return_pct": 1.49
         },
         {
             "name": "精誠",
             "pick_date": "2026-10-27",
             "strategies": "S2_創高動能, S4_強勢回測網球, ⚡RS創高",
             "entry_price": 203.0,
-            "current_price": 203.0,
-            "return_pct": 0.0
+            "current_price": NaN,
+            "return_pct": NaN,
+            "highest_price": 204.0,
+            "max_return_pct": 0.49
         }
     ],
     "6902.TW": [
@@ -1691,8 +2055,10 @@
             "pick_date": "2026-10-23",
             "strategies": "S2_創高動能, ⚡RS創高, 🐳大戶增持(+0.01%)",
             "entry_price": 166.0,
-            "current_price": 166.0,
-            "return_pct": 0.0
+            "current_price": NaN,
+            "return_pct": NaN,
+            "highest_price": 169.0,
+            "max_return_pct": 1.81
         }
     ],
     "2031.TW": [
@@ -1702,7 +2068,9 @@
             "strategies": "S2_創高動能, S4_強勢回測網球, ⚡RS創高, 🐳大戶增持(+0.51%)",
             "entry_price": 48.8,
             "current_price": 48.8,
-            "return_pct": 0.0
+            "return_pct": 0.0,
+            "highest_price": 48.85,
+            "max_return_pct": 0.1
         }
     ],
     "2211.TW": [
@@ -1711,8 +2079,10 @@
             "pick_date": "2026-10-27",
             "strategies": "S1_底部突破",
             "entry_price": 85.0,
-            "current_price": 85.0,
-            "return_pct": 0.0
+            "current_price": NaN,
+            "return_pct": NaN,
+            "highest_price": 85.0,
+            "max_return_pct": 0.0
         }
     ],
     "2347.TW": [
@@ -1722,7 +2092,9 @@
             "strategies": "S4_強勢回測網球, ⚡RS創高, 🐳大戶增持(+0.08%)",
             "entry_price": 102.0,
             "current_price": 102.0,
-            "return_pct": 0.0
+            "return_pct": 0.0,
+            "highest_price": 102.0,
+            "max_return_pct": 0.0
         }
     ],
     "2520.TW": [
@@ -1732,7 +2104,9 @@
             "strategies": "S2_創高動能, S4_強勢回測網球, ⚡RS創高, 🐳大戶增持(+0.05%)",
             "entry_price": 38.1,
             "current_price": 38.1,
-            "return_pct": 0.0
+            "return_pct": 0.0,
+            "highest_price": 38.1,
+            "max_return_pct": 0.0
         }
     ],
     "3010.TW": [
@@ -1742,7 +2116,9 @@
             "strategies": "S4_強勢回測網球, ⚡RS創高, 🐳大戶增持(+0.61%)",
             "entry_price": 137.0,
             "current_price": 137.0,
-            "return_pct": 0.0
+            "return_pct": 0.0,
+            "highest_price": 140.5,
+            "max_return_pct": 2.55
         }
     ],
     "3498.TWO": [
@@ -1752,7 +2128,9 @@
             "strategies": "S4_強勢回測網球, ⚡RS創高, 🐳大戶增持(+0.16%)",
             "entry_price": 252.0,
             "current_price": 252.0,
-            "return_pct": 0.0
+            "return_pct": 0.0,
+            "highest_price": 260.5,
+            "max_return_pct": 3.37
         }
     ],
     "4540.TW": [
@@ -1762,7 +2140,9 @@
             "strategies": "S1_底部突破, 🐳大戶增持(+0.14%)",
             "entry_price": 61.5,
             "current_price": 61.5,
-            "return_pct": 0.0
+            "return_pct": 0.0,
+            "highest_price": 62.1,
+            "max_return_pct": 0.98
         }
     ]
 }
