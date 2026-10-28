@@ -1,137 +1,10 @@
-<!DOCTYPE html>
-<html lang="zh-TW" class="dark">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TW-STOCK 戰情室</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script>
-        tailwind.config = {
-            darkMode: 'class',
-            theme: {
-                extend: {
-                    colors: {
-                        darkbg: '#0f172a',
-                        cardbg: '#1e293b',
-                        up: '#ef4444',
-                        down: '#22c55e',
-                    }
-                }
-            }
-        }
-    </script>
-    <style>
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
-        .tab-btn.active { border-bottom: 2px solid #3b82f6; color: #3b82f6; font-weight: bold; }
-        .badge-gold { background: rgba(234, 179, 8, 0.2); color: #fde047; border-color: rgba(234, 179, 8, 0.5); }
-    </style>
-</head>
-<body class="bg-darkbg text-gray-200 min-h-screen p-4 md:p-8">
-    <div class="max-w-7xl mx-auto">
-        
-        <!-- Header -->
-        <header class="flex justify-between items-center mb-8 pb-4 border-b border-gray-800">
-            <div>
-                <h1 class="text-3xl font-bold text-white flex items-center gap-3">
-                    🚀 台股量化戰情室
-                </h1>
-                <p id="update-time" class="text-sm text-gray-400 mt-2">最後更新：載入中...</p>
-            </div>
-        </header>
-
-        <!-- Tabs Navigation -->
-        <div class="flex gap-6 border-b border-gray-700 mb-6 overflow-x-auto">
-            <button onclick="switchTab('daily')" id="tab-daily" class="tab-btn active pb-2 px-1 whitespace-nowrap">🔥 今日選股</button>
-            <button onclick="switchTab('history')" id="tab-history" class="tab-btn pb-2 px-1 whitespace-nowrap">📈 歷史追蹤</button>
-            <button onclick="switchTab('weekly')" id="tab-weekly" class="tab-btn pb-2 px-1 whitespace-nowrap">🎯 週級趨勢/轉折</button>
-            <button onclick="switchTab('holders')" id="tab-holders" class="tab-btn pb-2 px-1 whitespace-nowrap">🐳 大戶籌碼追蹤</button>
-        </div>
-
-        <!-- 內容區塊: 每日選股 -->
-        <div id="content-daily" class="block">
-            <div id="daily-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
-                <p class="text-gray-400">載入中...</p>
-            </div>
-        </div>
-
-        <!-- 內容區塊: 歷史追蹤 -->
-        <div id="content-history" class="hidden">
-            <div class="mb-4 flex flex-col sm:flex-row gap-4 justify-between items-center bg-cardbg p-4 rounded-xl border border-gray-800">
-                <h2 class="text-xl font-bold text-white">波段表現追蹤</h2>
-                <select id="strat-filter" onchange="renderHistory()" class="bg-darkbg border border-gray-700 rounded-lg px-4 py-2 text-sm text-white focus:outline-none focus:border-blue-500">
-                    <option value="ALL">🎯 所有策略 (S1 ~ S7)</option>
-                    <option value="S1_底部突破">S1_底部突破</option>
-                    <option value="S2_創高動能">S2_創高動能</option>
-                    <option value="S3_投信認養">S3_投信認養</option>
-                    <option value="S4_強勢回測網球">S4_強勢回測網球</option>
-                    <option value="S5_投信作帳VCP">S5_投信作帳VCP</option>
-                    <option value="S6_營收口袋樞紐">S6_營收口袋樞紐</option>
-                    <option value="S7_漲停強勢旗形">S7_漲停強勢旗形</option>
-                    <option value="👑週轉折共振">👑 週轉折共振</option>
-                    <option value="🐳">🐳 大戶籌碼加持</option>
-                    <option value="⚡RS創高">⚡ RS領先創高</option>
-                </select>
-            </div>
-            <div class="overflow-x-auto bg-cardbg rounded-xl border border-gray-800">
-                <table class="w-full text-sm text-left">
-                    <thead class="text-xs uppercase bg-gray-800/50 text-gray-400">
-                        <tr>
-                            <th class="px-4 py-3">代碼</th>
-                            <th class="px-4 py-3">入選日期</th>
-                            <th class="px-4 py-3">觸發策略</th>
-                            <th class="px-4 py-3 text-right">進場價</th>
-                            <th class="px-4 py-3 text-right">最新價</th>
-                            <th class="px-4 py-3 text-right text-blue-300">波段最高</th>
-                            <th class="px-4 py-3 text-right">目前報酬</th>
-                            <th class="px-4 py-3 text-right text-yellow-300">最大漲幅(MFE)</th>
-                        </tr>
-                    </thead>
-                    <tbody id="history-tbody" class="divide-y divide-gray-800">
-                        <tr><td colspan="8" class="text-center py-4 text-gray-500">載入中...</td></tr>
-                    </tbody>
-                </table>
-            </div>
-        </div>
-
-        <!-- 內容區塊: 週級資料 -->
-        <div id="content-weekly" class="hidden space-y-8">
-            <div class="bg-cardbg rounded-xl border border-gray-800 p-5">
-                <h2 class="text-xl font-bold text-white mb-4">🏆 本週強勢多頭排列 (W_UpTrend)</h2>
-                <div id="weekly-uptrend-container" class="flex flex-wrap gap-2"></div>
-            </div>
-            <div class="bg-cardbg rounded-xl border border-gray-800 p-5">
-                <h2 class="text-xl font-bold text-white mb-4">🔄 關鍵三週轉折之上 (W_Turn)</h2>
-                <div id="weekly-turn-container" class="flex flex-wrap gap-2"></div>
-            </div>
-        </div>
-
-        <!-- 內容區塊: 籌碼追蹤 -->
-        <div id="content-holders" class="hidden">
-            <div class="bg-cardbg rounded-xl border border-gray-800 p-6">
-                <h2 class="text-xl font-bold text-white mb-4">大戶籌碼折線圖 (每週集保)</h2>
-                <div class="flex gap-3 mb-6">
-                    <input type="text" id="chip-input" placeholder="輸入股票代碼 (例: 2330)" class="bg-darkbg border border-gray-700 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-blue-500">
-                    <button onclick="drawChipChart()" class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg font-medium transition-colors">查詢</button>
-                </div>
-                <div class="h-[400px] w-full relative">
-                    <canvas id="chipChart"></canvas>
-                </div>
-                <p class="text-xs text-gray-500 mt-4 text-center">* 資料來源：集保中心 Open Data，每週六更新</p>
-            </div>
-        </div>
-
-    </div>
-
-    <script>
-        let globalDaily = [];
+let globalDaily = [];
         let globalHistory = {};
         let globalWeeklyUp = [];
         let globalWeeklyTurn = [];
         let globalHolders = {};
         let chipChartInstance = null;
 
-        // 頁籤切換
         function switchTab(tabId) {
             ['daily', 'history', 'weekly', 'holders'].forEach(id => {
                 document.getElementById(`content-${id}`).style.display = 'none';
@@ -141,7 +14,6 @@
             document.getElementById(`tab-${tabId}`).classList.add('active');
         }
 
-        // 顏色渲染工具
         function getColor(val) {
             const num = parseFloat(val);
             if (isNaN(num)) return 'text-gray-300';
@@ -150,15 +22,14 @@
             return 'text-gray-300';
         }
 
-        // 動態產生策略徽章
         function getStrategyBadges(stratArrayOrStr) {
             if (!stratArrayOrStr) return '';
-            const list = Array.isArray(stratArrayOrStr) ? stratArrayOrStr : stratArrayOrStr.split(',');
+            const list = Array.isArray(stratArrayOrStr) ? stratArrayOrStr : String(stratArrayOrStr).split(',');
             return list.map(s => {
                 const cleanS = s.trim();
                 if (!cleanS) return '';
                 
-                let colorClass = 'bg-gray-800 text-gray-300 border-gray-700'; // 預設
+                let colorClass = 'bg-gray-800 text-gray-300 border-gray-700'; 
                 
                 if (cleanS.includes('S1_')) colorClass = 'bg-purple-900/60 text-purple-300 border-purple-700/50';
                 else if (cleanS.includes('S2_')) colorClass = 'bg-red-900/60 text-red-300 border-red-700/50';
@@ -175,51 +46,61 @@
             }).join('');
         }
 
-        async function initData() {
+        // 安全讀取 JSON，避免單一檔案損壞導致全站崩潰
+        async function safeFetchJSON(url) {
             try {
-                // 1. 每日選股
-                const resDaily = await fetch('data/daily_picks.json?t=' + new Date().getTime());
-                if (resDaily.ok) {
-                    const data = await resDaily.json();
-                    document.getElementById('update-time').innerText = `最後更新：${data.date || '未知'}`;
-                    globalDaily = data.picks || [];
-                    renderDaily();
+                const res = await fetch(url + '?t=' + new Date().getTime());
+                if (res.ok) {
+                    return await res.json();
                 }
-
-                // 2. 歷史資料
-                const resHist = await fetch('data/history.json?t=' + new Date().getTime());
-                if (resHist.ok) {
-                    globalHistory = await resHist.json();
-                    renderHistory();
-                }
-
-                // 3. 週級資料
-                const resWUp = await fetch('data/weekly_uptrend.json?t=' + new Date().getTime());
-                if (resWUp.ok) {
-                    const data = await resWUp.json();
-                    globalWeeklyUp = data.stocks || [];
-                    renderWeeklyArray('weekly-uptrend-container', globalWeeklyUp);
-                }
-                const resWTurn = await fetch('data/weekly_turn.json?t=' + new Date().getTime());
-                if (resWTurn.ok) {
-                    const data = await resWTurn.json();
-                    globalWeeklyTurn = data.stocks || [];
-                    renderWeeklyArray('weekly-turn-container', globalWeeklyTurn);
-                }
-
-                // 4. 集保籌碼
-                const resHolders = await fetch('data/holders.json?t=' + new Date().getTime());
-                if (resHolders.ok) {
-                    globalHolders = await resHolders.json();
-                }
-
             } catch (e) {
-                console.error("載入 JSON 失敗", e);
-                document.getElementById('daily-container').innerHTML = '<p class="text-red-400">無法載入資料，請確認 GitHub Actions 是否執行成功。</p>';
+                console.warn(`讀取 ${url} 失敗:`, e);
+            }
+            return null;
+        }
+
+        async function initData() {
+            // 1. 每日選股
+            const dataDaily = await safeFetchJSON('data/daily_picks.json');
+            if (dataDaily) {
+                document.getElementById('update-time').innerText = `最後更新：${dataDaily.date || '未知'}`;
+                globalDaily = dataDaily.picks || [];
+                renderDaily();
+            } else {
+                document.getElementById('daily-container').innerHTML = '<p class="text-red-400">無法載入今日選股資料，檔案可能尚未生成。</p>';
+            }
+
+            // 2. 歷史資料
+            const dataHist = await safeFetchJSON('data/history.json');
+            if (dataHist) {
+                globalHistory = dataHist;
+                try {
+                    renderHistory();
+                } catch(e) {
+                    console.error("渲染歷史表格出錯:", e);
+                }
+            }
+
+            // 3. 週級資料
+            const dataWUp = await safeFetchJSON('data/weekly_uptrend.json');
+            if (dataWUp) {
+                globalWeeklyUp = dataWUp.stocks || [];
+                renderWeeklyArray('weekly-uptrend-container', globalWeeklyUp);
+            }
+
+            const dataWTurn = await safeFetchJSON('data/weekly_turn.json');
+            if (dataWTurn) {
+                globalWeeklyTurn = dataWTurn.stocks || [];
+                renderWeeklyArray('weekly-turn-container', globalWeeklyTurn);
+            }
+
+            // 4. 集保籌碼
+            const dataHolders = await safeFetchJSON('data/holders.json');
+            if (dataHolders) {
+                globalHolders = dataHolders;
             }
         }
 
-        // 渲染每日卡片
         function renderDaily() {
             const container = document.getElementById('daily-container');
             container.innerHTML = '';
@@ -263,7 +144,7 @@
                     <div class="mb-3">
                         ${getStrategyBadges(s.strats)}
                     </div>
-                    <p class="text-sm text-gray-400">距年高點跌幅：<span class="text-gray-300">${s.距年高點跌幅}</span></p>
+                    <p class="text-sm text-gray-400">距年高點跌幅：<span class="text-gray-300">${s.距年高點跌幅 || '-'}</span></p>
                     ${revHtml}
                     ${chipHtml}
                 `;
@@ -271,7 +152,6 @@
             });
         }
 
-        // 渲染歷史表格 (含最新防呆與 MFE 欄位)
         function renderHistory() {
             const tbody = document.getElementById('history-tbody');
             const filter = document.getElementById('strat-filter').value;
@@ -281,8 +161,9 @@
             for (const [ticker, records] of Object.entries(globalHistory)) {
                 records.forEach(r => {
                     const code = ticker.replace('.TW', '').replace('.TWO', '');
-                    if (filter === 'ALL' || r.strategies.includes(filter) || (filter === '🐳' && r.strategies.includes('🐳'))) {
-                        allRecords.push({ code, ...r });
+                    const strats = String(r.strategies || ""); // 防呆: 確保是字串
+                    if (filter === 'ALL' || strats.includes(filter) || (filter === '🐳' && strats.includes('🐳'))) {
+                        allRecords.push({ code, strats, ...r });
                     }
                 });
             }
@@ -298,14 +179,12 @@
                 const tr = document.createElement('tr');
                 tr.className = "hover:bg-gray-800/50 transition-colors";
                 
-                // 數值防呆與回退處理
                 const entryP = parseFloat(r.entry_price) || 0;
                 const curP = parseFloat(r.current_price) || entryP;
                 const highP = parseFloat(r.highest_price) || curP; 
                 const retPct = parseFloat(r.return_pct) || 0;
                 const maxRetPct = parseFloat(r.max_return_pct) || 0;
 
-                // 標註大波段飆股 (MFE > 15%)
                 let mfeClass = 'text-gray-300';
                 let mfeText = maxRetPct.toFixed(2) + '%';
                 if (maxRetPct >= 15.0) {
@@ -317,11 +196,11 @@
 
                 tr.innerHTML = `
                     <td class="px-4 py-3 font-medium text-white">
-                        <a href="https://tw.tradingview.com/symbols/TWSE-${r.code}/" target="_blank" class="hover:text-blue-400">${r.code} ${r.name}</a>
+                        <a href="https://tw.tradingview.com/symbols/TWSE-${r.code}/" target="_blank" class="hover:text-blue-400">${r.code} ${r.name || ''}</a>
                     </td>
-                    <td class="px-4 py-3 text-gray-400 whitespace-nowrap">${r.pick_date}</td>
+                    <td class="px-4 py-3 text-gray-400 whitespace-nowrap">${r.pick_date || '-'}</td>
                     <td class="px-4 py-3 max-w-[250px] leading-relaxed">
-                        ${getStrategyBadges(r.strategies)}
+                        ${getStrategyBadges(r.strats)}
                     </td>
                     <td class="px-4 py-3 text-right text-gray-300">${entryP.toFixed(2)}</td>
                     <td class="px-4 py-3 text-right font-medium text-white">${curP.toFixed(2)}</td>
@@ -422,8 +301,4 @@
             });
         }
 
-        // 啟動初始化
         window.onload = initData;
-    </script>
-</body>
-</html>
