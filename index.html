@@ -282,10 +282,14 @@
             let allRecords = [];
             for (const [ticker, records] of Object.entries(globalHistory)) {
                 records.forEach(r => {
-                    const code = ticker.replace('.TW', '').replace('.TWO', '');
+                    // 完美解決 'O' 殘留問題，並判斷上市(TWSE)或上櫃(TPEX)
+                    const isOTC = ticker.includes('.TWO');
+                    const code = ticker.split('.')[0]; 
+                    const exchange = isOTC ? 'TPEX' : 'TWSE';
+                    
                     const strats = String(r.strategies || ""); 
                     if (filter === 'ALL' || strats.includes(filter) || (filter === '🐳' && strats.includes('🐳'))) {
-                        allRecords.push({ code, strats, ...r });
+                        allRecords.push({ code, exchange, strats, ...r });
                     }
                 });
             }
@@ -318,7 +322,7 @@
 
                 tr.innerHTML = `
                     <td class="px-4 py-3 font-medium text-white">
-                        <a href="https://tw.tradingview.com/symbols/TWSE-${r.code}/" target="_blank" class="hover:text-blue-400">${r.code} ${r.name || ''}</a>
+                        <a href="https://tw.tradingview.com/symbols/${r.exchange}-${r.code}/" target="_blank" class="hover:text-blue-400">${r.code} ${r.name || ''}</a>
                     </td>
                     <td class="px-4 py-3 text-gray-400 whitespace-nowrap">${r.pick_date || '-'}</td>
                     <td class="px-4 py-3 max-w-[250px] leading-relaxed">
