@@ -1,4 +1,131 @@
-let globalDaily = [];
+<!DOCTYPE html>
+<html lang="zh-TW" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TW-STOCK 戰情室</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        darkbg: '#0f172a',
+                        cardbg: '#1e293b',
+                        up: '#ef4444',
+                        down: '#22c55e',
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        .tab-btn.active { border-bottom: 2px solid #3b82f6; color: #3b82f6; font-weight: bold; }
+        .badge-gold { background: rgba(234, 179, 8, 0.2); color: #fde047; border-color: rgba(234, 179, 8, 0.5); }
+    </style>
+</head>
+<body class="bg-darkbg text-gray-200 min-h-screen p-4 md:p-8">
+    <div class="max-w-7xl mx-auto">
+        
+        <!-- Header -->
+        <header class="flex justify-between items-center mb-8 pb-4 border-b border-gray-800">
+            <div>
+                <h1 class="text-3xl font-bold text-white flex items-center gap-3">
+                    🚀 台股量化戰情室
+                </h1>
+                <p id="update-time" class="text-sm text-gray-400 mt-2">最後更新：載入中...</p>
+            </div>
+        </header>
+
+        <!-- Tabs Navigation -->
+        <div class="flex gap-6 border-b border-gray-700 mb-6 overflow-x-auto">
+            <button onclick="switchTab('daily')" id="tab-daily" class="tab-btn active pb-2 px-1 whitespace-nowrap">🔥 今日選股</button>
+            <button onclick="switchTab('history')" id="tab-history" class="tab-btn pb-2 px-1 whitespace-nowrap">📈 歷史追蹤</button>
+            <button onclick="switchTab('weekly')" id="tab-weekly" class="tab-btn pb-2 px-1 whitespace-nowrap">🎯 週級趨勢/轉折</button>
+            <button onclick="switchTab('holders')" id="tab-holders" class="tab-btn pb-2 px-1 whitespace-nowrap">🐳 大戶籌碼追蹤</button>
+        </div>
+
+        <!-- 內容區塊: 每日選股 -->
+        <div id="content-daily" class="block">
+            <div id="daily-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+                <p class="text-gray-400">載入中...</p>
+            </div>
+        </div>
+
+        <!-- 內容區塊: 歷史追蹤 -->
+        <div id="content-history" class="hidden">
+            <div class="mb-4 flex flex-col sm:flex-row gap-4 justify-between items-center bg-cardbg p-4 rounded-xl border border-gray-800">
+                <h2 class="text-xl font-bold text-white">波段表現追蹤</h2>
+                <select id="strat-filter" onchange="renderHistory()" class="bg-darkbg border border-gray-700 rounded-lg px-4 py-2 text-sm text-white focus:outline-none focus:border-blue-500">
+                    <option value="ALL">🎯 所有策略 (S1 ~ S7)</option>
+                    <option value="S1_底部突破">S1_底部突破</option>
+                    <option value="S2_創高動能">S2_創高動能</option>
+                    <option value="S3_投信認養">S3_投信認養</option>
+                    <option value="S4_強勢回測網球">S4_強勢回測網球</option>
+                    <option value="S5_投信作帳VCP">S5_投信作帳VCP</option>
+                    <option value="S6_營收口袋樞紐">S6_營收口袋樞紐</option>
+                    <option value="S7_漲停強勢旗形">S7_漲停強勢旗形</option>
+                    <option value="👑週轉折共振">👑 週轉折共振</option>
+                    <option value="🐳">🐳 大戶籌碼加持</option>
+                    <option value="⚡RS創高">⚡ RS領先創高</option>
+                </select>
+            </div>
+            <div class="overflow-x-auto bg-cardbg rounded-xl border border-gray-800">
+                <table class="w-full text-sm text-left">
+                    <thead class="text-xs uppercase bg-gray-800/50 text-gray-400">
+                        <tr>
+                            <th class="px-4 py-3">代碼</th>
+                            <th class="px-4 py-3">入選日期</th>
+                            <th class="px-4 py-3">觸發策略</th>
+                            <th class="px-4 py-3 text-right">進場價</th>
+                            <th class="px-4 py-3 text-right">最新價</th>
+                            <th class="px-4 py-3 text-right text-blue-300">波段最高</th>
+                            <th class="px-4 py-3 text-right">目前報酬</th>
+                            <th class="px-4 py-3 text-right text-yellow-300">最大漲幅(MFE)</th>
+                        </tr>
+                    </thead>
+                    <tbody id="history-tbody" class="divide-y divide-gray-800">
+                        <tr><td colspan="8" class="text-center py-4 text-gray-500">載入中...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- 內容區塊: 週級資料 -->
+        <div id="content-weekly" class="hidden space-y-8">
+            <div class="bg-cardbg rounded-xl border border-gray-800 p-5">
+                <h2 class="text-xl font-bold text-white mb-4">🏆 本週強勢多頭排列 (W_UpTrend)</h2>
+                <div id="weekly-uptrend-container" class="flex flex-wrap gap-2"></div>
+            </div>
+            <div class="bg-cardbg rounded-xl border border-gray-800 p-5">
+                <h2 class="text-xl font-bold text-white mb-4">🔄 關鍵三週轉折之上 (W_Turn)</h2>
+                <div id="weekly-turn-container" class="flex flex-wrap gap-2"></div>
+            </div>
+        </div>
+
+        <!-- 內容區塊: 籌碼追蹤 -->
+        <div id="content-holders" class="hidden">
+            <div class="bg-cardbg rounded-xl border border-gray-800 p-6">
+                <h2 class="text-xl font-bold text-white mb-4">大戶籌碼折線圖 (每週集保)</h2>
+                <div class="flex gap-3 mb-6">
+                    <input type="text" id="chip-input" placeholder="輸入股票代碼 (例: 2330)" class="bg-darkbg border border-gray-700 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-blue-500">
+                    <button onclick="drawChipChart()" class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg font-medium transition-colors">查詢</button>
+                </div>
+                <div class="h-[400px] w-full relative">
+                    <canvas id="chipChart"></canvas>
+                </div>
+                <p class="text-xs text-gray-500 mt-4 text-center">* 資料來源：集保中心 Open Data，每週六更新</p>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- 這是最關鍵的 Script 區塊 -->
+    <script>
+        let globalDaily = [];
         let globalHistory = {};
         let globalWeeklyUp = [];
         let globalWeeklyTurn = [];
@@ -46,7 +173,6 @@ let globalDaily = [];
             }).join('');
         }
 
-        // 安全讀取 JSON，避免單一檔案損壞導致全站崩潰
         async function safeFetchJSON(url) {
             try {
                 const res = await fetch(url + '?t=' + new Date().getTime());
@@ -60,7 +186,6 @@ let globalDaily = [];
         }
 
         async function initData() {
-            // 1. 每日選股
             const dataDaily = await safeFetchJSON('data/daily_picks.json');
             if (dataDaily) {
                 document.getElementById('update-time').innerText = `最後更新：${dataDaily.date || '未知'}`;
@@ -70,7 +195,6 @@ let globalDaily = [];
                 document.getElementById('daily-container').innerHTML = '<p class="text-red-400">無法載入今日選股資料，檔案可能尚未生成。</p>';
             }
 
-            // 2. 歷史資料
             const dataHist = await safeFetchJSON('data/history.json');
             if (dataHist) {
                 globalHistory = dataHist;
@@ -81,7 +205,6 @@ let globalDaily = [];
                 }
             }
 
-            // 3. 週級資料
             const dataWUp = await safeFetchJSON('data/weekly_uptrend.json');
             if (dataWUp) {
                 globalWeeklyUp = dataWUp.stocks || [];
@@ -94,7 +217,6 @@ let globalDaily = [];
                 renderWeeklyArray('weekly-turn-container', globalWeeklyTurn);
             }
 
-            // 4. 集保籌碼
             const dataHolders = await safeFetchJSON('data/holders.json');
             if (dataHolders) {
                 globalHolders = dataHolders;
@@ -161,7 +283,7 @@ let globalDaily = [];
             for (const [ticker, records] of Object.entries(globalHistory)) {
                 records.forEach(r => {
                     const code = ticker.replace('.TW', '').replace('.TWO', '');
-                    const strats = String(r.strategies || ""); // 防呆: 確保是字串
+                    const strats = String(r.strategies || ""); 
                     if (filter === 'ALL' || strats.includes(filter) || (filter === '🐳' && strats.includes('🐳'))) {
                         allRecords.push({ code, strats, ...r });
                     }
@@ -302,3 +424,6 @@ let globalDaily = [];
         }
 
         window.onload = initData;
+    </script>
+</body>
+</html>
