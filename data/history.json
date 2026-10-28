@@ -6,9 +6,9 @@
             "strategies": "S2_創高動能, S4_強勢回測網球, ⚡RS創高, 🐳大戶增持(+0.51%)",
             "entry_price": 48.8,
             "current_price": 48.8,
-            "highest_price": 48.8,
+            "highest_price": 48.85,
             "return_pct": 0.0,
-            "max_return_pct": 0.0
+            "max_return_pct": 0.1
         }
     ],
     "2347.TW": [
@@ -42,9 +42,9 @@
             "strategies": "S4_強勢回測網球, ⚡RS創高, 🐳大戶增持(+0.14%)",
             "entry_price": 261.5,
             "current_price": 261.5,
-            "highest_price": 261.5,
+            "highest_price": 263.0,
             "return_pct": 0.0,
-            "max_return_pct": 0.0
+            "max_return_pct": 0.57
         }
     ],
     "3010.TW": [
@@ -54,9 +54,9 @@
             "strategies": "S4_強勢回測網球, ⚡RS創高, 🐳大戶增持(+0.61%)",
             "entry_price": 137.0,
             "current_price": 137.0,
-            "highest_price": 137.0,
+            "highest_price": 140.5,
             "return_pct": 0.0,
-            "max_return_pct": 0.0
+            "max_return_pct": 2.55
         }
     ],
     "3034.TW": [
@@ -66,9 +66,9 @@
             "strategies": "S4_強勢回測網球, ⚡RS創高, 🐳大戶增持(+0.33%)",
             "entry_price": 599.0,
             "current_price": 599.0,
-            "highest_price": 599.0,
+            "highest_price": 608.0,
             "return_pct": 0.0,
-            "max_return_pct": 0.0
+            "max_return_pct": 1.5
         }
     ],
     "3045.TW": [
@@ -78,9 +78,9 @@
             "strategies": "S4_強勢回測網球, ⚡RS創高, 🐳大戶增持(+0.06%)",
             "entry_price": 134.5,
             "current_price": 134.5,
-            "highest_price": 134.5,
+            "highest_price": 135.0,
             "return_pct": 0.0,
-            "max_return_pct": 0.0
+            "max_return_pct": 0.37
         }
     ],
     "3498.TWO": [
@@ -90,9 +90,9 @@
             "strategies": "S4_強勢回測網球, ⚡RS創高, 🐳大戶增持(+0.16%)",
             "entry_price": 252.0,
             "current_price": 252.0,
-            "highest_price": 252.0,
+            "highest_price": 260.5,
             "return_pct": 0.0,
-            "max_return_pct": 0.0
+            "max_return_pct": 3.37
         }
     ],
     "4540.TW": [
@@ -102,9 +102,9 @@
             "strategies": "S1_底部突破, 🐳大戶增持(+0.14%)",
             "entry_price": 61.5,
             "current_price": 61.5,
-            "highest_price": 61.5,
+            "highest_price": 62.1,
             "return_pct": 0.0,
-            "max_return_pct": 0.0
+            "max_return_pct": 0.98
         }
     ],
     "4566.TW": [
@@ -114,9 +114,9 @@
             "strategies": "S4_強勢回測網球, ⚡RS創高, 🐳大戶增持(+3.42%)",
             "entry_price": 87.2,
             "current_price": 87.2,
-            "highest_price": 87.2,
+            "highest_price": 90.6,
             "return_pct": 0.0,
-            "max_return_pct": 0.0
+            "max_return_pct": 3.9
         }
     ],
     "6214.TW": [
@@ -126,9 +126,9 @@
             "strategies": "S2_創高動能, S4_強勢回測網球, ⚡RS創高",
             "entry_price": 203.0,
             "current_price": 203.0,
-            "highest_price": 203.0,
+            "highest_price": 204.0,
             "return_pct": 0.0,
-            "max_return_pct": 0.0
+            "max_return_pct": 0.49
         }
     ],
     "6532.TWO": [
@@ -138,9 +138,9 @@
             "strategies": "S4_強勢回測網球",
             "entry_price": 116.0,
             "current_price": 116.0,
-            "highest_price": 116.0,
+            "highest_price": 127.5,
             "return_pct": 0.0,
-            "max_return_pct": 0.0
+            "max_return_pct": 9.91
         }
     ]
 }
