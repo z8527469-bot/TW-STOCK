@@ -635,6 +635,17 @@ def update_and_save_json(final_stocks):
 
 # ================= 主程式執行 =================
 if __name__ == "__main__":
+# --- 新增：資料新鮮度探測 ---
+    print("\n📡 正在檢查 Yahoo Finance 資料庫新鮮度...")
+    test_df = yf.Ticker("2330.TW").history(period="5d")
+    if not test_df.empty:
+        latest_date = test_df.index[-1].strftime("%Y-%m-%d")
+        print(f"📌 目前 YF 伺服器最新的台股 K 線日期為: {latest_date}")
+        today_str = datetime.datetime.now().strftime("%Y-%m-%d")
+        if latest_date != today_str:
+            print(f"⚠️ 警告：今天已經是 {today_str}，但 YF 資料還停留在 {latest_date}！選股結果可能為昨日舊資料。")
+    # --------------------------
+
     check_market_regime()
     load_auxiliary_databases()
     fetch_all_revenue()
