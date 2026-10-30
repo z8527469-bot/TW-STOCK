@@ -3,7 +3,7 @@ name: 台股盤後選股與網站更新機器人
 on:
   schedule:
     # 台灣時間 (UTC+8) 晚上 21:00 = UTC 時間 13:00
-    - cron: '0 13 * * 1-5'
+    - cron: '43 11 * * 1-5'
   workflow_dispatch:
 
 # 賦予機器人寫入倉庫的權限，才能自動儲存 JSON 歷史紀錄
