@@ -106,5 +106,53 @@
             "return_pct": 0.0,
             "max_return_pct": 0.0
         }
+    ],
+    "2412.TW": [
+        {
+            "name": "中華電",
+            "pick_date": "2026-10-30",
+            "strategies": "S4_強勢回測網球, ⚡RS創高, 🐳大戶增持(+0.12%)",
+            "entry_price": 160.0,
+            "current_price": 160.0,
+            "highest_price": 160.0,
+            "return_pct": 0.0,
+            "max_return_pct": 0.0
+        }
+    ],
+    "2603.TW": [
+        {
+            "name": "長榮",
+            "pick_date": "2026-10-30",
+            "strategies": "S3_投信認養, S4_強勢回測網球, ⚡RS創高, 🐳大戶增持(+0.14%)",
+            "entry_price": 271.5,
+            "current_price": 271.5,
+            "highest_price": 271.5,
+            "return_pct": 0.0,
+            "max_return_pct": 0.0
+        }
+    ],
+    "2606.TW": [
+        {
+            "name": "裕民",
+            "pick_date": "2026-10-30",
+            "strategies": "S4_強勢回測網球",
+            "entry_price": 76.0,
+            "current_price": 76.0,
+            "highest_price": 76.0,
+            "return_pct": 0.0,
+            "max_return_pct": 0.0
+        }
+    ],
+    "2615.TW": [
+        {
+            "name": "萬海",
+            "pick_date": "2026-10-30",
+            "strategies": "S4_強勢回測網球, 🐳大戶增持(+0.06%)",
+            "entry_price": 120.0,
+            "current_price": 120.0,
+            "highest_price": 120.0,
+            "return_pct": 0.0,
+            "max_return_pct": 0.0
+        }
     ]
 }
