@@ -111,11 +111,11 @@
         {
             "name": "中華電",
             "pick_date": "2026-10-30",
-            "strategies": "S4_強勢回測網球, ⚡RS創高, 🐳大戶增持(+0.12%)",
+            "strategies": "S4_強勢回測網球, ⚡RS創高, 🐳大戶增持(+0.12%), 🐳大戶增持(+0.13%)",
             "entry_price": 160.0,
-            "current_price": NaN,
+            "current_price": 161.5,
             "highest_price": 160.0,
-            "return_pct": NaN,
+            "return_pct": 0.94,
             "max_return_pct": 0.0
         }
     ],
@@ -213,6 +213,30 @@
             "highest_price": 204.0,
             "return_pct": NaN,
             "max_return_pct": 0.99
+        }
+    ],
+    "3147.TWO": [
+        {
+            "name": "大綜",
+            "pick_date": "2026-11-04",
+            "strategies": "S4_強勢回測網球, S6_營收口袋樞紐, ⚡RS創高, 🐳大戶增持(+1.18%)",
+            "entry_price": 316.5,
+            "current_price": 316.5,
+            "highest_price": 316.5,
+            "return_pct": 0.0,
+            "max_return_pct": 0.0
+        }
+    ],
+    "6446.TW": [
+        {
+            "name": "藥華藥",
+            "pick_date": "2026-11-04",
+            "strategies": "S3_投信認養, 🐳大戶增持(+0.32%)",
+            "entry_price": 1250.0,
+            "current_price": 1250.0,
+            "highest_price": 1250.0,
+            "return_pct": 0.0,
+            "max_return_pct": 0.0
         }
     ]
 }
