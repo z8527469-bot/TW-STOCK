@@ -563,7 +563,24 @@ def update_and_save_json(final_stocks):
 
 
 # ================= 主程式執行 =================
+# ================= 主程式執行 =================
 if __name__ == "__main__":
+    import sys  # 引入系統模組以支援提早退出
+    today_str = datetime.datetime.now().strftime("%Y-%m-%d")
+
+    # 🛡️ 防呆一：避免同日重複執行 (防止洗版 Discord)
+    daily_picks_file = "data/daily_picks.json"
+    if os.path.exists(daily_picks_file):
+        try:
+            with open(daily_picks_file, "r", encoding="utf-8") as f:
+                if json.load(f).get("date") == today_str:
+                    print(f"🛑 系統攔截：今日 ({today_str}) 的選股報告已成功生成過，跳過執行！")
+                    print("💡 若需強制重跑，請先至 GitHub 刪除 data/daily_picks.json 後再手動按 Run。")
+                    sys.exit(0)
+        except Exception:
+            pass
+
+    # 🛡️ 防呆二：YF 延遲與週末防護 (資料沒更新就提早下班)
     print("\n📡 正在取得絕對時間基準 (以台積電為準)...")
     try:
         test_df = yf.Ticker("2330.TW").history(period="5d")
@@ -571,12 +588,18 @@ if __name__ == "__main__":
             GLOBAL_LATEST_DATE = pd.to_datetime(test_df.index[-1]).tz_localize(None).normalize()
             latest_date_str = GLOBAL_LATEST_DATE.strftime("%Y-%m-%d")
             print(f"📌 系統絕對基準日已鎖定為: {latest_date_str}")
-            today_str = datetime.datetime.now().strftime("%Y-%m-%d")
+            
             if latest_date_str != today_str:
-                print(f"⚠️ 警告：今天已經是 {today_str}，但 YF 最新資料還停留在 {latest_date_str}！\n")
+                if datetime.datetime.now().weekday() >= 5: # 週末 (5=六, 6=日)
+                    print(f"🏖️ 今天是週末 ({today_str})，台股未開盤，系統自動休假！")
+                else:
+                    print(f"⚠️ 警告：今天已經是 {today_str}，但 YF 最新資料還停留在 {latest_date_str}！")
+                    print("⏳ 資料尚未更新，系統自動提早終止，保留機會給稍後的排程...")
+                sys.exit(0)
     except Exception as e:
         print(f"⚠️ 探測失敗: {e}\n")
 
+    # ----- 通過所有防線，開始正式執行 -----
     check_market_regime()
     load_auxiliary_databases()
     fetch_all_revenue()
