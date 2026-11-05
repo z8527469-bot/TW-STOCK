@@ -238,5 +238,17 @@
             "return_pct": 0.0,
             "max_return_pct": 0.0
         }
+    ],
+    "1477.TW": [
+        {
+            "name": "聚陽",
+            "pick_date": "2026-11-05",
+            "strategies": "S1_底部突破, ⚡RS創高, 🐳大戶增持(+0.19%)",
+            "entry_price": 214.5,
+            "current_price": 214.5,
+            "highest_price": 214.5,
+            "return_pct": 0.0,
+            "max_return_pct": 0.0
+        }
     ]
 }
