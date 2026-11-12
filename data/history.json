@@ -320,5 +320,29 @@
             "return_pct": NaN,
             "max_return_pct": 1.93
         }
+    ],
+    "4927.TW": [
+        {
+            "name": "泰鼎-KY",
+            "pick_date": "2026-11-12",
+            "strategies": "S2_創高動能, ⚡RS創高",
+            "entry_price": 65.2,
+            "current_price": 65.2,
+            "highest_price": 65.2,
+            "return_pct": 0.0,
+            "max_return_pct": 0.0
+        }
+    ],
+    "6456.TW": [
+        {
+            "name": "GIS-KY",
+            "pick_date": "2026-11-12",
+            "strategies": "S4_強勢回測網球, ⚡RS創高",
+            "entry_price": 101.5,
+            "current_price": 101.5,
+            "highest_price": 101.5,
+            "return_pct": 0.0,
+            "max_return_pct": 0.0
+        }
     ]
 }
