@@ -259,6 +259,16 @@
             "highest_price": 218.5,
             "return_pct": NaN,
             "max_return_pct": 1.86
+        },
+        {
+            "name": "聚陽",
+            "pick_date": "2026-11-13",
+            "strategies": "S1_底部突破, 🐳大戶增持(+0.56%)",
+            "entry_price": 225.5,
+            "current_price": 225.5,
+            "highest_price": 225.5,
+            "return_pct": 0.0,
+            "max_return_pct": 0.0
         }
     ],
     "1802.TW": [
@@ -303,9 +313,9 @@
             "pick_date": "2026-11-10",
             "strategies": "S2_創高動能, ⚡RS創高",
             "entry_price": 57.0,
-            "current_price": NaN,
+            "current_price": 58.4,
             "highest_price": 57.6,
-            "return_pct": NaN,
+            "return_pct": 2.46,
             "max_return_pct": 1.05
         }
     ],
@@ -341,6 +351,66 @@
             "entry_price": 101.5,
             "current_price": 101.5,
             "highest_price": 101.5,
+            "return_pct": 0.0,
+            "max_return_pct": 0.0
+        }
+    ],
+    "2453.TW": [
+        {
+            "name": "凌群",
+            "pick_date": "2026-11-13",
+            "strategies": "S2_創高動能, ⚡RS創高, 🐳大戶增持(+0.72%)",
+            "entry_price": 61.1,
+            "current_price": 61.1,
+            "highest_price": 61.1,
+            "return_pct": 0.0,
+            "max_return_pct": 0.0
+        }
+    ],
+    "2618.TW": [
+        {
+            "name": "長榮航",
+            "pick_date": "2026-11-13",
+            "strategies": "S4_強勢回測網球, ⚡RS創高, 🐳大戶增持(+0.93%)",
+            "entry_price": 47.75,
+            "current_price": 47.75,
+            "highest_price": 47.75,
+            "return_pct": 0.0,
+            "max_return_pct": 0.0
+        }
+    ],
+    "4743.TWO": [
+        {
+            "name": "合一",
+            "pick_date": "2026-11-13",
+            "strategies": "S1_底部突破, ⚡RS創高, 🐳大戶增持(+0.23%)",
+            "entry_price": 50.2,
+            "current_price": 50.2,
+            "highest_price": 50.2,
+            "return_pct": 0.0,
+            "max_return_pct": 0.0
+        }
+    ],
+    "4916.TW": [
+        {
+            "name": "事欣科",
+            "pick_date": "2026-11-13",
+            "strategies": "S2_創高動能, ⚡RS創高, 🐳大戶增持(+0.32%)",
+            "entry_price": 112.5,
+            "current_price": 112.5,
+            "highest_price": 112.5,
+            "return_pct": 0.0,
+            "max_return_pct": 0.0
+        }
+    ],
+    "6150.TWO": [
+        {
+            "name": "撼訊",
+            "pick_date": "2026-11-13",
+            "strategies": "S2_創高動能, ⚡RS創高",
+            "entry_price": 81.6,
+            "current_price": 81.6,
+            "highest_price": 81.6,
             "return_pct": 0.0,
             "max_return_pct": 0.0
         }
