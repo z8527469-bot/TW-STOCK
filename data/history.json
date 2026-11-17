@@ -277,9 +277,9 @@
             "pick_date": "2026-11-10",
             "strategies": "S3_投信認養, ⚡RS創高, 🐳大戶增持(+1.02%)",
             "entry_price": 69.8,
-            "current_price": 76.6,
+            "current_price": 69.0,
             "highest_price": 89.5,
-            "return_pct": 9.74,
+            "return_pct": -1.15,
             "max_return_pct": 28.22
         }
     ],
@@ -413,6 +413,18 @@
             "highest_price": 84.6,
             "return_pct": -2.82,
             "max_return_pct": 3.68
+        }
+    ],
+    "5013.TWO": [
+        {
+            "name": "強新",
+            "pick_date": "2026-11-17",
+            "strategies": "S4_強勢回測網球, ⚡RS創高",
+            "entry_price": 66.6,
+            "current_price": 66.6,
+            "highest_price": 66.6,
+            "return_pct": 0.0,
+            "max_return_pct": 0.0
         }
     ]
 }
